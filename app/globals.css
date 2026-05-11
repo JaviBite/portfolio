@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f4f4f8;
+  --bg-secondary: #eaeaf0;
+  --text-primary: #0a0a14;
+  --text-secondary: #4a4a6a;
+  --text-muted: #8888aa;
+  --accent-cyan: #0099cc;
+  --accent-cyan-glow: rgba(0, 153, 204, 0.2);
+  --accent-purple: #7c3aed;
+  --accent-purple-glow: rgba(124, 58, 237, 0.2);
+  --surface-card: #ffffff;
+  --surface-card-border: rgba(0, 0, 0, 0.08);
+  --grid-line: rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+}
+
+.dark {
+  --bg: #080810;
+  --bg-secondary: #0d0d1a;
+  --text-primary: #E8E8F0;
+  --text-secondary: #9999bb;
+  --text-muted: #555577;
+  --accent-cyan: #00f5ff;
+  --accent-cyan-glow: rgba(0, 245, 255, 0.15);
+  --accent-purple: #a855f7;
+  --accent-purple-glow: rgba(168, 85, 247, 0.15);
+  --surface-card: #0f0f1a;
+  --surface-card-border: rgba(255, 255, 255, 0.06);
+  --grid-line: rgba(255, 255, 255, 0.03);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 2px; }
+
+::selection {
+  background: var(--accent-cyan-glow);
+  color: var(--accent-cyan);
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px var(--accent-cyan-glow); }
+  50% { box-shadow: 0 0 30px var(--accent-cyan-glow), 0 0 60px var(--accent-cyan-glow); }
+}
+.vibe-active { animation: glow-pulse 0.6s ease-in-out infinite; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+
+@media print {
+  body { background: white !important; color: black !important; }
+  .no-print { display: none !important; }
+}

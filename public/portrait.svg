@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" role="img" aria-labelledby="title desc">
+  <title id="title">Portrait placeholder</title>
+  <desc id="desc">Simple portrait silhouette placeholder</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#0f213a" />
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <rect width="360" height="480" rx="32" fill="url(#bg)" />
+  <circle cx="180" cy="165" r="86" fill="#1e293b" />
+  <path d="M76 408c0-76 60-138 134-138s134 62 134 138" fill="#1e293b" />
+  <path d="M180 89c-37 0-67 31-67 69s30 69 67 69 67-31 67-69-30-69-67-69zm-90 286c0-48 40-86 90-86s90 38 90 86H90z" fill="#0f172a" opacity="0.85" />
+  <rect x="0" y="0" width="360" height="480" rx="32" fill="url(#shine)" />
+</svg>

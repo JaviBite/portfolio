@@ -1,0 +1,168 @@
+{
+  "profile": {
+    "name": "Javier Giménez Garcés",
+    "title": "Computer Vision & AI Engineer",
+    "portrait": "/portrait.svg",
+    "motto": "No veo problemas, solo soluciones",
+    "contact": {
+      "email": "javier@example.com",
+      "linkedin": "https://linkedin.com/in/javiergimenez",
+      "github": "https://github.com/javiergimenez",
+      "location": "Spain"
+    },
+    "bio": "Ingeniero especializado en Computer Vision e IA con experiencia en producción real. Construyo sistemas que funcionan fuera del laboratorio: desde tracking multi-cámara en entornos industriales hasta compresión de modelos con tecnología quantum-inspired.",
+    "achievements": [
+      "1º Premio Physicathon 2020",
+      "Top 25% Hashcode Google 2020"
+    ],
+    "music": {
+      "track": "/audio/track.mp3",
+      "bpm": 120
+    }
+  },
+  "experience": [
+    {
+      "company": "Multiverse Computing",
+      "roles": [
+        {
+          "role": "Pre-sales Engineer / Solution Architect",
+          "start": "2024",
+          "end": null,
+          "current": true,
+          "description": "Trabajo en CompactifAI, producto de compresión de LLMs con tecnología quantum-inspired. Comprimo modelos como YOLO y Whisper manteniendo >95% de accuracy con una fracción del tamaño. Rol híbrido técnico-comercial: demos, propuestas y definición de soluciones para clientes enterprise.",
+          "stack": ["CompactifAI", "PyTorch", "YOLO", "Whisper", "LLM Compression"]
+        }
+      ]
+    },
+    {
+      "company": "Freelance / Proyectos Enterprise",
+      "roles": [
+        {
+          "role": "Computer Vision Engineer",
+          "start": "2021",
+          "end": "2024",
+          "current": false,
+          "description": "Desarrollo de sistemas de visión artificial para clientes enterprise: Würth, Stellantis, GIS Madrid, Administración Pública, VIC/EITB.",
+          "stack": ["Python", "C++", "OpenCV", "SAM", "FFmpeg"]
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad de Zaragoza",
+      "degree": "Ingeniería Informática",
+      "start": "2016",
+      "end": "2021"
+    },
+    {
+      "institution": "Universidad Rey Juan Carlos",
+      "degree": "Máster en Robótica, Computer Vision y Gráficos",
+      "start": "2021",
+      "end": "2023"
+    }
+  ],
+  "howIThink": [
+    {
+      "title": "Producción > Papers",
+      "body": "Un modelo con 98% de accuracy en benchmark que falla en condiciones reales no vale nada. Diseño sistemas pensando en el caso edge desde el primer día."
+    },
+    {
+      "title": "El puente que falta",
+      "body": "La brecha entre investigación y entrega real es donde se pierden la mayoría de proyectos de IA. Sé moverse en los dos mundos y, sobre todo, sé construir el puente."
+    },
+    {
+      "title": "IA cuando tiene sentido",
+      "body": "No todo necesita un transformer. Antes de escalar a un modelo grande, me pregunto si una solución clásica más simple resuelve el problema igual de bien con menos coste."
+    },
+    {
+      "title": "Criterio técnico real",
+      "body": "Entiendo qué pasa dentro de los modelos que uso. Eso me permite comprimir, adaptar y depurar donde otros se rinden."
+    }
+  ],
+  "projects": [
+    {
+      "id": "logistics-wurth",
+      "client": "Würth",
+      "tag": "Enterprise",
+      "start": "2022",
+      "end": "2023",
+      "description": "Sistema de monitorización logística en tiempo real para detectar atascos y medir capacidad de zonas de almacén usando visión artificial.",
+      "stack": ["C++", "OpenCV", "SAM", "Background Subtraction"],
+      "demos": ["congestion-overlay", "capacity-slider"]
+    },
+    {
+      "id": "tracking-stellantis",
+      "client": "Stellantis",
+      "tag": "Enterprise",
+      "start": "2022",
+      "end": "2022",
+      "description": "Tracking multi-cámara de vehículos en planta de producción con proyección 2D mediante homografía para supervisión de líneas de montaje.",
+      "stack": ["Python", "OpenCV", "Homography", "Background Subtraction"],
+      "matrices": {
+        "cam_a": [[1.2, 0.2, 100], [0.1, 1.1, 50], [0, 0, 1]],
+        "cam_b": [[0.9, -0.1, 200], [0.05, 1.0, 30], [0, 0, 1]]
+      },
+      "demos": ["multicam-homography"]
+    },
+    {
+      "id": "aerial-gis-madrid",
+      "client": "GIS Madrid",
+      "tag": "Enterprise",
+      "start": "2023",
+      "end": "2023",
+      "description": "Análisis semántico de imágenes aéreas para detección de cambios urbanos. Resistente a variaciones de iluminación y sombras mediante embeddings visuales.",
+      "stack": ["SAM", "Cosine Similarity", "PyTorch"],
+      "demos": ["heatmap-slider"]
+    },
+    {
+      "id": "biometric-id",
+      "client": "Administración Pública",
+      "tag": "Enterprise",
+      "start": "2021",
+      "end": "2022",
+      "description": "Sistema de identificación biométrica facial para acceso seguro en instalaciones públicas. Pipeline de extracción de feature vectors y matching con KNN.",
+      "stack": ["Face Recognition", "KNN", "Python"],
+      "demos": ["log-console"],
+      "layout": "vertical-bottom"
+    },
+    {
+      "id": "smartcrop-autoflip",
+      "client": "VIC, EITB",
+      "tag": "Enterprise",
+      "start": "2023",
+      "end": "2024",
+      "description": "Sistema AutoFlip para reencuadre automático de contenido audiovisual de 16:9 a 9:16. Combina transcripción ASR, análisis de saliency y tracking de sujetos.",
+      "stack": ["Whisper", "NLP", "Tracking", "Saliency Detection", "FFmpeg"],
+      "demos": ["saliency-slider"]
+    },
+    {
+      "id": "personal-selfhosted",
+      "client": "Self-hosted Lab",
+      "tag": "Self-hosted",
+      "start": "2023",
+      "end": "Presente",
+      "description": "Infraestructura personal para experimentar con servicios en producción real: Proxmox, contenedores, VPN y plataformas multimedia con acceso remoto seguro.",
+      "stack": ["Proxmox", "Docker", "WireGuard", "Nginx", "Ollama", "Jellyfin", "Immich"],
+      "demos": ["topology-snapshot", "service-dashboard"],
+      "layout": "vertical-bottom"
+    }
+  ],
+  "homelab": {
+    "description": "Infraestructura personal self-hosted para experimentar con tecnologías en producción real. Todo orquestado desde un servidor Proxmox en casa.",
+    "nodes": [
+      {
+        "name": "Proxmox",
+        "children": [
+          {
+            "name": "Docker",
+            "services": ["WireGuard", "Pi-hole", "Nginx Proxy Manager", "DDNS"]
+          },
+          { "name": "Ollama" },
+          { "name": "Immich" },
+          { "name": "Jellyfin" }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "projects": "Projects",
+    "cv": "CV",
+    "chat": "Chat with my CV",
+    "lang": "ES",
+    "audio": "Audio"
+  },
+  "hero": {
+    "cta_projects": "View Projects",
+    "cta_cv": "View CV",
+    "available": "Available for projects"
+  },
+  "stack": {
+    "title": "Stack & Expertise",
+    "subtitle": "Tools I use in real production"
+  },
+  "think": {
+    "title": "How I Think"
+  },
+  "homelab": {
+    "title": "Side Projects & Home Lab",
+    "subtitle": "Personal infrastructure where I experiment before recommending"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Production systems for enterprise clients",
+    "tag_enterprise": "Enterprise",
+    "demo": "View demo",
+    "stack": "Stack"
+  },
+  "cv": {
+    "title": "Living CV",
+    "experience": "Experience",
+    "education": "Education",
+    "skills": "Skills",
+    "achievements": "Achievements",
+    "download": "Download PDF",
+    "chat_cta": "Ask my CV →",
+    "present": "Present"
+  },
+  "chat": {
+    "title": "Ask my CV",
+    "subtitle": "I have full context on Javier's background. Ask me anything.",
+    "placeholder": "How many years of experience does he have in Computer Vision?",
+    "send": "Send",
+    "questions_left": "questions left",
+    "limit_reached": "You've used all your questions for this session. Want to know more? Reach out directly.",
+    "contact": "Contact",
+    "thinking": "Thinking..."
+  }
+}

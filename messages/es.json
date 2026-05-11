@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "projects": "Proyectos",
+    "cv": "CV",
+    "chat": "Chat con mi CV",
+    "lang": "EN",
+    "audio": "Audio"
+  },
+  "hero": {
+    "cta_projects": "Ver Proyectos",
+    "cta_cv": "Ver CV",
+    "available": "Disponible para proyectos"
+  },
+  "stack": {
+    "title": "Stack & Expertise",
+    "subtitle": "Herramientas que uso en producción real"
+  },
+  "think": {
+    "title": "Cómo pienso"
+  },
+  "homelab": {
+    "title": "Side Projects & Home Lab",
+    "subtitle": "Infraestructura personal donde experimento antes de recomendar"
+  },
+  "projects": {
+    "title": "Proyectos",
+    "subtitle": "Sistemas en producción para clientes enterprise",
+    "tag_enterprise": "Enterprise",
+    "demo": "Ver demo",
+    "stack": "Stack"
+  },
+  "cv": {
+    "title": "Living CV",
+    "experience": "Experiencia",
+    "education": "Formación",
+    "skills": "Skills",
+    "achievements": "Logros",
+    "download": "Descargar PDF",
+    "chat_cta": "Pregunta a mi CV →",
+    "present": "Presente"
+  },
+  "chat": {
+    "title": "Pregunta a mi CV",
+    "subtitle": "Tengo contexto completo de la trayectoria de Javier. Pregúntame lo que quieras.",
+    "placeholder": "¿Cuántos años de experiencia tiene en Computer Vision?",
+    "send": "Enviar",
+    "questions_left": "preguntas restantes",
+    "limit_reached": "Has agotado las preguntas de esta sesión. ¿Quieres saber más? Contacta directamente.",
+    "contact": "Contactar",
+    "thinking": "Pensando..."
+  }
+}
