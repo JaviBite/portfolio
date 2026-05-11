@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Parking Lot · 3D Camera Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--surface:rgba(255,255,255,0.88);--border:rgba(80,140,220,0.18);
+  --accent:#3b82f6;--accent2:#f59e0b;--green:#22c55e;--red:#ef4444;
+  --text:#1e3a5f;--dim:#7a9bbf;--bright:#0f2240;
+  --mono:'DM Mono',monospace;--display:'Syne',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--mono);overflow:hidden}
+
+/* ─── Layout ─── */
+.shell{display:grid;grid-template-rows:52px 1fr;grid-template-columns:1fr 260px;height:100vh}
+header{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:0 20px;
+  border-bottom:1px solid var(--border);background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);
+  position:relative;z-index:10;box-shadow:0 1px 12px rgba(59,130,246,0.08)}
+.logo{font-family:var(--display);font-size:17px;font-weight:800;color:var(--bright);letter-spacing:-0.02em}
+.logo span{color:var(--accent)}
+.badge{font-size:9px;letter-spacing:0.14em;color:var(--accent);background:rgba(59,130,246,0.09);
+  border:1px solid rgba(59,130,246,0.22);padding:2px 8px;border-radius:3px}
+.spacer{flex:1}
+.hdr-pill{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--green);
+  background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);
+  padding:3px 10px;border-radius:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--green)}50%{opacity:.5;box-shadow:0 0 14px var(--green)}}
+
+/* ─── Main canvas area ─── */
+.canvas-area{position:relative;overflow:hidden;background:#87ceeb}
+#main-canvas{display:block;width:100%;height:100%}
+#overlay-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+
+/* ─── Camera pip overlays ─── */
+.pip-tray{position:absolute;bottom:14px;left:14px;display:flex;gap:10px;z-index:5}
+.pip{width:200px;border:1px solid rgba(255,255,255,0.6);border-radius:10px;overflow:hidden;
+  background:#fff;cursor:pointer;transition:border-color .2s,transform .15s,box-shadow .2s;
+  box-shadow:0 4px 16px rgba(59,130,246,0.15)}
+.pip:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(59,130,246,0.25)}
+.pip.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent),0 8px 24px rgba(59,130,246,0.3)}
+.pip canvas{display:block;width:100%;height:auto}
+.pip-label{padding:4px 8px;font-size:9px;letter-spacing:.1em;color:var(--accent);
+  background:rgba(255,255,255,0.95);border-top:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.pip-label .rec{width:5px;height:5px;border-radius:50%;background:var(--red);
+  box-shadow:0 0 6px var(--red);animation:pulse2 1.5s ease-in-out infinite}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Camera overlay HUD */
+.cam-hud{position:absolute;inset:0;pointer-events:none;z-index:4}
+.hud-corner{position:absolute;width:28px;height:28px;border-color:rgba(255,255,255,0.7);border-style:solid;opacity:.8}
+.hud-tl{top:10px;left:10px;border-width:2px 0 0 2px}
+.hud-tr{top:10px;right:10px;border-width:2px 2px 0 0}
+.hud-bl{bottom:10px;left:10px;border-width:0 0 2px 2px}
+.hud-br{bottom:10px;right:10px;border-width:0 2px 2px 0}
+.hud-info{position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,0.9);white-space:nowrap;
+  text-shadow:0 1px 4px rgba(0,0,0,0.4);background:rgba(0,0,0,0.2);padding:2px 8px;border-radius:4px}
+.hud-coords{position:absolute;bottom:14px;right:14px;
+  font-size:9px;color:rgba(255,255,255,0.85);text-align:right;line-height:1.6;
+  text-shadow:0 1px 3px rgba(0,0,0,0.5)}
+.scan-line{display:none}
+
+/* ─── Sidebar ─── */
+.sidebar{overflow-y:auto;border-left:1px solid var(--border);background:rgba(255,255,255,0.92);
+  display:flex;flex-direction:column;gap:0;backdrop-filter:blur(12px)}
+
+.panel{border-bottom:1px solid var(--border)}
+.panel-head{padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;
+  background:rgba(59,130,246,0.025);user-select:none}
+.panel-head:hover{background:rgba(59,130,246,0.05)}
+.panel-icon{font-size:12px;color:var(--accent);width:16px;text-align:center}
+.panel-title{font-family:var(--display);font-size:11px;font-weight:700;color:var(--bright);letter-spacing:.03em}
+.panel-body{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+
+/* Camera selector */
+.cam-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cam-btn{padding:7px 6px;border-radius:8px;border:1px solid var(--border);background:rgba(248,250,255,0.8);
+  color:var(--dim);font-family:var(--mono);font-size:9px;letter-spacing:.08em;cursor:pointer;
+  transition:all .15s;text-align:center}
+.cam-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(59,130,246,0.06)}
+.cam-btn.active{background:rgba(59,130,246,0.1);border-color:var(--accent);color:var(--accent);
+  box-shadow:inset 0 0 10px rgba(59,130,246,0.08),0 2px 8px rgba(59,130,246,0.12)}
+
+/* Sliders */
+.ctrl{display:flex;flex-direction:column;gap:4px}
+.ctrl-row{display:flex;justify-content:space-between;align-items:center}
+.ctrl-label{font-size:9.5px;color:var(--dim);letter-spacing:.05em}
+.ctrl-val{font-size:9.5px;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;height:3px;-webkit-appearance:none;appearance:none;
+  background:rgba(59,130,246,0.18);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;
+  border-radius:50%;background:var(--accent);border:2px solid #fff;
+  box-shadow:0 1px 6px rgba(59,130,246,0.5)}
+
+/* Toggle */
+.toggle-row{display:flex;justify-content:space-between;align-items:center}
+.toggle-label{font-size:9.5px;color:var(--dim)}
+.toggle{width:32px;height:17px;border-radius:9px;border:1px solid var(--border);
+  background:rgba(200,215,235,0.5);cursor:pointer;position:relative;transition:all .2s}
+.toggle.on{background:rgba(59,130,246,0.25);border-color:var(--accent)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:11px;height:11px;
+  border-radius:50%;background:#b0c4de;transition:all .2s}
+.toggle.on::after{left:17px;background:var(--accent)}
+
+/* Screenshot button */
+.shot-btn{padding:9px;border-radius:8px;border:1px solid rgba(59,130,246,0.25);
+  background:rgba(59,130,246,0.07);color:var(--accent);font-family:var(--mono);
+  font-size:9px;letter-spacing:.1em;cursor:pointer;transition:all .15s;text-align:center}
+.shot-btn:hover{background:rgba(59,130,246,0.14);border-color:var(--accent);
+  box-shadow:0 2px 12px rgba(59,130,246,0.2)}
+.shot-btn.all{background:rgba(245,158,11,0.07);border-color:rgba(245,158,11,0.28);color:var(--accent2)}
+.shot-btn.all:hover{background:rgba(245,158,11,0.14);border-color:var(--accent2)}
+
+/* Calibration points display */
+.cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.cal-pt{background:rgba(59,130,246,0.05);border:1px solid var(--border);border-radius:6px;
+  padding:5px 7px;font-size:8.5px;line-height:1.7}
+.cal-pt-label{color:var(--accent);font-weight:500;letter-spacing:.05em}
+.cal-pt-val{color:var(--text)}
+
+/* Divider */
+.divider{height:1px;background:var(--border);margin:2px 0}
+
+/* Info text */
+.info-text{font-size:9.5px;color:var(--dim);line-height:1.65}
+.info-text strong{color:var(--text);font-weight:500}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header>
+  <div class="logo">Parking<span>·3D</span></div>
+  <div class="badge">WEBGL SIMULATOR</div>
+  <div class="spacer"/>
+  <div style="font-size:9px;color:var(--dim);letter-spacing:.06em">Click PiP to switch view · Drag to orbit · Scroll to zoom</div>
+  <div class="hdr-pill"><div class="dot"></div>LIVE</div>
+</header>
+
+<div class="canvas-area" id="canvas-area">
+  <canvas id="main-canvas"></canvas>
+  <canvas id="overlay-canvas"></canvas>
+
+  <!-- Camera HUD overlay -->
+  <div class="cam-hud">
+    <div class="hud-corner hud-tl"></div>
+    <div class="hud-corner hud-tr"></div>
+    <div class="hud-corner hud-bl"></div>
+    <div class="hud-corner hud-br"></div>
+    <div class="hud-info" id="hud-cam-name">CAM 0 · FREE ORBIT</div>
+    <div class="hud-coords" id="hud-coords">FOV: 60°<br/>NEAR: 0.1 · FAR: 200</div>
+    <div class="scan-line"></div>
+  </div>
+
+  <!-- PiP camera thumbnails -->
+  <div class="pip-tray">
+    <div class="pip" id="pip0" onclick="switchCam(0)">
+      <canvas id="pip-canvas-0" height="120"></canvas>
+      <div class="pip-label"><div class="rec"></div>FREE ORBIT</div>
+    </div>
+    <div class="pip active" id="pip1" onclick="switchCam(1)">
+      <canvas id="pip-canvas-1" height="120"></canvas>
+      <div class="pip-label"><div class="rec"></div>CAM 1 · WEST POLE</div>
+    </div>
+    <div class="pip" id="pip2" onclick="switchCam(2)">
+      <canvas id="pip-canvas-2" height="120"></canvas>
+      <div class="pip-label"><div class="rec"></div>CAM 2 · EAST POLE</div>
+    </div>
+    <div class="pip" id="pip3" onclick="switchCam(3)">
+      <canvas id="pip-canvas-3" height="120"></canvas>
+      <div class="pip-label"><div class="rec"></div>CAM 3 · TOP DOWN</div>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar">
+  <!-- Camera selector -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-icon">◉</div>
+      <div class="panel-title">Camera Views</div>
+    </div>
+    <div class="panel-body">
+      <div class="cam-btns">
+        <button class="cam-btn" onclick="switchCam(0)">Free Orbit</button>
+        <button class="cam-btn active" id="cbtn1" onclick="switchCam(1)">CAM 1 · WEST</button>
+        <button class="cam-btn" id="cbtn2" onclick="switchCam(2)">CAM 2 · EAST</button>
+        <button class="cam-btn" id="cbtn3" onclick="switchCam(3)">Top Down</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene controls -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-icon">⚙</div>
+      <div class="panel-title">Scene Controls</div>
+    </div>
+    <div class="panel-body">
+      <div class="ctrl">
+        <div class="ctrl-row">
+          <span class="ctrl-label">Vehicle X</span>
+          <span class="ctrl-val" id="vx-val">0.0</span>
+        </div>
+        <input type="range" id="vx" min="-12" max="12" step="0.1" value="0"
+          oninput="updateVehicle()"/>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-row">
+          <span class="ctrl-label">Vehicle Z</span>
+          <span class="ctrl-val" id="vz-val">0.0</span>
+        </div>
+        <input type="range" id="vz" min="-8" max="8" step="0.1" value="0"
+          oninput="updateVehicle()"/>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-row">
+          <span class="ctrl-label">Vehicle Rotation</span>
+          <span class="ctrl-val" id="vrot-val">0°</span>
+        </div>
+        <input type="range" id="vrot" min="0" max="360" step="1" value="0"
+          oninput="updateVehicle()"/>
+      </div>
+      <div class="divider"></div>
+      <div class="toggle-row">
+        <span class="toggle-label">Show calibration points</span>
+        <div class="toggle on" id="tog-cal" onclick="toggleCal()"></div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Show camera frustums</span>
+        <div class="toggle on" id="tog-frust" onclick="toggleFrust()"></div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Night mode</span>
+        <div class="toggle" id="tog-night" onclick="toggleNight()"></div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Animate vehicle</span>
+        <div class="toggle" id="tog-anim" onclick="toggleAnim()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screenshots -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-icon">⬡</div>
+      <div class="panel-title">Export Frames</div>
+    </div>
+    <div class="panel-body">
+      <div class="info-text">Capture frames from each camera for use as <strong>homography background images</strong>.</div>
+      <button class="shot-btn" onclick="screenshot(1)">⬇ Save CAM 1 Frame</button>
+      <button class="shot-btn" onclick="screenshot(2)">⬇ Save CAM 2 Frame</button>
+      <button class="shot-btn" onclick="screenshot(3)">⬇ Save CAM 3 (Top)</button>
+      <button class="shot-btn all" onclick="screenshotAll()">⬇ Save All 4 Views</button>
+    </div>
+  </div>
+
+  <!-- Calibration points -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-icon">◈</div>
+      <div class="panel-title">Calibration Points</div>
+    </div>
+    <div class="panel-body">
+      <div class="info-text">4 ground markers define the homography correspondence.</div>
+      <div class="cal-grid" id="cal-display">
+        <div class="cal-pt"><div class="cal-pt-label">P1 · NW</div><div class="cal-pt-val" id="cp1">—</div></div>
+        <div class="cal-pt"><div class="cal-pt-label">P2 · NE</div><div class="cal-pt-val" id="cp2">—</div></div>
+        <div class="cal-pt"><div class="cal-pt-label">P3 · SE</div><div class="cal-pt-val" id="cp3">—</div></div>
+        <div class="cal-pt"><div class="cal-pt-label">P4 · SW</div><div class="cal-pt-val" id="cp4">—</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+</div><!-- /shell -->
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+// WEBGL PARKING LOT SIMULATOR
+// ─────────────────────────────────────────────────────────────────
+
+// ── Math utils ───────────────────────────────────────────────────
+const mat4 = {
+  create() { return new Float32Array(16); },
+  identity(m) {
+    m.fill(0); m[0]=m[5]=m[10]=m[15]=1; return m;
+  },
+  perspective(m, fovy, aspect, near, far) {
+    const f = 1/Math.tan(fovy/2), nf = 1/(near-far);
+    m[0]=f/aspect; m[1]=0; m[2]=0; m[3]=0;
+    m[4]=0; m[5]=f; m[6]=0; m[7]=0;
+    m[8]=0; m[9]=0; m[10]=(far+near)*nf; m[11]=-1;
+    m[12]=0; m[13]=0; m[14]=2*far*near*nf; m[15]=0;
+    return m;
+  },
+  lookAt(m, eye, center, up) {
+    const ex=eye[0],ey=eye[1],ez=eye[2];
+    const cx=center[0],cy=center[1],cz=center[2];
+    let fx=cx-ex, fy=cy-ey, fz=cz-ez;
+    let fl=Math.hypot(fx,fy,fz); fx/=fl; fy/=fl; fz/=fl;
+    let sx=fy*up[2]-fz*up[1], sy=fz*up[0]-fx*up[2], sz=fx*up[1]-fy*up[0];
+    let sl=Math.hypot(sx,sy,sz); sx/=sl; sy/=sl; sz/=sl;
+    const ux=sy*fz-sz*fy, uy=sz*fx-sx*fz, uz=sx*fy-sy*fx;
+    m[0]=sx; m[1]=ux; m[2]=-fx; m[3]=0;
+    m[4]=sy; m[5]=uy; m[6]=-fy; m[7]=0;
+    m[8]=sz; m[9]=uz; m[10]=-fz; m[11]=0;
+    m[12]=-(sx*ex+sy*ey+sz*ez);
+    m[13]=-(ux*ex+uy*ey+uz*ez);
+    m[14]= (fx*ex+fy*ey+fz*ez);
+    m[15]=1;
+    return m;
+  },
+  multiply(out, a, b) {
+    for(let i=0;i<4;i++) for(let j=0;j<4;j++) {
+      out[j*4+i]=0;
+      for(let k=0;k<4;k++) out[j*4+i]+=a[k*4+i]*b[j*4+k];
+    }
+    return out;
+  },
+  translate(m, x, y, z) {
+    const t = mat4.identity(mat4.create());
+    t[12]=x; t[13]=y; t[14]=z;
+    return mat4.multiply(mat4.create(), m, t);
+  },
+  rotateY(m, angle) {
+    const c=Math.cos(angle), s=Math.sin(angle);
+    const r = mat4.identity(mat4.create());
+    r[0]=c; r[2]=s; r[8]=-s; r[10]=c;
+    return mat4.multiply(mat4.create(), m, r);
+  },
+  scale(m, x, y, z) {
+    const s = mat4.identity(mat4.create());
+    s[0]=x; s[5]=y; s[10]=z;
+    return mat4.multiply(mat4.create(), m, s);
+  }
+};
+
+function vec3project(mvp, x, y, z, w, h) {
+  // Project world point to screen using MVP
+  const inv=[x,y,z,1];
+  let rx=mvp[0]*inv[0]+mvp[4]*inv[1]+mvp[8]*inv[2]+mvp[12]*inv[3];
+  let ry=mvp[1]*inv[0]+mvp[5]*inv[1]+mvp[9]*inv[2]+mvp[13]*inv[3];
+  let rw=mvp[3]*inv[0]+mvp[7]*inv[1]+mvp[11]*inv[2]+mvp[15]*inv[3];
+  const ndcx=rx/rw, ndcy=ry/rw;
+  return [(ndcx+1)/2*w, (1-ndcy)/2*h];
+}
+
+// ── Shader sources ────────────────────────────────────────────────
+const VS = `
+attribute vec3 aPos;
+attribute vec3 aNorm;
+attribute vec2 aUV;
+attribute vec3 aCol;
+uniform mat4 uMVP;
+uniform mat4 uModel;
+uniform vec3 uLightDir;
+uniform float uNight;
+varying vec3 vCol;
+varying vec2 vUV;
+varying float vDiff;
+varying float vNight;
+void main(){
+  vec4 worldPos = uModel * vec4(aPos, 1.0);
+  gl_Position = uMVP * vec4(aPos, 1.0);
+  vec3 worldNorm = normalize(mat3(uModel) * aNorm);
+  float diff = max(dot(worldNorm, normalize(uLightDir)), 0.0);
+  vDiff = diff;
+  vCol = aCol;
+  vUV = aUV;
+  vNight = uNight;
+}`;
+
+const FS = `
+precision mediump float;
+varying vec3 vCol;
+varying vec2 vUV;
+varying float vDiff;
+varying float vNight;
+uniform sampler2D uTex;
+uniform int uUseTex;
+void main(){
+  vec3 col;
+  if(uUseTex == 1){
+    vec4 t = texture2D(uTex, vUV);
+    col = t.rgb;
+  } else {
+    col = vCol;
+  }
+  float ambient = mix(0.55, 0.08, vNight);
+  float light    = mix(0.45, 0.5,  vNight);
+  vec3 lit = col * (ambient + vDiff * light);
+  // Night: add blue tint
+  lit = mix(lit, lit * vec3(0.7, 0.85, 1.1), vNight * 0.4);
+  gl_FragColor = vec4(lit, 1.0);
+}`;
+
+// ── State ─────────────────────────────────────────────────────────
+let gl, program, mainCanvas, overlayCanvas, overlayCtx, pipCanvases=[], offscreenCanvases=[];
+let activeCam = 1;
+let showCal = true, showFrust = true, nightMode = false, animVehicle = false;
+let vehicleX = 0, vehicleZ = 0, vehicleRot = 0;
+let animT = 0;
+let orbitAngle = 0.4, orbitPitch = 0.5, orbitDist = 38;
+let isDragging = false, lastMX = 0, lastMY = 0;
+
+// Camera definitions: eye, center, up, fov
+const CAMERAS = [
+  // 0: Free orbit (dynamic)
+  { name:'FREE ORBIT', fov:60 },
+  // 1: CAM1 – West pole, elevated, covers LEFT half (X < ~2), looking slightly right-down
+  { name:'CAM 1 · WEST POLE', eye:[-19, 13, 0], center:[-4, 0, 0], up:[0,1,0], fov:62 },
+  // 2: CAM2 – East pole, elevated, covers RIGHT half (X > ~-2), looking slightly left-down
+  { name:'CAM 2 · EAST POLE', eye:[ 19, 13, 0], center:[ 4, 0, 0], up:[0,1,0], fov:62 },
+  // 3: Top-down
+  { name:'CAM 3 · TOP DOWN',  eye:[0, 32, 0.01], center:[0, 0, 0], up:[0,1,0], fov:44 },
+];
+
+// Calibration ground points (world space XZ, Y=0)
+const CAL_POINTS = [
+  [-10, 0, -6], // NW
+  [ 10, 0, -6], // NE
+  [ 10, 0,  6], // SE
+  [-10, 0,  6], // SW
+];
+
+// Geometry buffers
+let buffers = {};
+
+// ── WebGL init ─────────────────────────────────────────────────────
+function initGL() {
+  mainCanvas = document.getElementById('main-canvas');
+  overlayCanvas = document.getElementById('overlay-canvas');
+  overlayCtx = overlayCanvas.getContext('2d');
+  
+  // Setup pip canvases
+  for(let i=0;i<4;i++){
+    pipCanvases.push(document.getElementById(`pip-canvas-${i}`));
+    const oc = document.createElement('canvas');
+    oc.width = 400; oc.height = 240;
+    offscreenCanvases.push(oc);
+  }
+
+  // Size main canvas
+  resizeMain();
+  window.addEventListener('resize', resizeMain);
+
+  gl = mainCanvas.getContext('webgl', {preserveDrawingBuffer:true, antialias:true});
+  if(!gl){ alert('WebGL not supported'); return; }
+
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.CULL_FACE);
+
+  // Compile shaders
+  const vs = compileShader(gl.VERTEX_SHADER, VS);
+  const fs = compileShader(gl.FRAGMENT_SHADER, FS);
+  program = gl.createProgram();
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  gl.useProgram(program);
+
+  // Build scene geometry
+  buildScene();
+
+  // Orbit controls on main canvas
+  mainCanvas.addEventListener('mousedown', e => { isDragging=true; lastMX=e.clientX; lastMY=e.clientY; });
+  window.addEventListener('mouseup', () => isDragging=false);
+  window.addEventListener('mousemove', e => {
+    if(!isDragging || activeCam !== 0) return;
+    orbitAngle -= (e.clientX-lastMX)*0.008;
+    orbitPitch = Math.max(0.1, Math.min(1.4, orbitPitch-(e.clientY-lastMY)*0.006));
+    lastMX=e.clientX; lastMY=e.clientY;
+  });
+  mainCanvas.addEventListener('wheel', e => {
+    if(activeCam !== 0) return;
+    orbitDist = Math.max(5, Math.min(80, orbitDist+e.deltaY*0.04));
+  });
+
+  requestAnimationFrame(loop);
+}
+
+function resizeMain() {
+  const area = document.getElementById('canvas-area');
+  mainCanvas.width = area.clientWidth;
+  mainCanvas.height = area.clientHeight;
+  if(overlayCanvas) {
+    overlayCanvas.width = area.clientWidth;
+    overlayCanvas.height = area.clientHeight;
+    overlayCanvas.style.width = area.clientWidth + 'px';
+    overlayCanvas.style.height = area.clientHeight + 'px';
+  }
+}
+
+function compileShader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+    console.error(gl.getShaderInfoLog(s));
+  return s;
+}
+
+// ── Geometry ───────────────────────────────────────────────────────
+function makeBuffer(data) {
+  const b = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, b);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+  return b;
+}
+
+function makeIndexBuffer(data) {
+  const b = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), gl.STATIC_DRAW);
+  return b;
+}
+
+// Each vertex: pos(3) + norm(3) + uv(2) + col(3) = 11 floats
+function box(x,y,z, w,h,d, r,g,b) {
+  const verts=[], idx=[];
+  const hw=w/2, hh=h/2, hd=d/2;
+  const faces=[
+    // front (+z)
+    [[x-hw,y-hh,z+hd],[x+hw,y-hh,z+hd],[x+hw,y+hh,z+hd],[x-hw,y+hh,z+hd],[0,0,1]],
+    // back (-z)
+    [[x+hw,y-hh,z-hd],[x-hw,y-hh,z-hd],[x-hw,y+hh,z-hd],[x+hw,y+hh,z-hd],[0,0,-1]],
+    // left (-x)
+    [[x-hw,y-hh,z-hd],[x-hw,y-hh,z+hd],[x-hw,y+hh,z+hd],[x-hw,y+hh,z-hd],[-1,0,0]],
+    // right (+x)
+    [[x+hw,y-hh,z+hd],[x+hw,y-hh,z-hd],[x+hw,y+hh,z-hd],[x+hw,y+hh,z+hd],[1,0,0]],
+    // top (+y)
+    [[x-hw,y+hh,z+hd],[x+hw,y+hh,z+hd],[x+hw,y+hh,z-hd],[x-hw,y+hh,z-hd],[0,1,0]],
+    // bottom (-y)
+    [[x-hw,y-hh,z-hd],[x+hw,y-hh,z-hd],[x+hw,y-hh,z+hd],[x-hw,y-hh,z+hd],[0,-1,0]],
+  ];
+  faces.forEach(([p0,p1,p2,p3,n])=>{
+    const base = verts.length/11;
+    [[p0,0,0],[p1,1,0],[p2,1,1],[p3,0,1]].forEach(([p,u,v])=>{
+      verts.push(p[0],p[1],p[2], n[0],n[1],n[2], u,v, r,g,b);
+    });
+    idx.push(base,base+1,base+2, base,base+2,base+3);
+  });
+  return {verts,idx};
+}
+
+function mergeGeometry(meshes) {
+  const verts=[], idx=[];
+  let offset=0;
+  meshes.forEach(m=>{
+    verts.push(...m.verts);
+    m.idx.forEach(i=>idx.push(i+offset));
+    offset += m.verts.length/11;
+  });
+  return {verts,idx};
+}
+
+function buildScene() {
+  const meshes = [];
+
+  // ── Ground / asphalt — warm grey daytime ──
+  meshes.push(box(0,-0.05,0, 40,0.1,24, 0.56,0.58,0.60));
+
+  // ── Sidewalk strips along edges ──
+  meshes.push(box(0,-0.04,-11.5, 40,0.08,1,  0.78,0.76,0.72));
+  meshes.push(box(0,-0.04, 11.5, 40,0.08,1,  0.78,0.76,0.72));
+
+  // ── Road markings — bright yellow dashes ──
+  for(let i=-5;i<=5;i++) meshes.push(box(i*3.6, 0.0, 0, 2,0.03,0.15, 0.98,0.85,0.12));
+  // Zebra crossing
+  for(let i=0;i<5;i++) meshes.push(box(-0.8+i*0.4, 0.0,-2.5, 0.2,0.03,2.5, 0.96,0.96,0.94));
+
+  // ── Parking bay lines — crisp white ──
+  for(let i=-4;i<=4;i++) {
+    meshes.push(box(i*2.4+1.2, 0.01,-7, 0.06,0.02,3.5,  0.92,0.92,0.92));
+    meshes.push(box(i*2.4+1.2, 0.01, 7, 0.06,0.02,3.5,  0.92,0.92,0.92));
+  }
+  // Bay end lines
+  meshes.push(box(0, 0.01,-5.25, 19.2,0.02,0.07, 0.88,0.88,0.88));
+  meshes.push(box(0, 0.01,-8.75, 19.2,0.02,0.07, 0.88,0.88,0.88));
+  meshes.push(box(0, 0.01, 5.25, 19.2,0.02,0.07, 0.88,0.88,0.88));
+  meshes.push(box(0, 0.01, 8.75, 19.2,0.02,0.07, 0.88,0.88,0.88));
+
+  // ── Bay number pads — removed, numbers drawn as pavement text via 2D overlay ──
+
+  // ── Parked cars — only 4 per row (alternating bays, skip even indices) ──
+  const carColors = [
+    [0.92,0.28,0.28],[0.28,0.62,0.92],[0.28,0.82,0.48],
+    [0.95,0.72,0.18],[0.72,0.38,0.92],[0.92,0.55,0.25],
+    [0.35,0.78,0.82],[0.88,0.38,0.62],[0.55,0.82,0.32],
+  ];
+  const topBayX = [-9.6,-7.2,-4.8,-2.4, 2.4, 4.8, 7.2, 9.6];
+  // Top row: only odd indices (bays 1,3,5,7)
+  topBayX.forEach((bx, i) => {
+    if(i % 2 !== 0) return; // skip even → keep bays at index 0,2,4,6
+    const [r,g,b] = carColors[i % carColors.length];
+    meshes.push(...carMesh(bx, 0, -7.5, 0, r,g,b));
+  });
+  // Bottom row: only even indices (bays 9,11,13,15)
+  topBayX.forEach((bx, i) => {
+    if(i % 2 !== 1) return; // keep bays at index 1,3,5,7
+    const [r,g,b] = carColors[(i+4) % carColors.length];
+    meshes.push(...carMesh(bx, 0, 7.5, Math.PI, r,g,b));
+  });
+
+  // ── Buildings — pastel daytime tones ──
+  const bldColors = [
+    [0.82,0.87,0.95],[0.90,0.84,0.78],[0.80,0.90,0.84],
+    [0.92,0.88,0.80],[0.85,0.82,0.92],[0.90,0.90,0.82],
+  ];
+  for(let i=0;i<5;i++) {
+    const bx = -16+i*8, bh = 5+Math.sin(i*1.7)*3, [r,g,b]=bldColors[i%bldColors.length];
+    meshes.push(box(bx, bh/2, -13, 7, bh, 1.5, r,g,b));
+    // Darker roof
+    meshes.push(box(bx, bh+0.1, -13, 7.2,0.25,1.7, r*0.7,g*0.7,b*0.7));
+    // Windows — warm cream
+    for(let wy=1;wy<bh-1;wy+=1.8) for(let wx=0;wx<3;wx++)
+      meshes.push(box(bx-2+wx*2, wy, -12.2, 0.75,1.0,0.06, 0.96,0.94,0.82));
+  }
+  for(let i=0;i<4;i++) {
+    const bx=-14+i*9, bh=4.5+Math.cos(i*2.1)*2.5, [r,g,b]=bldColors[(i+2)%bldColors.length];
+    meshes.push(box(bx, bh/2, 13, 8, bh, 1.5, r,g,b));
+    meshes.push(box(bx, bh+0.1, 13, 8.2,0.25,1.7, r*0.7,g*0.7,b*0.7));
+    for(let wy=1;wy<bh-1;wy+=1.8) for(let wx=0;wx<3;wx++)
+      meshes.push(box(bx-2+wx*2, wy, 12.2, 0.75,1.0,0.06, 0.96,0.94,0.82));
+  }
+  meshes.push(box(-20,4,-2,1.5,8,18, 0.82,0.85,0.90));
+  meshes.push(box( 20,4,-2,1.5,8,18, 0.82,0.85,0.90));
+
+  // ── Trees — lush green ──
+  const treePos=[[-12,-10],[-4,-10],[4,-10],[12,-10],[-12,10],[-4,10],[4,10],[12,10]];
+  treePos.forEach(([tx,tz])=>{
+    meshes.push(box(tx,0,tz, 0.3,1.2,0.3, 0.45,0.32,0.20)); // trunk
+    meshes.push(box(tx,2.2,tz, 2.2,2.8,2.2, 0.25,0.68,0.28)); // foliage outer
+    meshes.push(box(tx,3.2,tz, 1.4,2.0,1.4, 0.32,0.78,0.32)); // foliage inner
+    meshes.push(box(tx,4.4,tz, 0.8,1.2,0.8, 0.38,0.85,0.38)); // top
+  });
+
+  // ── Street lamps — modern white ──
+  const lampPositions=[[-12,0,-4],[-6,0,-4],[0,0,-4],[6,0,-4],[12,0,-4],
+                        [-12,0,4],[-6,0,4],[0,0,4],[6,0,4],[12,0,4]];
+  lampPositions.forEach(([lx,,lz])=>{
+    meshes.push(box(lx,2.5,lz, 0.1,5,0.1, 0.72,0.72,0.70));
+    meshes.push(box(lx+0.5,5,lz, 1.0,0.12,0.12, 0.70,0.70,0.68));
+    meshes.push(box(lx+0.95,4.9,lz, 0.28,0.2,0.28, 0.95,0.92,0.85));
+  });
+
+  // ── Camera poles at actual camera positions ──
+  // West pole at X=-19 (CAM1)
+  meshes.push(box(-19, 6.5, 0,  0.15,13,0.15, 0.55,0.55,0.52)); // pole
+  meshes.push(box(-19,13.1, 0,  0.5,0.25,0.5, 0.45,0.45,0.42)); // mount
+  meshes.push(box(-18.5,13.2,0, 0.7,0.3,0.35, 0.25,0.25,0.25)); // camera body
+  meshes.push(box(-18.1,13.2,0, 0.22,0.22,0.08, 0.08,0.08,0.08)); // lens
+  // East pole at X=+19 (CAM2)
+  meshes.push(box( 19, 6.5, 0,  0.15,13,0.15, 0.55,0.55,0.52));
+  meshes.push(box( 19,13.1, 0,  0.5,0.25,0.5, 0.45,0.45,0.42));
+  meshes.push(box( 18.5,13.2,0, 0.7,0.3,0.35, 0.25,0.25,0.25)); // camera body (mirrored)
+  meshes.push(box( 18.1,13.2,0, 0.22,0.22,0.08, 0.08,0.08,0.08));
+
+  // ── Calibration markers — bright orange ──
+  CAL_POINTS.forEach(([cx,,cz])=>{
+    meshes.push(box(cx, 0.02,cz, 0.6,0.05,0.6,  1.0,0.42,0.08));
+    meshes.push(box(cx, 0.04,cz, 0.12,0.10,0.65, 1.0,1.0,1.0));
+    meshes.push(box(cx, 0.04,cz, 0.65,0.10,0.12, 1.0,1.0,1.0));
+  });
+
+  const scene = mergeGeometry(meshes);
+  buffers.scene = {
+    vbo: makeBuffer(scene.verts),
+    ibo: makeIndexBuffer(scene.idx),
+    count: scene.idx.length,
+  };
+
+  //buildVehicleBuffer();
+}
+
+function carMesh(cx, cy, cz, rot, r, g, b) {
+  // Simple box car: body + roof + windows + wheels
+  const meshes = [];
+  const c = Math.cos(rot), s = Math.sin(rot);
+  function rp(x,z){return [cx+x*c-z*s, cz+x*s+z*c];}
+  
+  // Body
+  meshes.push(box(cx,cy+0.35,cz, 1.6,0.7,3.2, r,g,b));
+  // Roof  
+  meshes.push(box(cx,cy+0.88,cz, 1.3,0.4,1.8, r*0.85,g*0.85,b*0.85));
+  // Windshield tint
+  meshes.push(box(cx,cy+0.85,cz-0.88, 1.2,0.38,0.05, 0.3,0.45,0.65));
+  meshes.push(box(cx,cy+0.85,cz+0.88, 1.2,0.38,0.05, 0.25,0.4,0.6));
+  // Wheels (4 corners)
+  [[-0.78,cy+0.18,-1.1],[0.78,cy+0.18,-1.1],[-0.78,cy+0.18,1.1],[0.78,cy+0.18,1.1]].forEach(([wx,wy,wz])=>{
+    meshes.push(box(wx+cx,wy,wz+cz, 0.2,0.36,0.5, 0.1,0.1,0.12));
+  });
+  // Headlights
+  meshes.push(box(cx-0.55,cy+0.32,cz-1.61, 0.35,0.18,0.05, 0.95,0.92,0.7));
+  meshes.push(box(cx+0.55,cy+0.32,cz-1.61, 0.35,0.18,0.05, 0.95,0.92,0.7));
+  // Taillights
+  meshes.push(box(cx-0.55,cy+0.32,cz+1.61, 0.35,0.18,0.05, 0.85,0.12,0.12));
+  meshes.push(box(cx+0.55,cy+0.32,cz+1.61, 0.35,0.18,0.05, 0.85,0.12,0.12));
+  return meshes;
+}
+
+function buildVehicleBuffer() {
+  // Just a glowing ground marker — no car mesh
+  const meshes = [];
+  meshes.push(box(vehicleX, 0.02, vehicleZ, 1.8, 0.04, 3.5,  0.25, 0.72, 1.0));  // blue pad
+  meshes.push(box(vehicleX, 0.03, vehicleZ, 0.08,0.06, 3.6,  1.0,  1.0,  1.0));  // centre line Z
+  meshes.push(box(vehicleX, 0.03, vehicleZ, 1.9, 0.06, 0.08, 1.0,  1.0,  1.0));  // centre line X
+  const geo = mergeGeometry(meshes);
+  if(buffers.vehicle) {
+    gl.deleteBuffer(buffers.vehicle.vbo);
+    gl.deleteBuffer(buffers.vehicle.ibo);
+  }
+  buffers.vehicle = {
+    vbo: makeBuffer(geo.verts),
+    ibo: makeIndexBuffer(geo.idx),
+    count: geo.idx.length,
+  };
+}
+
+// ── Render ─────────────────────────────────────────────────────────
+function getViewMatrix(camIdx) {
+  if(camIdx === 0) {
+    // Free orbit
+    const ex = orbitDist * Math.cos(orbitPitch) * Math.sin(orbitAngle);
+    const ey = orbitDist * Math.sin(orbitPitch);
+    const ez = orbitDist * Math.cos(orbitPitch) * Math.cos(orbitAngle);
+    const view = mat4.create();
+    mat4.lookAt(view, [ex,ey,ez], [0,0,0], [0,1,0]);
+    return view;
+  }
+  const cam = CAMERAS[camIdx];
+  const view = mat4.create();
+  mat4.lookAt(view, cam.eye, cam.center, cam.up);
+  return view;
+}
+
+function renderScene(targetGL, w, h, camIdx, night) {
+  targetGL.viewport(0,0,w,h);
+  
+  const nightBlend = night ? 1.0 : 0.0;
+  const skyR = night ? 0.025 : 0.53;
+  const skyG = night ? 0.04  : 0.75;
+  const skyB = night ? 0.065 : 0.95;
+  targetGL.clearColor(skyR, skyG, skyB, 1);
+  targetGL.clear(targetGL.COLOR_BUFFER_BIT | targetGL.DEPTH_BUFFER_BIT);
+
+  const proj = mat4.create();
+  const fov = (CAMERAS[camIdx]?.fov || 60) * Math.PI/180;
+  mat4.perspective(proj, fov, w/h, 0.1, 200);
+
+  const view = getViewMatrix(camIdx);
+  const vp = mat4.multiply(mat4.create(), proj, view);
+  const model = mat4.identity(mat4.create());
+
+  const uMVP    = targetGL.getUniformLocation(program, 'uMVP');
+  const uModel  = targetGL.getUniformLocation(program, 'uModel');
+  const uLight  = targetGL.getUniformLocation(program, 'uLightDir');
+  const uNight  = targetGL.getUniformLocation(program, 'uNight');
+  const uUseTex = targetGL.getUniformLocation(program, 'uUseTex');
+
+  targetGL.uniformMatrix4fv(uMVP,   false, vp);
+  targetGL.uniformMatrix4fv(uModel, false, model);
+  targetGL.uniform3fv(uLight, [0.6, 1.0, 0.4]);
+  targetGL.uniform1f(uNight, nightBlend);
+  targetGL.uniform1i(uUseTex, 0);
+
+  const stride = 11 * 4;
+  function drawBuffer(buf) {
+    targetGL.bindBuffer(targetGL.ARRAY_BUFFER, buf.vbo);
+    targetGL.bindBuffer(targetGL.ELEMENT_ARRAY_BUFFER, buf.ibo);
+    const aPos  = targetGL.getAttribLocation(program, 'aPos');
+    const aNorm = targetGL.getAttribLocation(program, 'aNorm');
+    const aUV   = targetGL.getAttribLocation(program, 'aUV');
+    const aCol  = targetGL.getAttribLocation(program, 'aCol');
+    targetGL.enableVertexAttribArray(aPos);
+    targetGL.enableVertexAttribArray(aNorm);
+    targetGL.enableVertexAttribArray(aUV);
+    targetGL.enableVertexAttribArray(aCol);
+    targetGL.vertexAttribPointer(aPos,  3, targetGL.FLOAT, false, stride, 0);
+    targetGL.vertexAttribPointer(aNorm, 3, targetGL.FLOAT, false, stride, 12);
+    targetGL.vertexAttribPointer(aUV,   2, targetGL.FLOAT, false, stride, 24);
+    targetGL.vertexAttribPointer(aCol,  3, targetGL.FLOAT, false, stride, 32);
+    targetGL.drawElements(targetGL.TRIANGLES, buf.count, targetGL.UNSIGNED_SHORT, 0);
+  }
+
+  drawBuffer(buffers.scene);
+  drawBuffer(buffers.vehicle);
+
+  // Draw night sky (stars) using point sprites
+  if(night) drawStars(targetGL, vp);
+
+  // Draw camera frustums
+  if(showFrust) drawFrustums(targetGL, vp, camIdx);
+
+  // Draw calibration points (projected lines)
+  if(showCal) drawCalPoints(targetGL, vp, w, h, camIdx);
+}
+
+function drawStars(tgl, vp) {
+  // Skip - handled by sky color + we'd need a separate point program
+}
+
+function drawFrustums(tgl, vp, activeCamIdx) {
+  // Draw camera position markers as small boxes for non-active cams
+  [1,2,3].forEach(ci => {
+    if(ci === activeCamIdx) return;
+    const cam = CAMERAS[ci];
+    const [ex,ey,ez] = cam.eye;
+    const camModel = mat4.translate(mat4.identity(mat4.create()), ex, ey, ez);
+    const camMVP = mat4.multiply(mat4.create(), vp, camModel);
+    const uMVP = tgl.getUniformLocation(program, 'uMVP');
+    const uModel = tgl.getUniformLocation(program, 'uModel');
+    tgl.uniformMatrix4fv(uMVP,   false, camMVP);
+    tgl.uniformMatrix4fv(uModel, false, camModel);
+    const camBox = mergeGeometry([
+      box(0,0,0, 0.4,0.3,0.6, 0.9,0.6,0.1),
+      box(0,0.2,0, 0.2,0.15,0.2, 0.7,0.5,0.1),
+    ]);
+    const cb = {
+      vbo: makeBuffer(camBox.verts),
+      ibo: makeIndexBuffer(camBox.idx),
+      count: camBox.idx.length,
+    };
+    tgl.bindBuffer(tgl.ARRAY_BUFFER, cb.vbo);
+    tgl.bindBuffer(tgl.ELEMENT_ARRAY_BUFFER, cb.ibo);
+    const stride=11*4;
+    const aPos=tgl.getAttribLocation(program,'aPos');
+    const aNorm=tgl.getAttribLocation(program,'aNorm');
+    const aUV=tgl.getAttribLocation(program,'aUV');
+    const aCol=tgl.getAttribLocation(program,'aCol');
+    tgl.enableVertexAttribArray(aPos); tgl.enableVertexAttribArray(aNorm);
+    tgl.enableVertexAttribArray(aUV);  tgl.enableVertexAttribArray(aCol);
+    tgl.vertexAttribPointer(aPos, 3,tgl.FLOAT,false,stride,0);
+    tgl.vertexAttribPointer(aNorm,3,tgl.FLOAT,false,stride,12);
+    tgl.vertexAttribPointer(aUV,  2,tgl.FLOAT,false,stride,24);
+    tgl.vertexAttribPointer(aCol, 3,tgl.FLOAT,false,stride,32);
+    tgl.drawElements(tgl.TRIANGLES, cb.count, tgl.UNSIGNED_SHORT, 0);
+    tgl.deleteBuffer(cb.vbo); tgl.deleteBuffer(cb.ibo);
+  });
+  // Reset MVP
+  const uMVP=tgl.getUniformLocation(program,'uMVP');
+  const uModel=tgl.getUniformLocation(program,'uModel');
+  tgl.uniformMatrix4fv(uMVP, false, vp);
+  tgl.uniformMatrix4fv(uModel, false, mat4.identity(mat4.create()));
+}
+
+function drawCalPoints(tgl, vp, w, h, activeCamIdx) {
+  // Render cal markers as tiny highlighted boxes (already in scene geometry)
+  // Update sidebar pixel coords
+  CAL_POINTS.forEach(([cx,,cz], i) => {
+    const [px,py] = vec3project(vp, cx, 0.05, cz, w, h);
+    const el = document.getElementById(`cp${i+1}`);
+    if(el) el.textContent = `${Math.round(px)}, ${Math.round(py)}`;
+  });
+}
+
+// ── 2D overlay: bay numbers as pavement text + FOV coverage zones ──
+function drawOverlay(vp, w, h) {
+  if(!overlayCtx) return;
+  overlayCtx.clearRect(0, 0, w, h);
+
+  drawCoverageZones(vp, w, h);
+
+  const bayX = [-9.6,-7.2,-4.8,-2.4, 2.4, 4.8, 7.2, 9.6];
+
+  // Top row bays 1–8 (z = -7), bottom row 9–16 (z = +7)
+  bayX.forEach((bx, i) => {
+    drawPavementNumber(vp, w, h, bx, -7,  i + 1);
+    drawPavementNumber(vp, w, h, bx,  7,  i + 9);
+  });
+}
+
+// Draw a number painted on the ground in perspective.
+// We project the four corners of a ground quad around (wx, wz) and
+// set a canvas transform so the text warps correctly with perspective.
+function drawPavementNumber(vp, w, h, wx, wz, num) {
+  // Four corners of the text quad on the ground plane (y=0.05)
+  const hw = 0.85, hd = 0.85; // half-width, half-depth in world units
+  const y  = 0.06;
+  const corners = [
+    [wx - hw, y, wz - hd],
+    [wx + hw, y, wz - hd],
+    [wx + hw, y, wz + hd],
+    [wx - hw, y, wz + hd],
+  ];
+  const sc = corners.map(([cx,cy,cz]) => vec3project(vp, cx, cy, cz, w, h));
+
+  // Cull if entirely off-screen or behind camera (any coord extremely large)
+  if(sc.some(([sx,sy]) => !isFinite(sx) || !isFinite(sy))) return;
+  if(sc.every(([sx,sy]) => sx < 0 || sx > w || sy < 0 || sy > h)) return;
+
+  // We'll render the number into a small offscreen canvas, then
+  // draw it warped to the projected quad using a perspective transform.
+  // Use the dominant screen size to pick font size.
+  const dx = sc[1][0]-sc[0][0], dy = sc[1][1]-sc[0][1];
+  const projW = Math.sqrt(dx*dx+dy*dy);
+  if(projW < 4) return; // too small to read
+
+  overlayCtx.save();
+
+  // Draw the text directly using the perspective quad via setTransform.
+  // Map unit square [0,1]^2 → sc[0..3] using a bilinear approx (affine per triangle).
+  // For a proper perspective quad we use two triangles.
+  drawQuadText(overlayCtx, sc, String(num));
+
+  overlayCtx.restore();
+}
+
+// Render text onto a perspective quad defined by 4 screen points [TL,TR,BR,BL]
+function drawQuadText(ctx, sc, text) {
+  const [tl, tr, br, bl] = sc;
+
+  // Draw subtle background quad first
+  ctx.beginPath();
+  ctx.moveTo(tl[0],tl[1]); ctx.lineTo(tr[0],tr[1]);
+  ctx.lineTo(br[0],br[1]); ctx.lineTo(bl[0],bl[1]);
+  ctx.closePath();
+  ctx.fillStyle   = 'rgba(255,255,255,0.18)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+  ctx.lineWidth   = 0.8;
+  ctx.fill();
+  ctx.stroke();
+
+  // Compute a 2D affine transform that maps the unit square to the quad.
+  // We use the top-left triangle: TL→(0,0), TR→(1,0), BL→(0,1)
+  // src: (0,0)→tl, (1,0)→tr, (0,1)→bl
+  // [a c e]   maps x,y (0..1) to screen
+  // [b d f]
+  const a = tr[0]-tl[0], b = tr[1]-tl[1];
+  const c = bl[0]-tl[0], d = bl[1]-tl[1];
+  const e = tl[0],       f = tl[1];
+
+  // Scale: we'll render text in [0,1]×[0,1] space → apply transform
+  ctx.save();
+  ctx.transform(a, b, c, d, e, f);
+
+  // In the unit-square space the quad spans 0→1 in both axes
+  ctx.font         = 'bold 0.55px "DM Mono", monospace';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+
+  // White text with dark outline for readability on asphalt
+  ctx.strokeStyle = 'rgba(30,58,138,0.9)';
+  ctx.lineWidth   = 0.08;
+  ctx.strokeText(text, 0.5, 0.52);
+  ctx.fillStyle   = 'rgba(255,255,255,0.95)';
+  ctx.fillText(text, 0.5, 0.52);
+
+  ctx.restore();
+}
+
+function drawCoverageZones(vp, w, h) {
+  // CAM1 covers left half: X from -20 to +2, Z from -12 to +12
+  // CAM2 covers right half: X from -2 to +20, Z from -12 to +12
+  // Overlap: X from -2 to +2
+
+  const cam1Zone = [
+    [-20,0,-12],[-2,0,-12],[-2,0,12],[-20,0,12]
+  ];
+  const cam2Zone = [
+    [-2,0,-12],[20,0,-12],[20,0,12],[-2,0,12]
+  ];
+  const overlapZone = [
+    [-2,0,-12],[2,0,-12],[2,0,12],[-2,0,12]
+  ];
+
+  function projectPoly(worldPts) {
+    return worldPts.map(([x,y,z]) => vec3project(vp, x, y, z, w, h));
+  }
+
+  function drawZone(pts, fillColor, strokeColor, label, labelX, labelZ) {
+    const screen = projectPoly(pts);
+    // Check if any point is on screen
+    const onScreen = screen.some(([sx,sy])=>sx>-50&&sx<w+50&&sy>-50&&sy<h+50);
+    if(!onScreen) return;
+
+    overlayCtx.beginPath();
+    overlayCtx.moveTo(screen[0][0], screen[0][1]);
+    for(let i=1;i<screen.length;i++) overlayCtx.lineTo(screen[i][0], screen[i][1]);
+    overlayCtx.closePath();
+    overlayCtx.fillStyle = fillColor;
+    overlayCtx.fill();
+    overlayCtx.strokeStyle = strokeColor;
+    overlayCtx.lineWidth = 1.5;
+    overlayCtx.stroke();
+
+    // Label
+    if(label) {
+      const [lx,ly] = vec3project(vp, labelX, 0.5, labelZ, w, h);
+      if(lx>0&&lx<w&&ly>0&&ly<h) {
+        overlayCtx.font = 'bold 11px DM Mono, monospace';
+        overlayCtx.textAlign = 'center';
+        overlayCtx.textBaseline = 'middle';
+        overlayCtx.fillStyle = strokeColor;
+        overlayCtx.fillText(label, lx, ly);
+      }
+    }
+  }
+
+  drawZone(cam1Zone,    'rgba(59,130,246,0.10)',  'rgba(59,130,246,0.55)',  'CAM 1', -11, 0);
+  drawZone(cam2Zone,    'rgba(249,115,22,0.10)',  'rgba(249,115,22,0.55)',  'CAM 2',  11, 0);
+  drawZone(overlapZone, 'rgba(168,85,247,0.18)',  'rgba(168,85,247,0.75)',  '⟺', 0, 0);
+}
+
+
+// ── Main loop ────────────────────────────────────────────────────
+let frameCount = 0;
+function loop(ts) {
+  frameCount++;
+
+  if(animVehicle) {
+    animT += 0.012;
+    vehicleX = Math.sin(animT)*9;
+    vehicleZ = Math.cos(animT*0.7)*4;
+    vehicleRot = (Math.atan2(Math.cos(animT)*9, -Math.sin(animT*0.7)*0.7*4)*180/Math.PI+90)%360;
+    document.getElementById('vx').value = vehicleX.toFixed(1);
+    document.getElementById('vz').value = vehicleZ.toFixed(1);
+    document.getElementById('vrot').value = vehicleRot.toFixed(0);
+    document.getElementById('vx-val').textContent = vehicleX.toFixed(1);
+    document.getElementById('vz-val').textContent = vehicleZ.toFixed(1);
+    document.getElementById('vrot-val').textContent = Math.round(vehicleRot)+'°';
+    buildVehicleBuffer();
+  }
+
+  // Render main view
+  renderScene(gl, mainCanvas.width, mainCanvas.height, activeCam, nightMode);
+
+  // Draw 2D overlay (bay numbers)
+  const proj2 = mat4.create();
+  const fov2 = (CAMERAS[activeCam]?.fov || 60) * Math.PI/180;
+  mat4.perspective(proj2, fov2, mainCanvas.width/mainCanvas.height, 0.1, 200);
+  const view2 = getViewMatrix(activeCam);
+  const vp2 = mat4.multiply(mat4.create(), proj2, view2);
+  drawOverlay(vp2, mainCanvas.width, mainCanvas.height);
+
+  // Update HUD
+  document.getElementById('hud-cam-name').textContent = CAMERAS[activeCam]?.name || 'FREE ORBIT';
+  const fov = CAMERAS[activeCam]?.fov || 60;
+  document.getElementById('hud-coords').innerHTML = 
+    `FOV: ${fov}°<br/>VEH: ${vehicleX.toFixed(1)}, ${vehicleZ.toFixed(1)}`;
+
+  // Render pips every 3 frames
+  if(frameCount % 3 === 0) {
+    [0,1,2,3].forEach(ci => {
+      const pip = pipCanvases[ci];
+      if(!pip) return;
+      pip.width = pip.clientWidth * (window.devicePixelRatio||1) || 200;
+      pip.height = Math.round(pip.width * 0.6);
+      // Quick render to main, capture, restore
+      renderScene(gl, pip.width, pip.height, ci, nightMode);
+      const ctx = pip.getContext('2d');
+      if(ctx) ctx.drawImage(mainCanvas, 0, 0, pip.width, pip.height, 0, 0, pip.width, pip.height);
+    });
+    // Restore main view
+    renderScene(gl, mainCanvas.width, mainCanvas.height, activeCam, nightMode);
+  }
+
+  requestAnimationFrame(loop);
+}
+
+// ── Controls ─────────────────────────────────────────────────────
+function switchCam(idx) {
+  activeCam = idx;
+  document.querySelectorAll('.cam-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.querySelectorAll('.pip').forEach((p,i)=>p.classList.toggle('active',i===idx));
+}
+
+function updateVehicle() {
+  vehicleX = parseFloat(document.getElementById('vx').value);
+  vehicleZ = parseFloat(document.getElementById('vz').value);
+  vehicleRot = parseFloat(document.getElementById('vrot').value);
+  document.getElementById('vx-val').textContent = vehicleX.toFixed(1);
+  document.getElementById('vz-val').textContent = vehicleZ.toFixed(1);
+  document.getElementById('vrot-val').textContent = Math.round(vehicleRot)+'°';
+  buildVehicleBuffer();
+}
+
+function toggleCal()   { showCal   = !document.getElementById('tog-cal').classList.toggle('on',  !showCal);   showCal   = document.getElementById('tog-cal').classList.contains('on'); }
+function toggleFrust() { showFrust = !document.getElementById('tog-frust').classList.toggle('on', !showFrust); showFrust = document.getElementById('tog-frust').classList.contains('on'); }
+function toggleNight() { nightMode = !document.getElementById('tog-night').classList.toggle('on', !nightMode); nightMode = document.getElementById('tog-night').classList.contains('on'); }
+function toggleAnim()  { animVehicle = !document.getElementById('tog-anim').classList.toggle('on',!animVehicle); animVehicle = document.getElementById('tog-anim').classList.contains('on'); }
+
+function screenshot(camIdx) {
+  renderScene(gl, mainCanvas.width, mainCanvas.height, camIdx, nightMode);
+  const url = mainCanvas.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `parking_cam${camIdx}_${nightMode?'night':'day'}.png`;
+  a.click();
+  renderScene(gl, mainCanvas.width, mainCanvas.height, activeCam, nightMode);
+}
+
+function screenshotAll() {
+  [1,2,3].forEach((ci,i) => setTimeout(()=>screenshot(ci), i*200));
+}
+
+window.addEventListener('load', initGL);
+</script>
+</body>
+</html>
