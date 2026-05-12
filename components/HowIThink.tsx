@@ -9,28 +9,13 @@ interface Props {
 
 export function HowIThink({ blocks }: Props) {
   return (
-    <section style={{ maxWidth: 1200, margin: "0 auto", padding: "120px 24px" }}>
+    <section className="section-standard">
       {/* Header */}
       <div style={{ marginBottom: 64 }}>
-        <p
-          style={{
-            fontFamily: "var(--font-geist-mono)",
-            fontSize: 11,
-            color: "var(--accent-cyan)",
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-            marginBottom: 12,
-          }}
-        >
+        <p className="section-subtitle">
           // 03_FILOSOFÍA
         </p>
-        <h2
-          style={{
-            fontSize: "clamp(28px, 4vw, 48px)",
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-          }}
-        >
+        <h2 className="section-title">
           Cómo pienso
         </h2>
       </div>

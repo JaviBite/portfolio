@@ -86,7 +86,7 @@ export default function ProjectsPage() {
               backgroundColor: "var(--surface-card)",
               border: "1px solid var(--surface-card-border)",
               borderRadius: 16,
-              padding: 32,
+              padding: 0,
               position: "relative",
               overflow: "hidden",
               transition: "all 0.25s ease",
@@ -96,7 +96,7 @@ export default function ProjectsPage() {
               gridTemplateColumns: cardColumns,
               gridTemplateRows: cardRows,
               gridTemplateAreas: gridAreas,
-              gap: 24,
+              gap: 0,
             };
 
             return (
@@ -116,24 +116,24 @@ export default function ProjectsPage() {
                   el.style.boxShadow = "none";
                 }}
               >
-                {/* Ambient glow */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -60,
-                    right: -60,
-                    width: 180,
-                    height: 180,
-                    borderRadius: "50%",
-                    backgroundColor: color,
-                    opacity: 0.06,
-                    filter: "blur(40px)",
-                    pointerEvents: "none",
-                  }}
-                />
+                <div style={{ gridArea: "info", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "32px", position: "relative", overflow: "hidden" }}>
+                  {/* Ambient glow */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: -60,
+                      right: -60,
+                      width: 180,
+                      height: 180,
+                      borderRadius: "50%",
+                      backgroundColor: color,
+                      opacity: 0.06,
+                      filter: "blur(40px)",
+                      pointerEvents: "none",
+                    }}
+                  />
 
-                <div style={{ gridArea: "info", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: verticalTop ? "32px 32px 0 32px" : verticalBottom ? "0 32px 32px 32px" : "0" }}>
-                  <div>
+                  <div style={{ position: "relative", zIndex: 1 }}>
                     <div
                       style={{
                         display: "flex",
@@ -232,14 +232,9 @@ export default function ProjectsPage() {
                 <div
                   style={{
                     gridArea: "demo",
-                    padding: verticalTop ? "32px 32px 0 32px" : verticalBottom ? "0 32px 32px 32px" : demoLeft ? "32px 0 32px 32px" : demoRight ? "32px 32px 32px 0" : "32px",
+                    padding: "32px",
                     borderRadius: 0,
                     backgroundColor: "var(--bg)",
-                    border: "none",
-                    borderLeft: demoRight ? "2px solid var(--surface-card-border)" : undefined,
-                    borderRight: demoLeft ? "2px solid var(--surface-card-border)" : undefined,
-                    borderTop: verticalBottom ? "2px solid var(--surface-card-border)" : undefined,
-                    borderBottom: verticalTop ? "2px solid var(--surface-card-border)" : undefined,
                     minHeight: 220,
                     display: "flex",
                     flexDirection: "column",

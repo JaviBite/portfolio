@@ -6,7 +6,7 @@ import data from "@/lib/data.json";
 
 export default function HomePage() {
   return (
-    <main className="bg-grid" style={{ minHeight: "100vh", paddingTop: 60 }}>
+    <main className="bg-grid main-layout">
       <HeroSection profile={data.profile} />
       <StackSection />
       <ProjectsPreview projects={data.projects.slice(0, 4)} />

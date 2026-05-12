@@ -8,6 +8,9 @@ interface Project {
   tag: string;
   description: string;
   stack: string[];
+  demos?: string[];
+  start?: string;
+  end?: string | null;
 }
 
 interface Props {
@@ -24,62 +27,21 @@ const clientColors: Record<string, string> = {
 
 export function ProjectsPreview({ projects }: Props) {
   return (
-    <section
-      style={{
-        backgroundColor: "var(--bg-secondary, var(--bg))",
-        borderTop: "1px solid var(--surface-card-border)",
-        borderBottom: "1px solid var(--surface-card-border)",
-        padding: "120px 24px",
-      }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+    <section className="section-with-borders">
+      <div className="section-container">
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            marginBottom: 64,
-            flexWrap: "wrap",
-            gap: 16,
-          }}
-        >
+        <div className="section-header">
           <div>
-            <p
-              style={{
-                fontFamily: "var(--font-geist-mono)",
-                fontSize: 11,
-                color: "var(--accent-cyan)",
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                marginBottom: 12,
-              }}
-            >
-              // 02_PROYECTOS
+            <p className="section-subtitle">
+              {"// 02_PROYECTOS"}
             </p>
-            <h2
-              style={{
-                fontSize: "clamp(28px, 4vw, 48px)",
-                fontWeight: 700,
-                letterSpacing: "-0.02em",
-              }}
-            >
+            <h2 className="section-title">
               Proyectos Destacados
             </h2>
           </div>
           <Link
             href="/projects"
-            style={{
-              padding: "10px 20px",
-              borderRadius: 8,
-              border: "1px solid var(--accent-cyan)",
-              color: "var(--accent-cyan)",
-              fontSize: 13,
-              fontWeight: 600,
-              textDecoration: "none",
-              whiteSpace: "nowrap",
-              transition: "all 0.2s ease",
-            }}
+            className="view-all-link"
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = "var(--accent-cyan-glow)";
             }}
@@ -92,13 +54,7 @@ export function ProjectsPreview({ projects }: Props) {
         </div>
 
         {/* Bento grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: 20,
-          }}
-        >
+        <div className="bento-grid">
           {projects.map((project) => (
             <ProjectCard key={project.id} project={project} color={clientColors[project.client] ?? "var(--accent-cyan)"} />
           ))}
@@ -111,113 +67,62 @@ export function ProjectsPreview({ projects }: Props) {
 function ProjectCard({ project, color }: { project: Project; color: string }) {
   return (
     <div
-      style={{
-        backgroundColor: "var(--surface-card)",
-        border: "1px solid var(--surface-card-border)",
-        borderRadius: 12,
-        padding: 28,
-        position: "relative",
-        overflow: "hidden",
-        cursor: "pointer",
-        transition: "transform 0.2s ease",
-      }}
+      className="project-card-split"
+      style={{ "--accent-color": color } as React.CSSProperties & { "--accent-color": string }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
         (e.currentTarget as HTMLDivElement).style.borderColor = color;
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
         (e.currentTarget as HTMLDivElement).style.borderColor = "var(--surface-card-border)";
       }}
     >
-      {/* Background gradient */}
-      <div
-        style={{
-          position: "absolute",
-          top: -40,
-          right: -40,
-          width: 120,
-          height: 120,
-          borderRadius: "50%",
-          backgroundColor: color,
-          opacity: 0.05,
-          filter: "blur(30px)",
-          pointerEvents: "none",
-        }}
-      />
+      {/* Left side - Info */}
+      <div className="project-card-info" style={{ color }}>
+        {/* Tag */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, position: "relative", zIndex: 1 }}>
+          <span className="tag-chip" style={{ color, borderColor: color }}>
+            {project.tag.toUpperCase()}
+          </span>
+          <span className="arrow-icon">→</span>
+        </div>
 
-      {/* Tag */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <span
-          style={{
-            padding: "3px 10px",
-            borderRadius: 4,
-            fontSize: 10,
-            fontFamily: "var(--font-geist-mono)",
-            fontWeight: 600,
-            letterSpacing: "0.1em",
-            color: color,
-            border: `1px solid ${color}`,
-            opacity: 0.8,
-          }}
-        >
-          {project.tag.toUpperCase()}
-        </span>
-        <span
-          style={{
-            fontSize: 20,
-            fontFamily: "var(--font-geist-mono)",
-            color: "var(--text-muted)",
-            fontWeight: 700,
-          }}
-        >
-          →
-        </span>
+        {/* Client & Description */}
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <h3 className="client-title">{project.client}</h3>
+          <p className="description-text">{project.description}</p>
+
+          {/* Stack chips */}
+          <div className="stack-chips">
+            {project.stack.slice(0, 3).map((tech) => (
+              <span key={tech} className="stack-chip">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Client */}
-      <h3
-        style={{
-          fontSize: 22,
-          fontWeight: 700,
-          marginBottom: 8,
-          color: "var(--text-primary)",
-          letterSpacing: "-0.01em",
-        }}
-      >
-        {project.client}
-      </h3>
-
-      {/* Description */}
-      <p
-        style={{
-          fontSize: 14,
-          color: "var(--text-secondary)",
-          lineHeight: 1.6,
-          marginBottom: 20,
-        }}
-      >
-        {project.description}
-      </p>
-
-      {/* Stack chips */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-        {project.stack.slice(0, 4).map((tech) => (
-          <span
-            key={tech}
-            style={{
-              padding: "3px 8px",
-              borderRadius: 4,
-              fontSize: 11,
-              fontFamily: "var(--font-geist-mono)",
-              color: "var(--text-muted)",
-              backgroundColor: "var(--bg)",
-              border: "1px solid var(--surface-card-border)",
-            }}
-          >
-            {tech}
+      {/* Right side - Demo */}
+      <div className="project-card-demo">
+        <div>
+          <span style={{ display: "block", fontSize: 11, fontFamily: "var(--font-geist-mono)", fontWeight: 700, letterSpacing: "0.12em", color, marginBottom: 8, opacity: 0.8, textTransform: "uppercase" }}>
+            Demo
           </span>
-        ))}
+          <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6 }}>
+            Ejemplos de funcionalidades clave demostradas en este proyecto.
+          </p>
+        </div>
+
+        {/* Demo items */}
+        {project.demos && project.demos.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>
+            {project.demos.map((demo) => (
+              <div key={demo} style={{ padding: "6px 10px", borderRadius: 4, fontSize: 12, backgroundColor: "var(--surface-card)", border: "1px solid var(--surface-card-border)", color: "var(--text-secondary)", fontFamily: "var(--font-geist-mono)", textTransform: "capitalize" }}>
+                {demo.replace(/[-_]/g, " ")}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
