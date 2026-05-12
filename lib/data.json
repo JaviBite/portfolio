@@ -89,7 +89,11 @@
       "end": "2023",
       "description": "Sistema de monitorización logística en tiempo real para detectar atascos y medir capacidad de zonas de almacén usando visión artificial.",
       "stack": ["C++", "OpenCV", "SAM", "Background Subtraction"],
-      "demos": ["congestion-overlay", "capacity-slider"]
+      "demos": ["congestion-overlay", "capacity-slider"],
+      "gridSpan": 8,
+      "gridRowSpan": 1,
+      "demoPercentage": 60,
+      "layout": "horizontal-right"
     },
     {
       "id": "tracking-stellantis",
@@ -103,7 +107,11 @@
         "cam_a": [[1.2, 0.2, 100], [0.1, 1.1, 50], [0, 0, 1]],
         "cam_b": [[0.9, -0.1, 200], [0.05, 1.0, 30], [0, 0, 1]]
       },
-      "demos": ["multicam-homography"]
+      "demos": ["multicam-homography"],
+      "gridSpan": 4,
+      "gridRowSpan": 2,
+      "demoPercentage": 50,
+      "layout": "vertical-bottom"
     },
     {
       "id": "aerial-gis-madrid",
@@ -113,7 +121,11 @@
       "end": "2023",
       "description": "Análisis semántico de imágenes aéreas para detección de cambios urbanos. Resistente a variaciones de iluminación y sombras mediante embeddings visuales.",
       "stack": ["SAM", "Cosine Similarity", "PyTorch"],
-      "demos": ["heatmap-slider"]
+      "demos": ["heatmap-slider"],
+      "gridSpan": 8,
+      "gridRowSpan": 1,
+      "demoPercentage": 40,
+      "layout": "horizontal-left"
     },
     {
       "id": "biometric-id",
@@ -124,6 +136,9 @@
       "description": "Sistema de identificación biométrica facial para acceso seguro en instalaciones públicas. Pipeline de extracción de feature vectors y matching con KNN.",
       "stack": ["Face Recognition", "KNN", "Python"],
       "demos": ["log-console"],
+      "gridSpan": 4,
+      "gridRowSpan": 2,
+      "demoPercentage": 50,
       "layout": "vertical-bottom"
     },
     {
@@ -134,7 +149,11 @@
       "end": "2024",
       "description": "Sistema AutoFlip para reencuadre automático de contenido audiovisual de 16:9 a 9:16. Combina transcripción ASR, análisis de saliency y tracking de sujetos.",
       "stack": ["Whisper", "NLP", "Tracking", "Saliency Detection", "FFmpeg"],
-      "demos": ["saliency-slider"]
+      "demos": ["saliency-slider"],
+      "gridSpan": 8,
+      "gridRowSpan": 1,
+      "demoPercentage": 60,
+      "layout": "horizontal-right"
     },
     {
       "id": "personal-selfhosted",
@@ -145,7 +164,10 @@
       "description": "Infraestructura personal para experimentar con servicios en producción real: Proxmox, contenedores, VPN y plataformas multimedia con acceso remoto seguro.",
       "stack": ["Proxmox", "Docker", "WireGuard", "Nginx", "Ollama", "Jellyfin", "Immich"],
       "demos": ["topology-snapshot", "service-dashboard"],
-      "layout": "vertical-bottom"
+      "gridSpan": 8,
+      "gridRowSpan": 1,
+      "demoPercentage": 50,
+      "layout": "horizontal-right"
     }
   ],
   "homelab": {

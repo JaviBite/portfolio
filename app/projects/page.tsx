@@ -21,6 +21,14 @@ const projectIcons: Record<string, string> = {
   "personal-selfhosted": "🖥️",
 };
 
+// Constantes de estilo para el layout
+const LAYOUT_CONFIG = {
+  "horizontal-left": { columns: "1fr 0.85fr", rows: "1fr", areas: '"demo info"' },
+  "horizontal-right": { columns: "0.85fr 1fr", rows: "1fr", areas: '"info demo"' },
+  "vertical-top": { columns: "1fr", rows: "1fr 1fr", areas: '"demo""\ninfo"' },
+  "vertical-bottom": { columns: "1fr", rows: "1fr 1fr", areas: '"info"\n"demo"' },
+};
+
 export default function ProjectsPage() {
   return (
     <main style={{ minHeight: "100vh", paddingTop: 80, paddingBottom: 120 }}>
@@ -63,26 +71,43 @@ export default function ProjectsPage() {
             gap: 16,
           }}
         >
-          {data.projects.map((project, i) => {
+          {data.projects.map((project) => {
             const color = clientColors[project.client] ?? "var(--accent-cyan)";
             const icon = projectIcons[project.id] ?? "⚙️";
-            const layout = project.layout ?? (i % 2 === 0 ? "horizontal-right" : "horizontal-left");
-            const demoLeft = layout === "horizontal-left";
-            const demoRight = layout === "horizontal-right";
-            const verticalTop = layout === "vertical-top";
-            const verticalBottom = layout === "vertical-bottom";
-            const cardColumns = demoLeft || demoRight ? "0.95fr 0.55fr" : "1fr";
-            const cardRows = verticalTop || verticalBottom ? "1fr 1fr" : "1fr";
-            const gridAreas = demoLeft
-              ? '"demo info"'
-              : demoRight
-              ? '"info demo"'
-              : verticalTop
-              ? '"demo" "info"'
-              : '"info" "demo"';
+            const gridSpan = (project as any).gridSpan ?? 5;
+            const gridRowSpan = (project as any).gridRowSpan ?? 1;
+            const demoPercentage = (project as any).demoPercentage ?? 50;
+            const layout = (project as any).layout ?? "horizontal-right";
+            
+            // Calcular proporciones dinámicamente basadas en demoPercentage
+            const infoPct = 100 - demoPercentage;
+            let layoutConfig = LAYOUT_CONFIG[layout as keyof typeof LAYOUT_CONFIG];
+            
+            if (layout === "horizontal-left" || layout === "horizontal-right") {
+              const demoCol = `${demoPercentage}%`;
+              const infoCol = `${infoPct}%`;
+              const columns = layout === "horizontal-left" 
+                ? `${demoCol} ${infoCol}` 
+                : `${infoCol} ${demoCol}`;
+              const areas = layout === "horizontal-left"
+                ? '"demo info"'
+                : '"info demo"';
+              layoutConfig = { columns, rows: "1fr", areas };
+            } else {
+              const demoPct = `${demoPercentage}%`;
+              const infoPct = `${100 - demoPercentage}%`;
+              const rows = layout === "vertical-top"
+                ? `${demoPct} ${infoPct}`
+                : `${infoPct} ${demoPct}`;
+              const areas = layout === "vertical-top"
+                ? '"demo"\n"info"'
+                : '"info"\n"demo"';
+              layoutConfig = { columns: "1fr", rows, areas };
+            }
+
             const cardStyle: React.CSSProperties = {
-              gridColumn: i === 0 || i === 3 ? "span 7" : i === 1 ? "span 12" : "span 5",
-              gridRow: i === 1 ? "span 2" : undefined,
+              gridColumn: `span ${gridSpan}`,
+              gridRow: `span ${gridRowSpan}`,
               backgroundColor: "var(--surface-card)",
               border: "1px solid var(--surface-card-border)",
               borderRadius: 16,
@@ -91,11 +116,11 @@ export default function ProjectsPage() {
               overflow: "hidden",
               transition: "all 0.25s ease",
               cursor: "pointer",
-              minHeight: i === 1 ? 680 : 320,
+              minHeight: 320,
               display: "grid",
-              gridTemplateColumns: cardColumns,
-              gridTemplateRows: cardRows,
-              gridTemplateAreas: gridAreas,
+              gridTemplateColumns: layoutConfig.columns,
+              gridTemplateRows: layoutConfig.rows,
+              gridTemplateAreas: layoutConfig.areas,
               gap: 0,
             };
 
@@ -188,7 +213,7 @@ export default function ProjectsPage() {
 
                     <h2
                       style={{
-                        fontSize: i === 0 || i === 3 ? 28 : 22,
+                        fontSize: 22,
                         fontWeight: 700,
                         marginBottom: 12,
                         letterSpacing: "-0.02em",
@@ -235,7 +260,6 @@ export default function ProjectsPage() {
                     padding: "32px",
                     borderRadius: 0,
                     backgroundColor: "var(--bg)",
-                    minHeight: 220,
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
