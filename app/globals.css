@@ -107,6 +107,19 @@ body {
   gap: 20px;
 }
 
+.ambient-glow {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-color: var(--accent-color, var(--accent-cyan));
+  opacity: 0.06;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
 .project-card {
   background-color: var(--surface-card);
   border: 1px solid var(--surface-card-border);
@@ -148,20 +161,6 @@ body {
   justify-content: space-between;
   position: relative;
   overflow: hidden;
-}
-
-.project-card-info::before {
-  content: "";
-  position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background-color: currentColor;
-  opacity: 0.05;
-  filter: blur(30px);
-  pointer-events: none;
 }
 
 .project-card-demo {

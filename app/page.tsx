@@ -9,7 +9,7 @@ export default function HomePage() {
     <main className="bg-grid main-layout">
       <HeroSection profile={data.profile} />
       <StackSection />
-      <ProjectsPreview projects={data.projects.slice(0, 4)} />
+      <ProjectsPreview projects={data.projects.slice(0, 3)} />
       <HowIThink blocks={data.howIThink} />
     </main>
   );

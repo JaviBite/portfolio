@@ -67,8 +67,8 @@ export function ProjectsPreview({ projects }: Props) {
 function ProjectCard({ project, color }: { project: Project; color: string }) {
   return (
     <div
-      className="project-card-split"
-      style={{ "--accent-color": color } as React.CSSProperties & { "--accent-color": string }}
+      className="project-card"
+      style={{ "--accent-color": color, position: "relative", overflow: "hidden" } as React.CSSProperties & { "--accent-color": string }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = color;
       }}
@@ -76,8 +76,11 @@ function ProjectCard({ project, color }: { project: Project; color: string }) {
         (e.currentTarget as HTMLDivElement).style.borderColor = "var(--surface-card-border)";
       }}
     >
+      {/* Ambient glow */}
+      <div className="ambient-glow" />
+
       {/* Left side - Info */}
-      <div className="project-card-info" style={{ color }}>
+      <div className="project-card-info" style={{ color, position: "relative", zIndex: 1 }}>
         {/* Tag */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, position: "relative", zIndex: 1 }}>
           <span className="tag-chip" style={{ color, borderColor: color }}>
@@ -102,28 +105,7 @@ function ProjectCard({ project, color }: { project: Project; color: string }) {
         </div>
       </div>
 
-      {/* Right side - Demo */}
-      <div className="project-card-demo">
-        <div>
-          <span style={{ display: "block", fontSize: 11, fontFamily: "var(--font-geist-mono)", fontWeight: 700, letterSpacing: "0.12em", color, marginBottom: 8, opacity: 0.8, textTransform: "uppercase" }}>
-            Demo
-          </span>
-          <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6 }}>
-            Ejemplos de funcionalidades clave demostradas en este proyecto.
-          </p>
-        </div>
 
-        {/* Demo items */}
-        {project.demos && project.demos.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>
-            {project.demos.map((demo) => (
-              <div key={demo} style={{ padding: "6px 10px", borderRadius: 4, fontSize: 12, backgroundColor: "var(--surface-card)", border: "1px solid var(--surface-card-border)", color: "var(--text-secondary)", fontFamily: "var(--font-geist-mono)", textTransform: "capitalize" }}>
-                {demo.replace(/[-_]/g, " ")}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
