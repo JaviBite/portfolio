@@ -173,6 +173,21 @@ body {
   border-left: 1px solid var(--surface-card-border);
 }
 
+/* Projects page full-width cards - force split layout */
+[style*="grid-area: info"] {
+  padding: 32px !important;
+  gap: 0 !important;
+}
+
+[style*="grid-area: demo"] {
+  padding: 32px !important;
+  gap: 0 !important;
+  border-left: 1px solid var(--surface-card-border) !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
 .project-card-glow {
   position: absolute;
   top: -40px;
