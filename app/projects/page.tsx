@@ -109,12 +109,12 @@ export default function ProjectsPage() {
               gridColumn: `span ${gridSpan}`,
               gridRow: `span ${gridRowSpan}`,
               backgroundColor: "var(--surface-card)",
-              border: "1px solid var(--surface-card-border)",
-              borderRadius: 16,
+              border: "2px solid var(--surface-card-border)",
+              borderRadius: 4,
               padding: 0,
               position: "relative",
               overflow: "hidden",
-              transition: "all 0.25s ease",
+              transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
               cursor: "pointer",
               minHeight: 320,
               display: "grid",
@@ -122,6 +122,7 @@ export default function ProjectsPage() {
               gridTemplateRows: layoutConfig.rows,
               gridTemplateAreas: layoutConfig.areas,
               gap: 0,
+              boxShadow: "4px 4px 0px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06)",
             };
 
             return (
@@ -130,15 +131,13 @@ export default function ProjectsPage() {
                 style={cardStyle}
                 onMouseEnter={(e) => {
                   const el = e.currentTarget as HTMLDivElement;
-                  el.style.transform = "translateY(-4px)";
-                  el.style.borderColor = color;
-                  el.style.boxShadow = `0 20px 60px rgba(0,0,0,0.2)`;
+                  el.style.transform = "scale(1.02)";
+                  el.style.boxShadow = "6px 6px 0px rgba(0,0,0,0.12), 0 12px 32px rgba(0,0,0,0.1)";
                 }}
                 onMouseLeave={(e) => {
                   const el = e.currentTarget as HTMLDivElement;
-                  el.style.transform = "translateY(0)";
-                  el.style.borderColor = "var(--surface-card-border)";
-                  el.style.boxShadow = "none";
+                  el.style.transform = "scale(1)";
+                  el.style.boxShadow = "4px 4px 0px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06)";
                 }}
               >
                 <div style={{ gridArea: "info", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "32px", position: "relative", overflow: "hidden" }}>
@@ -173,8 +172,8 @@ export default function ProjectsPage() {
                             fontSize: 28,
                             padding: "8px",
                             backgroundColor: "var(--bg)",
-                            borderRadius: 10,
-                            border: "1px solid var(--surface-card-border)",
+                            borderRadius: 2,
+                            border: "2px solid var(--surface-card-border)",
                           }}
                         >
                           {icon}
@@ -184,13 +183,13 @@ export default function ProjectsPage() {
                             style={{
                               display: "block",
                               padding: "2px 8px",
-                              borderRadius: 4,
+                              borderRadius: 2,
                               fontSize: 10,
                               fontFamily: "var(--font-geist-mono)",
                               fontWeight: 700,
                               letterSpacing: "0.12em",
                               color: color,
-                              border: `1px solid ${color}`,
+                              border: `2px solid ${color}`,
                               opacity: 0.8,
                               marginBottom: 4,
                               width: "fit-content",
@@ -240,12 +239,12 @@ export default function ProjectsPage() {
                         key={tech}
                         style={{
                           padding: "3px 10px",
-                          borderRadius: 4,
+                          borderRadius: 2,
                           fontSize: 11,
                           fontFamily: "var(--font-geist-mono)",
                           color: "var(--text-muted)",
                           backgroundColor: "var(--bg)",
-                          border: "1px solid var(--surface-card-border)",
+                          border: "2px solid var(--surface-card-border)",
                         }}
                       >
                         {tech}
@@ -291,9 +290,9 @@ export default function ProjectsPage() {
                         key={demo}
                         style={{
                           padding: "10px 12px",
-                          borderRadius: 10,
+                          borderRadius: 2,
                           backgroundColor: "var(--surface-card)",
-                          border: "1px solid var(--surface-card-border)",
+                          border: "2px solid var(--surface-card-border)",
                           fontSize: 11,
                           fontFamily: "var(--font-geist-mono)",
                           color: "var(--text-muted)",

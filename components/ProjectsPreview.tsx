@@ -70,10 +70,14 @@ function ProjectCard({ project, color }: { project: Project; color: string }) {
       className="project-card"
       style={{ "--accent-color": color, position: "relative", overflow: "hidden" } as React.CSSProperties & { "--accent-color": string }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = color;
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.transform = "scale(1.02)";
+        el.style.boxShadow = "6px 6px 0px rgba(0,0,0,0.12), 0 12px 32px rgba(0,0,0,0.1)";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "var(--surface-card-border)";
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.transform = "scale(1)";
+        el.style.boxShadow = "4px 4px 0px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06)";
       }}
     >
       {/* Ambient glow */}
