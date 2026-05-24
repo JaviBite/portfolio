@@ -2,6 +2,7 @@
 
 import data from "@/lib/data.json";
 import { ExperienceSection } from "@/components/ExperienceSection";
+import { Icon } from "@/components/Icon";
 
 export default function CVPrintPage() {
   const { profile, experience, education, languages, skills } = data;
@@ -24,20 +25,24 @@ export default function CVPrintPage() {
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 10, color: "var(--text-secondary)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Icon name="mail" size={12} style={{ color: "var(--accent-cyan)" }} />
                   <span style={{ fontSize: 9, fontWeight: 600, minWidth: 60 }}>EMAIL:</span>
                   <a href={`mailto:${profile.contact.email}`} style={{ textDecoration: "none", color: "inherit" }}>
                     {profile.contact.email}
                   </a>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Icon name="location_on" size={12} style={{ color: "var(--accent-cyan)" }} />
                   <span style={{ fontSize: 9, fontWeight: 600, minWidth: 60 }}>UBICACIÓN:</span>
                   <span>{profile.contact.location}</span>
                 </div>
                 <div style={{ display: "flex", gap: 16, marginTop: 4 }}>
-                  <a href={profile.contact.linkedin} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "var(--accent-cyan)", fontSize: 10, fontWeight: 600 }}>
+                  <a href={profile.contact.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "var(--accent-cyan)", fontSize: 10, fontWeight: 600 }}>
+                    <Icon name="work" size={14} />
                     LinkedIn
                   </a>
-                  <a href={profile.contact.github} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "var(--accent-cyan)", fontSize: 10, fontWeight: 600 }}>
+                  <a href={profile.contact.github} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "var(--accent-cyan)", fontSize: 10, fontWeight: 600 }}>
+                    <Icon name="code" size={14} />
                     GitHub
                   </a>
                 </div>
@@ -45,10 +50,13 @@ export default function CVPrintPage() {
             </div>
             
             {/* Portrait */}
-            <div style={{ display: "flex", alignItems: "start", justifyContent: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
               {profile.portrait && (
                 <img src={profile.portrait} alt="Portrait" style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover" }} />
               )}
+              <p style={{ margin: 0, fontSize: 10, color: "var(--text-secondary)", textAlign: "center", maxWidth: 140 }}>
+                "No veo problemas, solo soluciones."
+              </p>
             </div>
           </div>
         </header>
@@ -64,7 +72,8 @@ export default function CVPrintPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Education */}
             <section style={{ pageBreakInside: "avoid" }}>
-              <div style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                <Icon name="school" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
                   Formación
                 </h3>
@@ -86,7 +95,8 @@ export default function CVPrintPage() {
 
             {/* Languages */}
             <section style={{ pageBreakInside: "avoid" }}>
-              <div style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                <Icon name="translate" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
                   Idiomas
                 </h3>
@@ -117,7 +127,8 @@ export default function CVPrintPage() {
 
             {/* Skills */}
             <section style={{ pageBreakInside: "avoid" }}>
-              <div style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                <Icon name="build" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
                   Skills
                 </h3>
@@ -147,7 +158,8 @@ export default function CVPrintPage() {
 
             {/* Achievements */}
             <section style={{ pageBreakInside: "avoid" }}>
-              <div style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                <Icon name="star" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
                   Logros
                 </h3>
@@ -155,7 +167,7 @@ export default function CVPrintPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {profile.achievements.map((achievement, idx) => (
                   <div key={idx} style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 7, color: "var(--accent-cyan)", fontWeight: 700, flexShrink: 0 }}>•</span>
+                    <Icon name="check_circle" size={14} style={{ color: "var(--accent-cyan)", flexShrink: 0, marginTop: 2 }} />
                     <span style={{ fontSize: 8, color: "var(--text-secondary)", lineHeight: 1.3 }}>{achievement}</span>
                   </div>
                 ))}

@@ -62,31 +62,30 @@ export default function CVPage() {
               </div>
             </div>
             {/* Photo - Hidden in print */}
-            <div
-              className="no-print"
-              style={{
-                borderRadius: "50%",
-                overflow: "hidden",
-                border: "3px solid var(--accent-cyan)",
-                backgroundColor: "var(--surface-card)",
-                width: 160,
-                height: 160,
-                boxShadow: "0 0 24px rgba(6, 182, 212, 0.3)",
-                flexShrink: 0,
-              }}
-            >
-              <img
-                src={profile.portrait}
-                alt={`Portrait of ${profile.name}`}
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-              />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+              <div
+                className="no-print"
+                style={{
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  border: "3px solid var(--accent-cyan)",
+                  backgroundColor: "var(--surface-card)",
+                  width: 160,
+                  height: 160,
+                  boxShadow: "0 0 24px rgba(6, 182, 212, 0.3)",
+                  flexShrink: 0,
+                }}
+              >
+                <img
+                  src={profile.portrait}
+                  alt={`Portrait of ${profile.name}`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+              </div>
+              <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)", textAlign: "center", maxWidth: 180 }}>
+                "No veo problemas, solo soluciones."
+              </p>
             </div>
-          </div>
-          {/* Motto */}
-          <div className="no-print" style={{ marginTop: 24, textAlign: "center" }}>
-            <p style={{ fontSize: 13, color: "var(--text-secondary)", fontStyle: "italic", fontFamily: "var(--font-geist-mono)" }}>
-              "{profile.motto}"
-            </p>
           </div>
         </header>
 

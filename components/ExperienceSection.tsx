@@ -33,9 +33,9 @@ export function ExperienceSection({ experience, isPrint = false }: ExperienceSec
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
         {experience.map((exp, compIdx) => (
           <div key={exp.company} style={{ pageBreakInside: "avoid" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "56px 1fr", gap: 12, alignItems: "start" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "44px 1fr", gap: 12, alignItems: "start" }}>
               {/* Logo */}
-              <div style={{ gridColumn: "1 / 2", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+              <div style={{ gridColumn: "1 / 2", display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
                 {exp.logo ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={exp.logo} alt={`${exp.company} logo`} style={{ width: 34, height: 34, objectFit: "cover", borderRadius: 6, zIndex: 2 }} />
@@ -65,9 +65,9 @@ export function ExperienceSection({ experience, isPrint = false }: ExperienceSec
                         <div key={`${exp.company}-${idx}`} style={{ position: "relative", paddingLeft: 0 }}>
                           {exp.roles.length > 1 && (
                             <>
-                              <span style={{ position: "absolute", left: -32, top: 6, width: 8, height: 8, borderRadius: "50%", backgroundColor: "var(--accent-cyan)", zIndex: 2 }} />
+                              <span style={{ position: "absolute", left: -43, top: 6, width: 8, height: 8, borderRadius: "50%", backgroundColor: "var(--accent-cyan)", zIndex: 2 }} />
                               {idx < exp.roles.length - 1 && (
-                                <div style={{ position: "absolute", left: -29, top: 18, width: 2, height: "calc(100% - 8px)", background: "var(--accent-cyan)", zIndex: 1 }} />
+                                <div style={{ position: "absolute", left: -40, top: 18, width: 2, height: "calc(100% - 8px)", background: "var(--accent-cyan)", zIndex: 1 }} />
                               )}
                             </>
                           )}
