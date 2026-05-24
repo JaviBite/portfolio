@@ -2,6 +2,7 @@
 
 import data from "@/lib/data.json";
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 
 const clientColors: Record<string, string> = {
   "Würth": "var(--accent-cyan)",
@@ -12,13 +13,13 @@ const clientColors: Record<string, string> = {
   "Self-hosted Lab": "#ec4899",
 };
 
-const projectIcons: Record<string, string> = {
-  "logistics-wurth": "📦",
-  "tracking-stellantis": "🚗",
-  "aerial-gis-madrid": "🛰️",
-  "biometric-id": "👤",
-  "smartcrop-autoflip": "🎬",
-  "personal-selfhosted": "🖥️",
+const projectIcons: Record<string, { icon: string; fill?: boolean }> = {
+  "logistics-wurth": { icon: "local_shipping", fill: false },
+  "tracking-stellantis": { icon: "two_wheeler", fill: false },
+  "aerial-gis-madrid": { icon: "satellite_alt", fill: false },
+  "biometric-id": { icon: "person", fill: false },
+  "smartcrop-autoflip": { icon: "movie", fill: false },
+  "personal-selfhosted": { icon: "storage", fill: false },
 };
 
 // Constantes de estilo para el layout
@@ -73,7 +74,7 @@ export default function ProjectsPage() {
         >
           {data.projects.map((project) => {
             const color = clientColors[project.client] ?? "var(--accent-cyan)";
-            const icon = projectIcons[project.id] ?? "⚙️";
+            const iconData = projectIcons[project.id] ?? { icon: "settings" };
             const gridSpan = (project as any).gridSpan ?? 5;
             const gridRowSpan = (project as any).gridRowSpan ?? 1;
             const demoPercentage = (project as any).demoPercentage ?? 50;
@@ -167,17 +168,22 @@ export default function ProjectsPage() {
                       }}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <span
+                        <div
                           style={{
                             fontSize: 28,
                             padding: "8px",
                             backgroundColor: "var(--bg)",
                             borderRadius: 2,
                             border: "2px solid var(--surface-card-border)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 44,
+                            height: 44,
                           }}
                         >
-                          {icon}
-                        </span>
+                          <Icon name={iconData.icon} size={24} style={{ color }} fill={iconData.fill} />
+                        </div>
                         <div>
                           <span
                             style={{

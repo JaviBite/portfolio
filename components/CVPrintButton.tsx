@@ -1,9 +1,20 @@
 "use client";
 
+import { Icon } from "@/components/Icon";
+
 export function CVPrintButton() {
+  const handlePrint = () => {
+    const printWindow = window.open("/cv/print", "CVPrint", "width=800,height=600");
+    if (printWindow) {
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    }
+  };
+
   return (
     <button
-      onClick={() => window.print()}
+      onClick={handlePrint}
       style={{
         padding: "8px 18px",
         borderRadius: 8,
@@ -13,9 +24,13 @@ export function CVPrintButton() {
         fontSize: 13,
         cursor: "pointer",
         fontFamily: "var(--font-geist-mono)",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
       }}
     >
-      ⎙ PDF
+      <Icon name="file_download" size={16} />
+      PDF
     </button>
   );
 }

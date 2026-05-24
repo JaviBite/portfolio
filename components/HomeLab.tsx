@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Icon } from "@/components/Icon";
 
 interface HomelabNode {
   name: string;
@@ -19,15 +20,15 @@ interface Props {
   homelab: Homelab;
 }
 
-const serviceIcons: Record<string, string> = {
-  WireGuard: "🔐",
-  "Pi-hole": "🛡️",
-  "Nginx Proxy Manager": "🔀",
-  DDNS: "🌐",
-  Ollama: "🤖",
-  Immich: "📷",
-  Jellyfin: "🎬",
-  Docker: "🐳",
+const serviceIcons: Record<string, { icon: string; fill?: boolean }> = {
+  WireGuard: { icon: "lock", fill: true },
+  "Pi-hole": { icon: "security", fill: true },
+  "Nginx Proxy Manager": { icon: "router", fill: false },
+  DDNS: { icon: "public", fill: false },
+  Ollama: { icon: "smart_toy", fill: false },
+  Immich: { icon: "photo_library", fill: false },
+  Jellyfin: { icon: "video_library", fill: false },
+  Docker: { icon: "deployed_code", fill: false },
 };
 
 const serviceDescriptions: Record<string, string> = {
@@ -51,120 +52,55 @@ export function HomeLab({ homelab }: Props) {
   ];
 
   return (
-    <section
-      style={{
-        borderTop: "1px solid var(--surface-card-border)",
-        padding: "120px 24px",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
+    <section className="home-lab-section">
       {/* Background accent */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: -100,
-          right: -100,
-          width: 400,
-          height: 400,
-          borderRadius: "50%",
-          backgroundColor: "var(--accent-purple)",
-          opacity: 0.04,
-          filter: "blur(80px)",
-          pointerEvents: "none",
-        }}
-      />
+      <div className="home-lab-backdrop" />
 
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+      <div className="page-container">
         {/* Header */}
-        <div style={{ marginBottom: 64 }}>
-          <p
-            style={{
-              fontFamily: "var(--font-geist-mono)",
-              fontSize: 11,
-              color: "var(--accent-cyan)",
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              marginBottom: 12,
-            }}
-          >
-            // 04_HOME_LAB
-          </p>
-          <h2
-            style={{
-              fontSize: "clamp(28px, 4vw, 48px)",
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-              marginBottom: 12,
-            }}
-          >
-            Side Projects & Home Lab
-          </h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: 16, maxWidth: 520 }}>
-            {homelab.description}
-          </p>
+        <div className="section-header-compact">
+          <p className="section-subtitle">// 04_HOME_LAB</p>
+          <h2 className="section-title">Side Projects & Home Lab</h2>
+          <p className="section-copy">{homelab.description}</p>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 40,
-            alignItems: "start",
-          }}
-        >
+        <div className="home-lab-grid">
           {/* Network diagram */}
-          <div
-            style={{
-              backgroundColor: "var(--surface-card)",
-              border: "1px solid var(--surface-card-border)",
-              borderRadius: 12,
-              padding: 32,
-            }}
-          >
-            <p
-              style={{
-                fontFamily: "var(--font-geist-mono)",
-                fontSize: 11,
-                color: "var(--text-muted)",
-                letterSpacing: "0.1em",
-                marginBottom: 24,
-              }}
-            >
-              NETWORK_TOPOLOGY.json
-            </p>
+          <div className="home-lab-panel">
+
+            <p className="section-copy-sm">NETWORK_TOPOLOGY.json</p>
 
             {/* Proxmox root */}
-            <div style={{ fontFamily: "var(--font-geist-mono)", fontSize: 13 }}>
+            <div className="home-lab-node-group">
               <NodeRow
-                icon="🖥️"
+                icon={<Icon name="storage" size={18} className="home-lab-node-icon" />}
                 name="Proxmox"
-                color="var(--accent-cyan)"
+                tone="cyan"
                 isRoot
                 active={activeNode === "Proxmox"}
                 onClick={() => setActiveNode(activeNode === "Proxmox" ? null : "Proxmox")}
               />
 
               {/* Docker branch */}
-              <div style={{ marginLeft: 24, marginTop: 8 }}>
+              <div className="home-lab-node-children">
                 <NodeRow
-                  icon="🐳"
+                  icon={<Icon name="deployed_code" size={18} className="home-lab-node-icon" />}
                   name="Docker"
-                  color="var(--accent-cyan)"
+                  tone="cyan"
                   connector="├─"
                   active={activeNode === "Docker"}
                   onClick={() => setActiveNode(activeNode === "Docker" ? null : "Docker")}
                 />
-                <div style={{ marginLeft: 20, marginTop: 6 }}>
+                <div className="home-lab-node-children-inner">
                   {node.children
                     ?.find((c) => c.name === "Docker")
                     ?.services?.map((svc, i, arr) => (
                       <NodeRow
                         key={svc}
-                        icon={serviceIcons[svc] ?? "◦"}
+                        icon={serviceIcons[svc] ? <Icon name={serviceIcons[svc].icon} size={16} fill={serviceIcons[svc].fill} className="home-lab-node-icon" /> : "◦"}
                         name={svc}
                         connector={i === arr.length - 1 ? "└─" : "├─"}
-                        color="var(--accent-purple)"
+                        tone="purple"
                         active={activeNode === svc}
                         onClick={() => setActiveNode(activeNode === svc ? null : svc)}
                         small
@@ -178,10 +114,10 @@ export function HomeLab({ homelab }: Props) {
                   .map((child, i, arr) => (
                     <NodeRow
                       key={child.name}
-                      icon={serviceIcons[child.name] ?? "◦"}
+                      icon={serviceIcons[child.name] ? <Icon name={serviceIcons[child.name].icon} size={16} fill={serviceIcons[child.name].fill} className="home-lab-node-icon" /> : "◦"}
                       name={child.name}
                       connector={i === arr.length - 1 ? "└─" : "├─"}
-                      color="var(--accent-purple)"
+                      tone="purple"
                       active={activeNode === child.name}
                       onClick={() => setActiveNode(activeNode === child.name ? null : child.name)}
                     />
@@ -191,85 +127,38 @@ export function HomeLab({ homelab }: Props) {
           </div>
 
           {/* Service details panel */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="home-lab-details-panel">
             {activeNode && serviceDescriptions[activeNode] ? (
-              <div
-                style={{
-                  backgroundColor: "var(--surface-card)",
-                  border: "1px solid var(--accent-cyan)",
-                  borderRadius: 12,
-                  padding: 28,
-                  marginBottom: 16,
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                  <span style={{ fontSize: 28 }}>{serviceIcons[activeNode] ?? "⚙️"}</span>
+              <div className="home-lab-details-card">
+                <div className="home-lab-details-heading">
+                  <span className="home-lab-details-icon">{serviceIcons[activeNode] ?? "⚙️"}</span>
                   <div>
-                    <h4
-                      style={{
-                        fontFamily: "var(--font-geist-mono)",
-                        fontSize: 14,
-                        fontWeight: 700,
-                        color: "var(--accent-cyan)",
-                      }}
-                    >
-                      {activeNode}
-                    </h4>
-                    <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>
-                      {serviceDescriptions[activeNode]}
-                    </p>
+                    <h4 className="home-lab-details-title">{activeNode}</h4>
+                    <p className="section-copy-sm">{serviceDescriptions[activeNode]}</p>
                   </div>
                 </div>
               </div>
             ) : (
-              <div
-                style={{
-                  padding: 20,
-                  border: "1px dashed var(--surface-card-border)",
-                  borderRadius: 12,
-                  color: "var(--text-muted)",
-                  fontSize: 13,
-                  fontFamily: "var(--font-geist-mono)",
-                  marginBottom: 16,
-                }}
-              >
+              <div className="home-lab-details-empty">
                 ← Haz clic en un nodo para ver detalles
               </div>
             )}
 
             {/* Service grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: 10,
-              }}
-            >
-              {allServices.map((svc) => (
-                <button
-                  key={svc}
-                  onClick={() => setActiveNode(activeNode === svc ? null : svc)}
-                  style={{
-                    padding: "12px 16px",
-                    borderRadius: 8,
-                    border: "1px solid",
-                    borderColor: activeNode === svc ? "var(--accent-cyan)" : "var(--surface-card-border)",
-                    backgroundColor: activeNode === svc ? "var(--accent-cyan-glow)" : "var(--surface-card)",
-                    color: activeNode === svc ? "var(--accent-cyan)" : "var(--text-secondary)",
-                    fontSize: 12,
-                    fontFamily: "var(--font-geist-mono)",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    transition: "all 0.2s ease",
-                  }}
-                >
-                  <span>{serviceIcons[svc] ?? "◦"}</span>
-                  <span>{svc}</span>
-                </button>
-              ))}
+            <div className="home-lab-service-grid">
+              {allServices.map((svc) => {
+                const isActive = activeNode === svc;
+                return (
+                  <button
+                    key={svc}
+                    onClick={() => setActiveNode(isActive ? null : svc)}
+                    className={`home-lab-service-button ${isActive ? "active" : ""}`}
+                  >
+                    <span>{serviceIcons[svc] ? <Icon name={serviceIcons[svc].icon} size={16} fill={serviceIcons[svc].fill} /> : "◦"}</span>
+                    <span>{svc}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -281,16 +170,16 @@ export function HomeLab({ homelab }: Props) {
 function NodeRow({
   icon,
   name,
-  color,
+  tone,
   connector,
   isRoot,
   active,
   onClick,
   small,
 }: {
-  icon: string;
+  icon: React.ReactNode | string;
   name: string;
-  color: string;
+  tone?: "cyan" | "purple";
   connector?: string;
   isRoot?: boolean;
   active?: boolean;
@@ -300,46 +189,12 @@ function NodeRow({
   return (
     <div
       onClick={onClick}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "5px 8px",
-        borderRadius: 6,
-        cursor: "pointer",
-        backgroundColor: active ? "var(--accent-cyan-glow)" : "transparent",
-        transition: "all 0.15s ease",
-        marginBottom: 4,
-        color: active ? "var(--accent-cyan)" : "var(--text-secondary)",
-        fontSize: small ? 12 : 13,
-      }}
+      className={`home-lab-node-row ${tone ? `tone-${tone}` : ""} ${active ? "active" : ""} ${isRoot ? "root" : ""} ${small ? "small" : ""}`}
     >
-      {connector && (
-        <span style={{ color: "var(--text-muted)", userSelect: "none" }}>{connector}</span>
-      )}
+      {connector && <span className="home-lab-node-connector">{connector}</span>}
       <span>{icon}</span>
-      <span
-        style={{
-          fontWeight: isRoot ? 700 : 500,
-          color: active ? color : "inherit",
-        }}
-      >
-        {name}
-      </span>
-      {isRoot && (
-        <span
-          style={{
-            fontSize: 10,
-            padding: "2px 6px",
-            borderRadius: 3,
-            backgroundColor: "var(--accent-cyan-glow)",
-            color: "var(--accent-cyan)",
-            marginLeft: 4,
-          }}
-        >
-          HOST
-        </span>
-      )}
+      <span className="home-lab-node-name">{name}</span>
+      {isRoot && <span className="home-lab-node-host">HOST</span>}
     </div>
   );
 }

@@ -1,24 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import data from "@/lib/data.json";
 import { CVPrintButton } from "@/components/CVPrintButton";
+import { ExperienceSection } from "@/components/ExperienceSection";
+import { Icon } from "@/components/Icon";
 
 export default function CVPage() {
-  const { profile, experience, education } = data;
-
-  const stackAll = [
-    "Python","C++","TypeScript","JavaScript","OpenCV","PyTorch","SAM","YOLO",
-    "Whisper","FFmpeg","Docker","Proxmox","Nginx","WireGuard","CompactifAI",
-    "KNN","Face Recognition","Background Subtraction","Homografía","Saliency Detection",
-    "Musician",
-  ];
+  const { profile, experience, education, languages, skills } = data;
 
   return (
     <main style={{ minHeight: "100vh", paddingTop: 80, paddingBottom: 120 }}>
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
         {/* Actions bar */}
         <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", marginBottom: 40, borderBottom: "1px solid var(--surface-card-border)" }}>
           <span style={{ fontFamily: "var(--font-geist-mono)", fontSize: 11, color: "var(--text-muted)", letterSpacing: "0.1em" }}>
-            LIVING CV — actualizado 2025
+            LIVING CV — actualizado 2026
           </span>
           <div style={{ display: "flex", gap: 12 }}>
             <Link href="/cv/chat" style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid var(--accent-cyan)", backgroundColor: "var(--accent-cyan-glow)", color: "var(--accent-cyan)", fontSize: 13, fontWeight: 600, textDecoration: "none", fontFamily: "var(--font-geist-mono)" }}>
@@ -28,151 +25,293 @@ export default function CVPage() {
           </div>
         </div>
 
-        {/* Header */}
-        <header
-          style={{
-            marginBottom: 60,
-            display: "grid",
-            gridTemplateColumns: "1fr minmax(180px, 180px)",
-            gap: 32,
-            alignItems: "start",
-          }}
-        >
-          <div>
-            <h1 style={{ fontSize: "clamp(36px, 5vw, 56px)", fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 8 }}>
-              {profile.name}
-            </h1>
-            <p style={{ fontSize: 18, color: "var(--accent-cyan)", fontFamily: "var(--font-geist-mono)", letterSpacing: "0.05em", marginBottom: 16 }}>
-              {profile.title}
-            </p>
-            <p style={{ fontSize: 15, color: "var(--text-secondary)", lineHeight: 1.7, maxWidth: 600, marginBottom: 20 }}>
-              {profile.bio}
-            </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
-              <a href={`mailto:${profile.contact.email}`} style={chipStyle}><span>✉️</span><span>{profile.contact.email}</span></a>
-              <a href={profile.contact.linkedin} target="_blank" rel="noopener noreferrer" style={chipStyle}><span>💼</span><span>LinkedIn</span></a>
-              <a href={profile.contact.github} target="_blank" rel="noopener noreferrer" style={chipStyle}><span>🐙</span><span>GitHub</span></a>
-              <span style={chipStyle}><span>📍</span><span>{profile.contact.location}</span></span>
+        {/* Header - Top Section */}
+        <header style={{ marginBottom: 32, paddingBottom: 24, borderBottom: "2px solid var(--surface-card-border)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "start" }}>
+            <div>
+              <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4, textTransform: "uppercase" }}>
+                {profile.name}
+              </h1>
+              <p style={{ fontSize: 14, color: "var(--accent-cyan)", fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", marginBottom: 12, textTransform: "uppercase" }}>
+                {profile.title}
+              </p>
+              <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: 12, maxWidth: 600 }}>
+                {profile.bio}
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 12, color: "var(--text-secondary)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Icon name="mail" size={18} style={{ color: "var(--accent-cyan)" }} />
+                  <a href={`mailto:${profile.contact.email}`} style={{ textDecoration: "none", color: "inherit" }}>
+                    {profile.contact.email}
+                  </a>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Icon name="location_on" size={18} style={{ color: "var(--accent-cyan)" }} />
+                  <span>{profile.contact.location}</span>
+                </div>
+                <div style={{ display: "flex", gap: 20, marginTop: 4 }}>
+                  <a href={profile.contact.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "var(--accent-cyan)", fontSize: 12, fontWeight: 600 }}>
+                    <Icon name="work" size={16} />
+                    LinkedIn
+                  </a>
+                  <a href={profile.contact.github} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "var(--accent-cyan)", fontSize: 12, fontWeight: 600 }}>
+                    <Icon name="code" size={16} />
+                    GitHub
+                  </a>
+                </div>
+              </div>
+            </div>
+            {/* Photo - Hidden in print */}
+            <div
+              className="no-print"
+              style={{
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: "3px solid var(--accent-cyan)",
+                backgroundColor: "var(--surface-card)",
+                width: 160,
+                height: 160,
+                boxShadow: "0 0 24px rgba(6, 182, 212, 0.3)",
+                flexShrink: 0,
+              }}
+            >
+              <img
+                src={profile.portrait}
+                alt={`Portrait of ${profile.name}`}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
             </div>
           </div>
-          <div
-            style={{
-              borderRadius: "50%",
-              overflow: "hidden",
-              border: "2px solid var(--accent-cyan)",
-              backgroundColor: "var(--surface-card)",
-              width: 180,
-              height: 180,
-              boxShadow: "0 0 24px rgba(6, 182, 212, 0.2)",
-            }}
-          >
-            <img
-              src={profile.portrait}
-              alt={`Portrait of ${profile.name}`}
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-            />
+          {/* Motto */}
+          <div className="no-print" style={{ marginTop: 24, textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "var(--text-secondary)", fontStyle: "italic", fontFamily: "var(--font-geist-mono)" }}>
+              "{profile.motto}"
+            </p>
           </div>
         </header>
 
-        {/* Experience */}
-        <Section title="Experiencia">
+        {/* Single Column Layout - Experiencia Full Width First */}
+        <div style={{ marginBottom: 32 }}>
+          <ExperienceSection experience={experience} />
+        </div>
+
+        {/* Secondary Content - Education, Languages, Skills, Achievements */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }}>
+          {/* LEFT COLUMN - Education & Languages */}
           <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-            {experience.map((exp) => (
-              <div key={exp.company}>
-                {exp.roles.map((role, roleIdx) => (
-                  <div key={`${exp.company}-${roleIdx}`} style={{ paddingLeft: 20, borderLeft: "2px solid var(--surface-card-border)", position: "relative", marginBottom: roleIdx < exp.roles.length - 1 ? 24 : 0 }}>
-                    <div style={{ position: "absolute", left: -5, top: 6, width: 8, height: 8, borderRadius: "50%", backgroundColor: role.current ? "var(--accent-cyan)" : "var(--text-muted)", boxShadow: role.current ? "0 0 8px var(--accent-cyan)" : "none" }} />
-                    <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 6 }}>
-                      <div>
-                        <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 2, letterSpacing: "-0.01em" }}>{role.role}</h3>
-                        <p style={{ fontSize: 14, fontFamily: "var(--font-geist-mono)", color: "var(--accent-cyan)" }}>{exp.company}</p>
-                      </div>
-                      <span style={{ fontSize: 12, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", padding: "3px 10px", borderRadius: 4, border: "1px solid var(--surface-card-border)", height: "fit-content" }}>
-                        {role.start} — {role.current ? "Presente" : role.end}
-                      </span>
+            {/* Education */}
+            <section style={{ pageBreakInside: "avoid" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <Icon name="school" size={20} style={{ color: "var(--accent-cyan)" }} />
+                <h3 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
+                  Formación
+                </h3>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {education.map((edu, idx) => (
+                  <div key={idx} style={{ paddingBottom: 12, borderBottom: idx < education.length - 1 ? "1px solid var(--surface-card-border)" : "none" }}>
+                    <h4 style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{edu.degree}</h4>
+                    <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", marginBottom: 4 }}>
+                      {edu.institution}
+                    </p>
+                    <p style={{ fontSize: 10, color: "var(--text-secondary)" }}>
+                      {edu.start} – {edu.end}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Languages */}
+            <section style={{ pageBreakInside: "avoid" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <Icon name="translate" size={20} style={{ color: "var(--accent-cyan)" }} />
+                <h3 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
+                  Idiomas
+                </h3>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {languages.map((lang, idx) => (
+                  <div key={idx}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600 }}>{lang.language}</span>
                     </div>
-                    <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: 14 }}>{role.description}</p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                      {role.stack.map((tech) => (
-                        <span key={tech} style={{ padding: "2px 8px", borderRadius: 4, fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", border: "1px solid var(--surface-card-border)" }}>{tech}</span>
+                    <div style={{ display: "flex", gap: 3 }}>
+                      {[...Array(5)].map((_, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: "50%",
+                            backgroundColor: i < lang.level ? "var(--accent-cyan)" : "var(--surface-card-border)",
+                          }}
+                        />
                       ))}
+                    </div>
+                    {lang.note && <p style={{ fontSize: 10, color: "var(--text-secondary)", marginTop: 4 }}>{lang.note}</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* RIGHT COLUMN - Skills & Achievements */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+            {/* Skills */}
+            <section style={{ pageBreakInside: "avoid" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <Icon name="build" size={20} style={{ color: "var(--accent-cyan)" }} />
+                <h3 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
+                  Skills
+                </h3>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {skills.map((skillGroup, idx) => (
+                  <div key={idx}>
+                    <h4 style={{ fontSize: 11, fontWeight: 700, color: "var(--accent-cyan)", marginBottom: 8, textTransform: "uppercase", fontFamily: "var(--font-geist-mono)" }}>
+                      {skillGroup.category}
+                    </h4>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {Array.isArray(skillGroup.items)
+                        ? skillGroup.items.map((item: any) => (
+                            <span key={typeof item === "string" ? item : item.name} style={{ padding: "3px 8px", borderRadius: 4, fontSize: 10, fontFamily: "var(--font-geist-mono)", color: "var(--text-secondary)", backgroundColor: "var(--surface-card)", border: "1px solid var(--surface-card-border)" }}>
+                              {typeof item === "string" ? item : item.name}
+                            </span>
+                          ))
+                        : null}
                     </div>
                   </div>
                 ))}
               </div>
-            ))}
-          </div>
-        </Section>
+            </section>
 
-        {/* Education */}
-        <Section title="Formación">
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {education.map((edu) => (
-              <div key={edu.degree} style={{ backgroundColor: "var(--surface-card)", border: "1px solid var(--surface-card-border)", borderRadius: 10, padding: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-                <div>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{edu.degree}</h3>
-                  <p style={{ fontSize: 13, fontFamily: "var(--font-geist-mono)", color: "var(--accent-cyan)" }}>{edu.institution}</p>
-                </div>
-                <span style={{ fontSize: 12, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)" }}>{edu.start} — {edu.end}</span>
+            {/* Achievements */}
+            <section style={{ pageBreakInside: "avoid" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <Icon name="star" size={20} style={{ color: "var(--accent-cyan)" }} />
+                <h3 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
+                  Logros
+                </h3>
               </div>
-            ))}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {profile.achievements.map((achievement, idx) => (
+                  <div key={idx} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                    <Icon name="check_circle" size={16} style={{ color: "var(--accent-cyan)", marginTop: 2, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.4 }}>{achievement}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
-        </Section>
-
-        {/* Skills */}
-        <Section title="Skills Técnicos">
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {stackAll.map((tech) => {
-              const isMusician = tech === "Musician";
-              return (
-                <span
-                  key={tech}
-                  style={{
-                    padding: "5px 12px",
-                    borderRadius: 6,
-                    fontSize: 12,
-                    fontFamily: "var(--font-geist-mono)",
-                    color: isMusician ? "var(--accent-purple)" : "var(--text-secondary)",
-                    backgroundColor: "var(--surface-card)",
-                    border: isMusician ? "1px solid var(--accent-purple)" : "1px solid var(--surface-card-border)",
-                    animation: isMusician ? "skillVibe 3s ease-in-out infinite" : "none",
-                  }}
-                  title={isMusician ? "Musician - subtle vibe" : undefined}
-                >
-                  {tech}
-                </span>
-              );
-            })}
-          </div>
-          <style>{`
-            @keyframes skillVibe {
-              0%, 100% { opacity: 0.7; transform: scale(1); }
-              50% { opacity: 1; transform: scale(1.05); }
-            }
-          `}</style>
-        </Section>
+        </div>
       </div>
+
+      {/* Print styles */}
+      <style>{`
+        @media print {
+          main {
+            padding: 0 !important;
+            margin: 0 !important;
+            min-height: auto !important;
+          }
+          
+          main > div {
+            max-width: 100% !important;
+            padding: 12mm 15mm !important;
+            margin: 0 !important;
+          }
+          
+          body {
+            margin: 0;
+            padding: 0;
+          }
+          
+          .no-print {
+            display: none !important;
+          }
+          
+          header {
+            margin-bottom: 16px !important;
+            padding-bottom: 12px !important;
+            page-break-inside: avoid;
+          }
+          
+          header h1 {
+            font-size: 22px !important;
+            margin-bottom: 4px !important;
+          }
+          
+          header p {
+            font-size: 10px !important;
+            margin-bottom: 6px !important;
+          }
+          
+          /* First section (Experience) stays on page 1 */
+          header + div {
+            page-break-after: auto;
+            margin-bottom: 16px !important;
+          }
+          
+          header + div section {
+            page-break-inside: avoid;
+          }
+          
+          section {
+            page-break-inside: avoid;
+            margin-bottom: 16px !important;
+          }
+          
+          section div[style*="gridTemplateColumns"] {
+            display: block !important;
+            margin-bottom: 0 !important;
+          }
+          
+          h2 {
+            font-size: 11px !important;
+            margin-bottom: 12px !important;
+          }
+          
+          h3, h4 {
+            font-size: 10px !important;
+            margin-bottom: 4px !important;
+          }
+          
+          p {
+            font-size: 9px !important;
+            margin: 0 !important;
+            line-height: 1.3 !important;
+          }
+          
+          span {
+            font-size: 8px !important;
+          }
+          
+          /* Optimize spacing for experience items */
+          div[style*="gap: 24px"] {
+            gap: 16px !important;
+          }
+          
+          div[style*="gap: 32px"] {
+            gap: 16px !important;
+          }
+          
+          div[style*="gap: 40px"] {
+            gap: 20px !important;
+          }
+          
+          /* Reduce gaps in secondary content */
+          div[style*="gridTemplateColumns: \"1fr 1fr\""] {
+            gap: 20px !important;
+          }
+          
+          /* Tech stack badges smaller */
+          span[style*="padding: \"2px 8px\""] {
+            padding: 2px 6px !important;
+            font-size: 7px !important;
+          }
+        }
+      `}</style>
     </main>
-  );
-}
-
-const chipStyle: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px",
-  borderRadius: 6, border: "1px solid var(--surface-card-border)",
-  backgroundColor: "var(--surface-card)", fontSize: 13, color: "var(--text-secondary)",
-  textDecoration: "none", fontFamily: "var(--font-geist-mono)",
-};
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section style={{ marginBottom: 56 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
-        <h2 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", whiteSpace: "nowrap" }}>
-          {title}
-        </h2>
-        <div style={{ flex: 1, height: 1, backgroundColor: "var(--surface-card-border)" }} />
-      </div>
-      {children}
-    </section>
   );
 }

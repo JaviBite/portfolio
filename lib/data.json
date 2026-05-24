@@ -1,49 +1,75 @@
 {
   "profile": {
-    "name": "Javier Giménez Garcés",
-    "title": "Computer Vision & AI Engineer",
+    "name": "JAVIER GIMÉNEZ GARCÉS",
+    "title": "Ingeniero Informático",
+    "birthDate": "25-08-1998",
     "portrait": "/portrait.svg",
     "motto": "No veo problemas, solo soluciones",
     "contact": {
-      "email": "javier@example.com",
-      "linkedin": "https://linkedin.com/in/javiergimenez",
+      "email": "javiergimenezgarces@gmail.com",
+      "linkedin": "https://linkedin.com/in/jgimenez",
       "github": "https://github.com/javiergimenez",
-      "location": "Spain"
+      "location": "Zaragoza, España"
     },
-    "bio": "Ingeniero especializado en Computer Vision e IA con experiencia en producción real. Construyo sistemas que funcionan fuera del laboratorio: desde tracking multi-cámara en entornos industriales hasta compresión de modelos con tecnología quantum-inspired.",
+    "bio": "Soy un chico muy curioso, organizado e interesado por el aprendizaje automático, la informática gráfica y visión por computador, así como la realidad virtual o aumentada.",
     "achievements": [
-      "1º Premio Physicathon 2020",
-      "Top 25% Hashcode Google 2020"
-    ],
-    "music": {
-      "track": "/audio/track.mp3",
-      "bpm": 120
-    }
+      "1º Premio, Physicathon 2020",
+      "Top 25% Hashcode 2020",
+      "Curso de Voluntariado"
+    ]
   },
   "experience": [
     {
       "company": "Multiverse Computing",
+      "website": "https://multiversecomputing.com",
       "roles": [
         {
-          "role": "Pre-sales Engineer / Solution Architect",
-          "start": "2024",
+          "role": "Ingeniero de preventa",
+          "start": "Enero 2026",
           "end": null,
           "current": true,
-          "description": "Trabajo en CompactifAI, producto de compresión de LLMs con tecnología quantum-inspired. Comprimo modelos como YOLO y Whisper manteniendo >95% de accuracy con una fracción del tamaño. Rol híbrido técnico-comercial: demos, propuestas y definición de soluciones para clientes enterprise.",
-          "stack": ["CompactifAI", "PyTorch", "YOLO", "Whisper", "LLM Compression"]
+          "location": "Zaragoza, España",
+          "description": "Implicado en el proceso de preventa en múltiples proyectos clave vinculados a CompactifAI y soluciones IA de Computer Vision y GenAI (LLM, Agentes), impulsando oportunidades de alto impacto. Participación destacada en un proyecto estratégico de primer nivel con MediaPro.",
+          "stack": ["CompactifAI", "LLM", "Agentes", "Computer Vision", "GenAI"]
         }
       ]
     },
     {
-      "company": "Freelance / Proyectos Enterprise",
+      "company": "ETIQMEDIA",
+      "website": "https://etiqmedia.com",
       "roles": [
         {
-          "role": "Computer Vision Engineer",
-          "start": "2021",
-          "end": "2024",
+          "role": "Experto en tecnologías de computer vision",
+          "start": "Diciembre 2022",
+          "end": "Enero 2026",
           "current": false,
-          "description": "Desarrollo de sistemas de visión artificial para clientes enterprise: Würth, Stellantis, GIS Madrid, Administración Pública, VIC/EITB.",
-          "stack": ["Python", "C++", "OpenCV", "SAM", "FFmpeg"]
+          "location": "Zaragoza, España",
+          "description": "Gestión del departamento de vídeo/imagen y visión por computador. Desarrollo y gestión de proyectos/PoCs: lectura de códigos en contenedores y matrículas (JSV Logistics, STEF), detección de atascos logísticos (Würth), control de accesos biométrico en residencia (Adm. Pública Castilla y León), tracking multicámara (Stellantis), descripción de imágenes interactiva y detección de incendios. Análisis de ortofotografías (GIS Madrid). Segmentación y generación automática de contenido con NLP y CV.",
+          "stack": ["Python", "C++", "OpenCV", "NLP", "CV", "Docker"]
+        },
+        {
+          "role": "Desarrollador e investigador de computer vision y arquitectura backend",
+          "start": "Febrero 2022",
+          "end": "Diciembre 2022",
+          "current": false,
+          "location": "Zaragoza, España",
+          "description": "Desarrollo e integración de sistemas de IA para visión por computadora e indexación de video: detección de caras, objetos y texto (OCR), segmentación y comprensión de imágenes y búsqueda semántica. Optimización de modelos con TensorRT y despliegue eficiente con ONNX.",
+          "stack": ["Python", "TensorRT", "ONNX", "OCR", "PyTorch"]
+        }
+      ]
+    },
+    {
+      "company": "Universidad de Zaragoza (Colaboración con BSH)",
+      "website": "https://unizar.es",
+      "roles": [
+        {
+          "role": "Prácticas en visión por computador y aprendizaje profundo (deep learning)",
+          "start": "Febrero 2021",
+          "end": "Junio 2021",
+          "current": false,
+          "location": "Zaragoza, España",
+          "description": "Grupo de Investigación: Graphics and Imaging Lab",
+          "stack": ["Python", "Deep Learning", "Computer Vision"]
         }
       ]
     }
@@ -51,15 +77,74 @@
   "education": [
     {
       "institution": "Universidad de Zaragoza",
-      "degree": "Ingeniería Informática",
-      "start": "2016",
-      "end": "2021"
+      "degree": "Máster en robótica, gráficos y visión por computador",
+      "start": "Septiembre 2020",
+      "end": "Febrero 2022",
+      "location": "Zaragoza, España"
     },
     {
-      "institution": "Universidad Rey Juan Carlos",
-      "degree": "Máster en Robótica, Computer Vision y Gráficos",
-      "start": "2021",
-      "end": "2023"
+      "institution": "Universidad de Zaragoza",
+      "degree": "Grado Universitario en ingeniería informática",
+      "specialization": "Computación, Ciencia computacional",
+      "start": "Septiembre 2016",
+      "end": "Junio 2020",
+      "location": "Zaragoza, España"
+    },
+    {
+      "institution": "Conservatorio Profesional de Música de Zaragoza",
+      "degree": "Grado Profesional de Música",
+      "start": "Septiembre 2006",
+      "end": "Junio 2016",
+      "location": "Zaragoza, España"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Inglés (B2)",
+      "level": 4,
+      "note": "Certificado FIRST Certificate por Cambridge"
+    },
+    {
+      "language": "Español (Nativo)",
+      "level": 5
+    }
+  ],
+  "skills": [
+    {
+      "category": "Lenguajes",
+      "items": [
+        { "name": "C++", "level": 5 },
+        { "name": "C#", "level": 5 },
+        { "name": "Python", "level": 5 },
+        { "name": "Java", "level": 4 },
+        { "name": "TypeScript", "level": 4 }
+      ]
+    },
+    {
+      "category": "Frameworks & Tools",
+      "items": [
+        "PyTorch",
+        "TensorRT",
+        "ONNX",
+        "OpenCV",
+        "SAM",
+        "YOLO",
+        "Whisper",
+        "FFmpeg",
+        "Docker",
+        "Torch & Keras & TF"
+      ]
+    },
+    {
+      "category": "Competencias",
+      "items": [
+        "Trabajador",
+        "Motivador & Optimista",
+        "Resolución de problemas",
+        "GIT",
+        "Músico",
+        "ISTJ"
+      ]
     }
   ],
   "howIThink": [
