@@ -20,15 +20,15 @@
   --bg: #201c15;
   --bg-secondary: #27221b;
   --text-primary: #f0ede8;
-  --text-secondary: #c4b5a8;
-  --text-muted: #8a7f78;
+  --text-secondary: #e0dbd5; /* incremented contrast for body/secondary text */
+  --text-muted: #c6c0b9; /* lighter muted for small labels */
   --accent-cyan: #7eb8d1;
   --accent-cyan-glow: rgba(126, 184, 209, 0.25);
   --accent-purple: #b896b8;
   --accent-purple-glow: rgba(184, 150, 184, 0.25);
   --surface-card: #2a2520;
-  --surface-card-border: rgba(255, 255, 255, 0.1);
-  --grid-line: rgba(255, 255, 255, 0.02);
+  --surface-card-border: rgba(255, 255, 255, 0.12);
+  --grid-line: rgba(255, 255, 255, 0.03);
   --shadow-card: 4px 4px 0px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.2);
 }
 
@@ -1520,3 +1520,28 @@ body {
   font-family: var(--font-geist-mono);
   color: var(--text-muted);
 }
+
+/* Accessibility & reduced-motion */
+:focus-visible {
+  outline: none;
+}
+
+/* Make interactive elements show a clear focus ring */
+.button:focus-visible,
+.view-all-link:focus-visible,
+.button-secondary:focus-visible,
+.button-tertiary:focus-visible,
+.chat-submit:focus-visible,
+.chat-input:focus-visible {
+  box-shadow: 0 0 0 4px var(--accent-cyan-glow);
+  border-color: var(--accent-cyan);
+}
+
+/* Respect user's reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
