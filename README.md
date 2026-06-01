@@ -1,5 +1,7 @@
 # Portfolio — Javier Giménez Garcés
 
+[![Visual regression](https://github.com/JaviBite/portfolio/actions/workflows/playwright-visual.yml/badge.svg)](https://github.com/JaviBite/portfolio/actions/workflows/playwright-visual.yml)
+
 > **Computer Vision & AI Engineer** — Personal branding site con chatbot de CV, Bento Grid de proyectos y diagrama de Home Lab interactivo.
 
 ---
