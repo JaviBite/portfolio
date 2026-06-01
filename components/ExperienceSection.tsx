@@ -10,7 +10,8 @@ interface ExperienceSectionProps {
     roles: Array<{
       role: string;
       start: string;
-      end?: string;
+      end?: string | null;
+      current?: boolean;
       description: string;
       stack: string[];
       location?: string;

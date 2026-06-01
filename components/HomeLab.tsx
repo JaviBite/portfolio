@@ -131,7 +131,13 @@ export function HomeLab({ homelab }: Props) {
             {activeNode && serviceDescriptions[activeNode] ? (
               <div className="home-lab-details-card">
                 <div className="home-lab-details-heading">
-                  <span className="home-lab-details-icon">{serviceIcons[activeNode] ?? "⚙️"}</span>
+                  <span className="home-lab-details-icon">
+                    {serviceIcons[activeNode] ? (
+                      <Icon name={serviceIcons[activeNode].icon} size={20} fill={serviceIcons[activeNode].fill} />
+                    ) : (
+                      "⚙️"
+                    )}
+                  </span>
                   <div>
                     <h4 className="home-lab-details-title">{activeNode}</h4>
                     <p className="section-copy-sm">{serviceDescriptions[activeNode]}</p>

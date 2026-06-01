@@ -11,6 +11,13 @@ module.exports = {
     viewport: { width: 1280, height: 900 },
     actionTimeout: 10_000,
     trace: 'on-first-retry',
+    baseURL: 'http://127.0.0.1:3000'
+  },
+  webServer: {
+    command: 'npm run build && npm run start',
+    url: 'http://127.0.0.1:3000',
+    reuseExistingServer: true,
+    timeout: 120_000,
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } }
