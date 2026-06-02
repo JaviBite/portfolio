@@ -132,7 +132,7 @@
         "Whisper",
         "FFmpeg",
         "Docker",
-        "Torch & Keras & TF"
+        "PyTorch & Keras & TF"
       ]
     },
     {
@@ -141,9 +141,9 @@
         { "es": "Trabajador", "en": "Hardworking" },
         { "es": "Motivador & Optimista", "en": "Motivator & Optimist" },
         { "es": "Resolución de problemas", "en": "Problem Solving" },
-        { "es": "GIT", "en": "GIT" },
+        "GIT",
         { "es": "Músico", "en": "Musician" },
-        { "es": "ISTJ", "en": "ISTJ" }
+        "ISTJ"
       ]
     }
   ],

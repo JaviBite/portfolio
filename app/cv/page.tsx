@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import data from "@/lib/data.json";
 import { CVPrintButton } from "@/components/CVPrintButton";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { Icon } from "@/components/Icon";
 import { useLocale } from "@/i18n/LocaleContext";
+import { useData } from "@/lib/useData";
 
 export default function CVPage() {
   const { messages } = useLocale();
+  const data = useData();
   const { profile, experience, education, languages, skills } = data;
 
   return (

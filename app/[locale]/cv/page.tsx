@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import data from "@/lib/data.json";
 import { CVPrintButton } from "@/components/CVPrintButton";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { Icon } from "@/components/Icon";
+import { useData } from "@/lib/useData";
 
 export default function CVPage() {
+  const data = useData();
   const { profile, experience, education, languages, skills } = data;
 
   return (

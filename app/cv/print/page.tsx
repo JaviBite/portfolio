@@ -1,10 +1,11 @@
 "use client";
 
-import data from "@/lib/data.json";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { Icon } from "@/components/Icon";
+import { useData } from "@/lib/useData";
 
 export default function CVPrintPage() {
+  const data = useData();
   const { profile, experience, education, languages, skills } = data;
 
   return (
