@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test:visual": "npx playwright test",
     "test:visual:update": "npx playwright test --update-snapshots --project=chromium --grep=visual /",
-    "test:visual:update:linux": "docker run --rm -v \"$PWD\":/repo -w /repo node:20 bash -lc \"npm ci && npx playwright install --with-deps chromium && npm run test:visual:update\""
+    "test:visual:update:linux": "node ./scripts/test-visual-update-linux.js"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",

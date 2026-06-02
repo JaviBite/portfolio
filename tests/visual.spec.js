@@ -13,7 +13,7 @@ for (const theme of themes) {
       await page.goto(BASE + route, { waitUntil: 'networkidle' });
       await page.waitForTimeout(500);
       const routeName = route === '/' ? 'home' : route.slice(1).replace(/\//g, '-');
-      expect(await page.screenshot({ fullPage: true })).toMatchSnapshot(`${routeName}-${theme}.png`);
+      expect(await page.screenshot({ fullPage: true })).toMatchSnapshot(`${routeName}-${theme}.png`, { threshold: 0.05 });
     });
   }
 }

@@ -6,7 +6,7 @@ import rawData from "./data.json";
 type Locale = "es" | "en";
 
 // Helper to extract translated value from bilingual field
-function getTranslated<T extends Record<string, any>>(field: T | string, locale: Locale): any {
+function getTranslated<T extends Record<string, any>>(field: T | string | undefined, locale: Locale): any {
   if (typeof field === "string") {
     return field;
   }
