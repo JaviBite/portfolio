@@ -8,7 +8,20 @@ import { useLocale } from "@/i18n/LocaleContext";
 export default function CVPrintPage() {
   const data = useData();
   const { profile, experience, education, languages, skills } = data;
-  const { messages } = useLocale();
+  const { locale } = useLocale();
+
+  const LABELS: Record<string, { email: string; location: string }> = {
+    es: { email: "EMAIL:", location: "UBICACIÓN:" },
+    en: { email: "EMAIL:", location: "LOCATION:" },
+  };
+
+  const HEADERS: Record<string, { education: string; languages: string; skills: string; achievements: string }> = {
+    es: { education: "Formación", languages: "Idiomas", skills: "Skills", achievements: "Logros" },
+    en: { education: "Education", languages: "Languages", skills: "Skills", achievements: "Achievements" },
+  };
+
+  const labels = LABELS[(locale as string) || "es"];
+  const headers = HEADERS[(locale as string) || "es"];
 
   return (
     <main style={{ minHeight: "100vh", paddingTop: 0, paddingBottom: 0 }}>
@@ -29,14 +42,14 @@ export default function CVPrintPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 10, color: "var(--text-secondary)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <Icon name="mail" size={12} style={{ color: "var(--accent-cyan)" }} />
-                  <span style={{ fontSize: 9, fontWeight: 600, minWidth: 60 }}>{messages?.labels?.email || "EMAIL:"}</span>
+                  <span style={{ fontSize: 9, fontWeight: 600, minWidth: 60 }}>{labels.email}</span>
                   <a href={`mailto:${profile.contact.email}`} style={{ textDecoration: "none", color: "inherit" }}>
                     {profile.contact.email}
                   </a>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <Icon name="location_on" size={12} style={{ color: "var(--accent-cyan)" }} />
-                  <span style={{ fontSize: 9, fontWeight: 600, minWidth: 60 }}>{messages?.labels?.location || "UBICACIÓN:"}</span>
+                  <span style={{ fontSize: 9, fontWeight: 600, minWidth: 60 }}>{labels.location}</span>
                   <span>{profile.contact.location}</span>
                 </div>
                 <div style={{ display: "flex", gap: 16, marginTop: 4 }}>
@@ -58,7 +71,7 @@ export default function CVPrintPage() {
                 <img src={profile.portrait} alt="Portrait" style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover" }} />
               )}
               <p style={{ margin: 0, fontSize: 10, color: "var(--text-secondary)", textAlign: "center", maxWidth: 140 }}>
-                {messages?.labels?.portrait_quote || "No veo problemas, solo soluciones."}
+                {profile.motto}
               </p>
             </div>
           </div>
@@ -78,7 +91,7 @@ export default function CVPrintPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                 <Icon name="school" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
-                  {messages?.cv?.education || "Formación"}
+                  {headers.education}
                 </h3>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -101,7 +114,7 @@ export default function CVPrintPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                 <Icon name="translate" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
-                  {messages?.cv?.languages || "Idiomas"}
+                  {headers.languages}
                 </h3>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -133,7 +146,7 @@ export default function CVPrintPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                 <Icon name="build" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
-                  {messages?.cv?.skills || "Skills"}
+                  {headers.skills}
                 </h3>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -164,7 +177,7 @@ export default function CVPrintPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                 <Icon name="star" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
-                  {messages?.cv?.achievements || "Logros"}
+                  {headers.achievements}
                 </h3>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
