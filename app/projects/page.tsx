@@ -3,6 +3,7 @@
 import data from "@/lib/data.json";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { useLocale } from "@/i18n/LocaleContext";
 
 const clientColors: Record<string, string> = {
   "Würth": "var(--accent-cyan)",
@@ -31,6 +32,7 @@ const LAYOUT_CONFIG = {
 };
 
 export default function ProjectsPage() {
+  const { messages } = useLocale();
   return (
     <main style={{ minHeight: "100vh", paddingTop: 80, paddingBottom: 120 }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
@@ -47,7 +49,7 @@ export default function ProjectsPage() {
               marginBottom: 12,
             }}
           >
-            // PROYECTOS
+            {messages.projects?.header || "// PROYECTOS"}
           </p>
           <h1
             style={{

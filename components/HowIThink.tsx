@@ -7,13 +7,16 @@ interface Props {
   blocks: Block[];
 }
 
+import { useLocale } from "@/i18n/LocaleContext";
+
 export function HowIThink({ blocks }: Props) {
+  const { messages } = useLocale();
   return (
     <section className="section-standard">
       {/* Header */}
       <div className="section-header-compact">
-        <p className="section-subtitle">// 03_FILOSOFÍA</p>
-        <h2 className="section-title">Cómo pienso</h2>
+        <p className="section-subtitle">{messages.think?.header || "// 03_FILOSOFÍA"}</p>
+        <h2 className="section-title">{messages.think?.title || "Cómo pienso"}</h2>
       </div>
 
       {/* Blocks grid */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "@/components/Icon";
+import { useLocale } from "@/i18n/LocaleContext";
 
 interface ExperienceSectionProps {
   experience: Array<{
@@ -8,26 +9,33 @@ interface ExperienceSectionProps {
     logo?: string;
     website?: string;
     roles: Array<{
-      role: string;
+      role: { es: string; en: string } | string;
       start: string;
-      end?: string | null;
+      end?: { es: string; en: string } | string | null;
       current?: boolean;
-      description: string;
+      description: { es: string; en: string } | string;
       stack: string[];
       location?: string;
     }>;
   }>;
   isPrint?: boolean;
+  messages?: any;
 }
 
-export function ExperienceSection({ experience, isPrint = false }: ExperienceSectionProps) {
+export function ExperienceSection({ experience, isPrint = false, messages }: ExperienceSectionProps) {
+  const { locale } = useLocale();
+
+  const getText = (text: { es: string; en: string } | string) => {
+    if (typeof text === "string") return text;
+    return text[locale as keyof typeof text] || text.es;
+  };
   // Unified layout for web and print: left line column, logo column, content column
   return (
     <section>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
         <Icon name="work_history" size={20} style={{ color: "var(--accent-cyan)" }} />
         <h2 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
-          Experiencia
+          {messages?.cv?.experience || "Experiencia"}
         </h2>
       </div>
 
@@ -59,7 +67,7 @@ export function ExperienceSection({ experience, isPrint = false }: ExperienceSec
                       )}
                     </div>
 
-                    <p style={{ fontSize: 9, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0 4px" }}>{exp.roles[0].start} – {exp.roles[exp.roles.length - 1].end || "Presente"}{exp.roles[0].location && ` • ${exp.roles[0].location}`}</p>
+                    <p style={{ fontSize: 9, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0 4px" }}>{exp.roles[0].start} – {getText(exp.roles[exp.roles.length - 1].end || messages?.cv?.present || "Presente")}{exp.roles[0].location && ` • ${exp.roles[0].location}`}</p>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: 6, position: "relative" }}>
                       {exp.roles.map((role, idx) => (
@@ -74,9 +82,9 @@ export function ExperienceSection({ experience, isPrint = false }: ExperienceSec
                           )}
 
                           <div>
-                            <h4 style={{ fontSize: 11, fontWeight: 600, margin: 0 }}>{role.role}</h4>
-                            <p style={{ fontSize: 10, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0" }}>{role.start} – {role.end || "Presente"}</p>
-                            <p style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.5, margin: 0 }}>{role.description}</p>
+                            <h4 style={{ fontSize: 11, fontWeight: 600, margin: 0 }}>{getText(role.role)}</h4>
+                            <p style={{ fontSize: 10, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0" }}>{role.start} – {getText(role.end || messages?.cv?.present || "Presente")}</p>
+                            <p style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.5, margin: 0 }}>{getText(role.description)}</p>
                           </div>
                         </div>
                       ))}
@@ -85,7 +93,7 @@ export function ExperienceSection({ experience, isPrint = false }: ExperienceSec
                 ) : (
                   <>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                      <h3 style={{ fontSize: 12, fontWeight: 800, margin: 0 }}>{exp.roles[0].role}</h3>
+                      <h3 style={{ fontSize: 12, fontWeight: 800, margin: 0 }}>{getText(exp.roles[0].role)}</h3>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", margin: "2px 0 2px" }}>
                       <p style={{ fontSize: 10, fontWeight: 600, color: "var(--text-secondary)", margin: 0 }}>{exp.company}</p>
@@ -96,9 +104,9 @@ export function ExperienceSection({ experience, isPrint = false }: ExperienceSec
                       )}
                     </div>
                     <p style={{ fontSize: 9, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "0 0 4px" }}>
-                      {exp.roles[0].start} – {exp.roles[0].end || "Presente"}{exp.roles[0].location && ` • ${exp.roles[0].location}`}
+                      {exp.roles[0].start} – {getText(exp.roles[0].end || messages?.cv?.present || "Presente")}{exp.roles[0].location && ` • ${exp.roles[0].location}`}
                     </p>
-                    <p style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.5, margin: 0 }}>{exp.roles[0].description}</p>
+                    <p style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.5, margin: 0 }}>{getText(exp.roles[0].description)}</p>
                   </>
                 )}
               </div>

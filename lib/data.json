@@ -1,21 +1,21 @@
 {
   "profile": {
     "name": "JAVIER GIMÉNEZ GARCÉS",
-    "title": "Ingeniero Informático",
+    "title": { "es": "Ingeniero Informático", "en": "Computer Science Engineer" },
     "birthDate": "25-08-1998",
     "portrait": "/portrait.svg",
-    "motto": "No veo problemas, solo soluciones",
+    "motto": { "es": "No veo problemas, solo soluciones", "en": "I don't see problems, only solutions" },
     "contact": {
       "email": "javiergimenezgarces@gmail.com",
       "linkedin": "https://linkedin.com/in/jgimenez",
       "github": "https://github.com/javiergimenez",
       "location": "Zaragoza, España"
     },
-    "bio": "Soy un chico muy curioso, organizado e interesado por el aprendizaje automático, la informática gráfica y visión por computador, así como la realidad virtual o aumentada.",
+    "bio": { "es": "Soy un chico muy curioso, organizado e interesado por el aprendizaje automático, la informática gráfica y visión por computador, así como la realidad virtual o aumentada.", "en": "I'm a curious, organized guy interested in machine learning, computer graphics, computer vision, virtual and augmented reality." },
     "achievements": [
-      "1º Premio, Physicathon 2020",
-      "Top 25% Hashcode 2020",
-      "Curso de Voluntariado"
+      { "es": "1º Premio, Physicathon 2020", "en": "1st Prize, Physicathon 2020" },
+      { "es": "Top 25% Hashcode 2020", "en": "Top 25% Hashcode 2020" },
+      { "es": "Curso de Voluntariado", "en": "Volunteering Course" }
     ]
   },
   "experience": [
@@ -24,12 +24,12 @@
       "website": "https://multiversecomputing.com",
       "roles": [
         {
-          "role": "Ingeniero de preventa",
+          "role": { "es": "Ingeniero de preventa", "en": "Pre-sales Engineer" },
           "start": "Enero 2026",
           "end": null,
           "current": true,
           "location": "Zaragoza, España",
-          "description": "Implicado en el proceso de preventa en múltiples proyectos clave vinculados a CompactifAI y soluciones IA de Computer Vision y GenAI (LLM, Agentes), impulsando oportunidades de alto impacto. Participación destacada en un proyecto estratégico de primer nivel con MediaPro.",
+          "description": { "es": "Implicado en el proceso de preventa en múltiples proyectos clave vinculados a CompactifAI y soluciones IA de Computer Vision y GenAI (LLM, Agentes), impulsando oportunidades de alto impacto. Participación destacada en un proyecto estratégico de primer nivel con MediaPro.", "en": "Involved in pre-sales processes for key projects linked to CompactifAI and AI solutions for Computer Vision and GenAI (LLM, Agents), driving high-impact opportunities. Outstanding participation in a top-level strategic project with MediaPro." },
           "stack": ["CompactifAI", "LLM", "Agentes", "Computer Vision", "GenAI"]
         }
       ]
@@ -39,21 +39,21 @@
       "website": "https://etiqmedia.com",
       "roles": [
         {
-          "role": "Experto en tecnologías de computer vision",
+          "role": { "es": "Experto en tecnologías de computer vision", "en": "Expert in Computer Vision Technologies" },
           "start": "Diciembre 2022",
           "end": "Enero 2026",
           "current": false,
           "location": "Zaragoza, España",
-          "description": "Gestión del departamento de vídeo/imagen y visión por computador. Desarrollo y gestión de proyectos/PoCs: lectura de códigos en contenedores y matrículas (JSV Logistics, STEF), detección de atascos logísticos (Würth), control de accesos biométrico en residencia (Adm. Pública Castilla y León), tracking multicámara (Stellantis), descripción de imágenes interactiva y detección de incendios. Análisis de ortofotografías (GIS Madrid). Segmentación y generación automática de contenido con NLP y CV.",
+          "description": { "es": "Gestión del departamento de vídeo/imagen y visión por computador. Desarrollo y gestión de proyectos/PoCs: lectura de códigos en contenedores y matrículas (JSV Logistics, STEF), detección de atascos logísticos (Würth), control de accesos biométrico en residencia (Adm. Pública Castilla y León), tracking multicámara (Stellantis), descripción de imágenes interactiva y detección de incendios. Análisis de ortofotografías (GIS Madrid). Segmentación y generación automática de contenido con NLP y CV.", "en": "Management of video/image and computer vision department. Development and management of projects/PoCs: container and license plate reading (JSV Logistics, STEF), logistics congestion detection (Würth), biometric access control (Public Administration Castilla y León), multi-camera tracking (Stellantis), interactive image description and fire detection. Orthophoto analysis (GIS Madrid). Segmentation and automatic content generation with NLP and CV." },
           "stack": ["Python", "C++", "OpenCV", "NLP", "CV", "Docker"]
         },
         {
-          "role": "Desarrollador e investigador de computer vision y arquitectura backend",
+          "role": { "es": "Desarrollador e investigador de computer vision y arquitectura backend", "en": "Computer Vision Developer and Backend Architecture Researcher" },
           "start": "Febrero 2022",
           "end": "Diciembre 2022",
           "current": false,
           "location": "Zaragoza, España",
-          "description": "Desarrollo e integración de sistemas de IA para visión por computadora e indexación de video: detección de caras, objetos y texto (OCR), segmentación y comprensión de imágenes y búsqueda semántica. Optimización de modelos con TensorRT y despliegue eficiente con ONNX.",
+          "description": { "es": "Desarrollo e integración de sistemas de IA para visión por computadora e indexación de video: detección de caras, objetos y texto (OCR), segmentación y comprensión de imágenes y búsqueda semántica. Optimización de modelos con TensorRT y despliegue eficiente con ONNX.", "en": "Development and integration of AI systems for computer vision and video indexing: face, object and text detection (OCR), image segmentation and understanding, semantic search. Model optimization with TensorRT and efficient deployment with ONNX." },
           "stack": ["Python", "TensorRT", "ONNX", "OCR", "PyTorch"]
         }
       ]
@@ -63,12 +63,12 @@
       "website": "https://unizar.es",
       "roles": [
         {
-          "role": "Prácticas en visión por computador y aprendizaje profundo (deep learning)",
+          "role": { "es": "Prácticas en visión por computador y aprendizaje profundo (deep learning)", "en": "Internship in Computer Vision and Deep Learning" },
           "start": "Febrero 2021",
           "end": "Junio 2021",
           "current": false,
           "location": "Zaragoza, España",
-          "description": "Grupo de Investigación: Graphics and Imaging Lab",
+          "description": { "es": "Grupo de Investigación: Graphics and Imaging Lab", "en": "Research Group: Graphics and Imaging Lab" },
           "stack": ["Python", "Deep Learning", "Computer Vision"]
         }
       ]
@@ -77,22 +77,22 @@
   "education": [
     {
       "institution": "Universidad de Zaragoza",
-      "degree": "Máster en robótica, gráficos y visión por computador",
+      "degree": { "es": "Máster en robótica, gráficos y visión por computador", "en": "Master's in Robotics, Graphics and Computer Vision" },
       "start": "Septiembre 2020",
       "end": "Febrero 2022",
       "location": "Zaragoza, España"
     },
     {
       "institution": "Universidad de Zaragoza",
-      "degree": "Grado Universitario en ingeniería informática",
-      "specialization": "Computación, Ciencia computacional",
+      "degree": { "es": "Grado Universitario en ingeniería informática", "en": "Bachelor's Degree in Computer Science Engineering" },
+      "specialization": { "es": "Computación, Ciencia computacional", "en": "Computing, Computer Science" },
       "start": "Septiembre 2016",
       "end": "Junio 2020",
       "location": "Zaragoza, España"
     },
     {
       "institution": "Conservatorio Profesional de Música de Zaragoza",
-      "degree": "Grado Profesional de Música",
+      "degree": { "es": "Grado Profesional de Música", "en": "Professional Music Degree" },
       "start": "Septiembre 2006",
       "end": "Junio 2016",
       "location": "Zaragoza, España"
@@ -100,18 +100,18 @@
   ],
   "languages": [
     {
-      "language": "Inglés (B2)",
+      "language": { "es": "Inglés (B2)", "en": "English (B2)" },
       "level": 4,
-      "note": "Certificado FIRST Certificate por Cambridge"
+      "note": { "es": "Certificado FIRST Certificate por Cambridge", "en": "Cambridge FIRST Certificate" }
     },
     {
-      "language": "Español (Nativo)",
+      "language": { "es": "Español (Nativo)", "en": "Spanish (Native)" },
       "level": 5
     }
   ],
   "skills": [
     {
-      "category": "Lenguajes",
+      "category": { "es": "Lenguajes", "en": "Languages" },
       "items": [
         { "name": "C++", "level": 5 },
         { "name": "C#", "level": 5 },
@@ -121,7 +121,7 @@
       ]
     },
     {
-      "category": "Frameworks & Tools",
+      "category": { "es": "Frameworks & Tools", "en": "Frameworks & Tools" },
       "items": [
         "PyTorch",
         "TensorRT",
@@ -136,43 +136,43 @@
       ]
     },
     {
-      "category": "Competencias",
+      "category": { "es": "Competencias", "en": "Soft Skills" },
       "items": [
-        "Trabajador",
-        "Motivador & Optimista",
-        "Resolución de problemas",
-        "GIT",
-        "Músico",
-        "ISTJ"
+        { "es": "Trabajador", "en": "Hardworking" },
+        { "es": "Motivador & Optimista", "en": "Motivator & Optimist" },
+        { "es": "Resolución de problemas", "en": "Problem Solving" },
+        { "es": "GIT", "en": "GIT" },
+        { "es": "Músico", "en": "Musician" },
+        { "es": "ISTJ", "en": "ISTJ" }
       ]
     }
   ],
   "howIThink": [
     {
-      "title": "Producción > Papers",
-      "body": "Un modelo con 98% de accuracy en benchmark que falla en condiciones reales no vale nada. Diseño sistemas pensando en el caso edge desde el primer día."
+      "title": { "es": "Producción > Papers", "en": "Production > Papers" },
+      "body": { "es": "Un modelo con 98% de accuracy en benchmark que falla en condiciones reales no vale nada. Diseño sistemas pensando en el caso edge desde el primer día.", "en": "A model with 98% accuracy on benchmarks that fails in real conditions is worthless. I design systems thinking about edge cases from day one." }
     },
     {
-      "title": "El puente que falta",
-      "body": "La brecha entre investigación y entrega real es donde se pierden la mayoría de proyectos de IA. Sé moverse en los dos mundos y, sobre todo, sé construir el puente."
+      "title": { "es": "El puente que falta", "en": "The Missing Bridge" },
+      "body": { "es": "La brecha entre investigación y entrega real es donde se pierden la mayoría de proyectos de IA. Sé moverse en los dos mundos y, sobre todo, sé construir el puente.", "en": "The gap between research and real delivery is where most AI projects fail. I can move in both worlds and, most importantly, I know how to build the bridge." }
     },
     {
-      "title": "IA cuando tiene sentido",
-      "body": "No todo necesita un transformer. Antes de escalar a un modelo grande, me pregunto si una solución clásica más simple resuelve el problema igual de bien con menos coste."
+      "title": { "es": "IA cuando tiene sentido", "en": "AI When It Makes Sense" },
+      "body": { "es": "No todo necesita un transformer. Antes de escalar a un modelo grande, me pregunto si una solución clásica más simple resuelve el problema igual de bien con menos coste.", "en": "Not everything needs a transformer. Before scaling to a large model, I ask if a simpler, classical solution solves the problem just as well for less cost." }
     },
     {
-      "title": "Criterio técnico real",
-      "body": "Entiendo qué pasa dentro de los modelos que uso. Eso me permite comprimir, adaptar y depurar donde otros se rinden."
+      "title": { "es": "Criterio técnico real", "en": "Real Technical Judgment" },
+      "body": { "es": "Entiendo qué pasa dentro de los modelos que uso. Eso me permite comprimir, adaptar y depurar donde otros se rinden.", "en": "I understand what happens inside the models I use. That allows me to compress, adapt and debug where others give up." }
     }
   ],
   "projects": [
     {
       "id": "logistics-wurth",
       "client": "Würth",
-      "tag": "Enterprise",
+      "tag": { "es": "Enterprise", "en": "Enterprise" },
       "start": "2022",
       "end": "2023",
-      "description": "Sistema de monitorización logística en tiempo real para detectar atascos y medir capacidad de zonas de almacén usando visión artificial.",
+      "description": { "es": "Sistema de monitorización logística en tiempo real para detectar atascos y medir capacidad de zonas de almacén usando visión artificial.", "en": "Real-time logistics monitoring system to detect congestion and measure warehouse zone capacity using computer vision." },
       "stack": ["C++", "OpenCV", "SAM", "Background Subtraction"],
       "demos": ["congestion-overlay", "capacity-slider"],
       "gridSpan": 8,
@@ -183,10 +183,10 @@
     {
       "id": "tracking-stellantis",
       "client": "Stellantis",
-      "tag": "Enterprise",
+      "tag": { "es": "Enterprise", "en": "Enterprise" },
       "start": "2022",
       "end": "2022",
-      "description": "Tracking multi-cámara de vehículos en planta de producción con proyección 2D mediante homografía para supervisión de líneas de montaje.",
+      "description": { "es": "Tracking multi-cámara de vehículos en planta de producción con proyección 2D mediante homografía para supervisión de líneas de montaje.", "en": "Multi-camera vehicle tracking in production plant with 2D projection via homography for assembly line supervision." },
       "stack": ["Python", "OpenCV", "Homography", "Background Subtraction"],
       "matrices": {
         "cam_a": [[1.2, 0.2, 100], [0.1, 1.1, 50], [0, 0, 1]],
@@ -201,10 +201,10 @@
     {
       "id": "aerial-gis-madrid",
       "client": "GIS Madrid",
-      "tag": "Enterprise",
+      "tag": { "es": "Enterprise", "en": "Enterprise" },
       "start": "2023",
       "end": "2023",
-      "description": "Análisis semántico de imágenes aéreas para detección de cambios urbanos. Resistente a variaciones de iluminación y sombras mediante embeddings visuales.",
+      "description": { "es": "Análisis semántico de imágenes aéreas para detección de cambios urbanos. Resistente a variaciones de iluminación y sombras mediante embeddings visuales.", "en": "Semantic analysis of aerial imagery for urban change detection. Robust to lighting and shadow variations through visual embeddings." },
       "stack": ["SAM", "Cosine Similarity", "PyTorch"],
       "demos": ["heatmap-slider"],
       "gridSpan": 8,
@@ -215,10 +215,10 @@
     {
       "id": "biometric-id",
       "client": "Administración Pública",
-      "tag": "Enterprise",
+      "tag": { "es": "Enterprise", "en": "Enterprise" },
       "start": "2021",
       "end": "2022",
-      "description": "Sistema de identificación biométrica facial para acceso seguro en instalaciones públicas. Pipeline de extracción de feature vectors y matching con KNN.",
+      "description": { "es": "Sistema de identificación biométrica facial para acceso seguro en instalaciones públicas. Pipeline de extracción de feature vectors y matching con KNN.", "en": "Facial biometric identification system for secure access to public facilities. Feature vector extraction and KNN matching pipeline." },
       "stack": ["Face Recognition", "KNN", "Python"],
       "demos": ["log-console"],
       "gridSpan": 4,
@@ -229,10 +229,10 @@
     {
       "id": "smartcrop-autoflip",
       "client": "VIC, EITB",
-      "tag": "Enterprise",
+      "tag": { "es": "Enterprise", "en": "Enterprise" },
       "start": "2023",
       "end": "2024",
-      "description": "Sistema AutoFlip para reencuadre automático de contenido audiovisual de 16:9 a 9:16. Combina transcripción ASR, análisis de saliency y tracking de sujetos.",
+      "description": { "es": "Sistema AutoFlip para reencuadre automático de contenido audiovisual de 16:9 a 9:16. Combina transcripción ASR, análisis de saliency y tracking de sujetos.", "en": "AutoFlip system for automatic audio-visual content reframing from 16:9 to 9:16. Combines ASR transcription, saliency analysis and subject tracking." },
       "stack": ["Whisper", "NLP", "Tracking", "Saliency Detection", "FFmpeg"],
       "demos": ["saliency-slider"],
       "gridSpan": 8,
@@ -243,10 +243,10 @@
     {
       "id": "personal-selfhosted",
       "client": "Self-hosted Lab",
-      "tag": "Self-hosted",
+      "tag": { "es": "Self-hosted", "en": "Self-hosted" },
       "start": "2023",
-      "end": "Presente",
-      "description": "Infraestructura personal para experimentar con servicios en producción real: Proxmox, contenedores, VPN y plataformas multimedia con acceso remoto seguro.",
+      "end": { "es": "Presente", "en": "Present" },
+      "description": { "es": "Infraestructura personal para experimentar con servicios en producción real: Proxmox, contenedores, VPN y plataformas multimedia con acceso remoto seguro.", "en": "Personal infrastructure to experiment with services in real production: Proxmox, containers, VPN and multimedia platforms with secure remote access." },
       "stack": ["Proxmox", "Docker", "WireGuard", "Nginx", "Ollama", "Jellyfin", "Immich"],
       "demos": ["topology-snapshot", "service-dashboard"],
       "gridSpan": 8,
@@ -256,7 +256,7 @@
     }
   ],
   "homelab": {
-    "description": "Infraestructura personal self-hosted para experimentar con tecnologías en producción real. Todo orquestado desde un servidor Proxmox en casa.",
+    "description": { "es": "Infraestructura personal self-hosted para experimentar con tecnologías en producción real. Todo orquestado desde un servidor Proxmox en casa.", "en": "Personal self-hosted infrastructure to experiment with technologies in real production. Everything orchestrated from a Proxmox server at home." },
     "nodes": [
       {
         "name": "Proxmox",

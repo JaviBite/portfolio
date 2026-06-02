@@ -4,18 +4,17 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useLocale } from "@/i18n/LocaleContext";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
+  const { locale, setLocale, messages } = useLocale();
   const [mounted, setMounted] = useState(false);
-  const [locale, setLocale] = useState<"es" | "en">("es");
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
-    const saved = document.cookie.match(/locale=([^;]+)/)?.[1] as "es" | "en" | undefined;
-    if (saved) setLocale(saved);
   }, []);
 
   useEffect(() => {
@@ -27,8 +26,6 @@ export function Navbar() {
   function toggleLocale() {
     const next = locale === "es" ? "en" : "es";
     setLocale(next);
-    document.cookie = `locale=${next};path=/;max-age=31536000`;
-    window.location.reload();
   }
 
   function toggleTheme() {
@@ -36,8 +33,8 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { href: "/projects", label: locale === "es" ? "Proyectos" : "Projects" },
-    { href: "/cv", label: "CV" },
+    { href: "/projects", label: messages.nav?.projects || "Projects" },
+    { href: "/cv", label: messages.nav?.cv || "CV" },
   ];
 
   return (

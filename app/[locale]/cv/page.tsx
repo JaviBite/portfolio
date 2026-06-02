@@ -5,10 +5,8 @@ import data from "@/lib/data.json";
 import { CVPrintButton } from "@/components/CVPrintButton";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { Icon } from "@/components/Icon";
-import { useLocale } from "@/i18n/LocaleContext";
 
 export default function CVPage() {
-  const { messages } = useLocale();
   const { profile, experience, education, languages, skills } = data;
 
   return (
@@ -17,11 +15,11 @@ export default function CVPage() {
         {/* Actions bar */}
         <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", marginBottom: 40, borderBottom: "1px solid var(--surface-card-border)" }}>
           <span style={{ fontFamily: "var(--font-geist-mono)", fontSize: 11, color: "var(--text-muted)", letterSpacing: "0.1em" }}>
-            {messages.cv?.subtitle || "LIVING CV — actualizado 2026"}
+            LIVING CV — actualizado 2026
           </span>
           <div style={{ display: "flex", gap: 12 }}>
             <Link href="/cv/chat" style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid var(--accent-cyan)", backgroundColor: "var(--accent-cyan-glow)", color: "var(--accent-cyan)", fontSize: 13, fontWeight: 600, textDecoration: "none", fontFamily: "var(--font-geist-mono)" }}>
-              {messages.cv?.chat_cta || "Pregunta a mi CV →"}
+              Pregunta a mi CV →
             </Link>
             <CVPrintButton />
           </div>
@@ -93,7 +91,7 @@ export default function CVPage() {
 
         {/* Single Column Layout - Experiencia Full Width First */}
         <div style={{ marginBottom: 32 }}>
-          <ExperienceSection experience={experience} messages={messages} />
+          <ExperienceSection experience={experience} />
         </div>
 
         {/* Secondary Content - Education, Languages, Skills, Achievements */}
@@ -105,7 +103,7 @@ export default function CVPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
                 <Icon name="school" size={20} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
-                  {messages.cv?.education || "Formación"}
+                  Formación
                 </h3>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>

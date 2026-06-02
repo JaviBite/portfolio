@@ -12,10 +12,24 @@
     "available": "Disponible para proyectos"
   },
   "stack": {
+    "expertise_header": "// 01_EXPERTISE",
     "title": "Stack & Expertise",
-    "subtitle": "Herramientas que uso en producción real"
+    "subtitle": "Herramientas que uso en producción real. No teoría.",
+    "domains": {
+      "vision": "Computer Vision",
+      "ai": "AI / ML",
+      "infra": "Infraestructura",
+      "languages": "Lenguajes"
+    },
+    "items": {
+      "vision": ["OpenCV", "SAM", "YOLO", "FFmpeg", "Tracking multi-cámara", "Homografía", "Saliency Detection"],
+      "ai": ["PyTorch", "Whisper", "KNN", "Embeddings", "Compresión de modelos", "CompactifAI"],
+      "infra": ["Docker", "Proxmox", "Nginx", "WireGuard", "CI/CD"],
+      "languages": ["Python", "C++", "TypeScript", "JavaScript"]
+    }
   },
   "think": {
+    "header": "// 03_FILOSOFÍA",
     "title": "Cómo pienso"
   },
   "homelab": {
@@ -23,7 +37,9 @@
     "subtitle": "Infraestructura personal donde experimento antes de recomendar"
   },
   "projects": {
-    "title": "Proyectos",
+    "header": "// 02_PROYECTOS",
+    "title": "Proyectos Destacados",
+    "view_all": "Ver todos →",
     "subtitle": "Sistemas en producción para clientes enterprise",
     "tag_enterprise": "Enterprise",
     "demo": "Ver demo",
@@ -31,6 +47,7 @@
   },
   "cv": {
     "title": "Living CV",
+    "subtitle": "LIVING CV — actualizado 2026",
     "experience": "Experiencia",
     "education": "Formación",
     "skills": "Skills",

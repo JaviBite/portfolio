@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
+import { useLocale } from "@/i18n/LocaleContext";
 
 interface HomelabNode {
   name: string;
@@ -43,6 +44,7 @@ const serviceDescriptions: Record<string, string> = {
 };
 
 export function HomeLab({ homelab }: Props) {
+  const { messages } = useLocale();
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const node = homelab.nodes[0];
 
@@ -60,7 +62,7 @@ export function HomeLab({ homelab }: Props) {
         {/* Header */}
         <div className="section-header-compact">
           <p className="section-subtitle">// 04_HOME_LAB</p>
-          <h2 className="section-title">Side Projects & Home Lab</h2>
+          <h2 className="section-title">{messages.homelab?.title || "Side Projects & Home Lab"}</h2>
           <p className="section-copy">{homelab.description}</p>
         </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useLocale } from "@/i18n/LocaleContext";
 
 interface Project {
   id: string;
@@ -26,24 +27,25 @@ const clientColors: Record<string, string> = {
 };
 
 export function ProjectsPreview({ projects }: Props) {
+  const { messages } = useLocale();
   return (
     <section className="section-with-borders">
       <div className="section-container">
         {/* Header */}
         <div className="section-header">
           <div>
-            <p className="section-subtitle">// 02_PROYECTOS</p>
-            <h2 className="section-title">Proyectos Destacados</h2>
+            <p className="section-subtitle">{messages.projects?.header || "// 02_PROYECTOS"}</p>
+            <h2 className="section-title">{messages.projects?.title || "Proyectos Destacados"}</h2>
           </div>
           <Link href="/projects" className="view-all-link">
-            Ver todos →
+            {messages.projects?.view_all || "Ver todos →"}
           </Link>
         </div>
 
         {/* Bento grid */}
         <div className="bento-grid">
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} color={clientColors[project.client] ?? "var(--accent-cyan)"} />
+            <ProjectCard key={project.id} project={project} color={clientColors[project.client] ?? "var(--accent-cyan)"} messages={messages} />
           ))}
         </div>
       </div>
@@ -51,7 +53,7 @@ export function ProjectsPreview({ projects }: Props) {
   );
 }
 
-function ProjectCard({ project, color }: { project: Project; color: string }) {
+function ProjectCard({ project, color, messages }: { project: Project; color: string; messages: any }) {
   return (
     <div className="project-card" style={{ "--accent-color": color } as React.CSSProperties & { "--accent-color": string }}>
 
@@ -63,7 +65,7 @@ function ProjectCard({ project, color }: { project: Project; color: string }) {
         {/* Tag */}
         <div className="project-card-header">
           <span className="tag-chip" style={{ color, borderColor: color }}>
-            {project.tag.toUpperCase()}
+            {messages.projects?.tag_enterprise || "ENTERPRISE"}
           </span>
           <span className="arrow-icon">→</span>
         </div>

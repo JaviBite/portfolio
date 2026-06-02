@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { useLocale } from "@/i18n/LocaleContext";
 
 interface HeroProps {
   profile: {
@@ -14,6 +15,7 @@ interface HeroProps {
 }
 
 export function HeroSection({ profile }: HeroProps) {
+  const { messages } = useLocale();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Animated particle grid
@@ -82,7 +84,7 @@ export function HeroSection({ profile }: HeroProps) {
           {/* Available badge */}
           <div className="hero-badge">
             <span className="hero-badge-dot" />
-            DISPONIBLE PARA PROYECTOS
+            {messages.hero?.available || "DISPONIBLE PARA PROYECTOS"}
           </div>
 
           <h1 className="hero-title">
@@ -96,10 +98,10 @@ export function HeroSection({ profile }: HeroProps) {
 
           <div className="hero-actions">
             <Link href="/projects" className="button button-primary">
-              Ver Proyectos
+              {messages.hero?.cta_projects || "Ver Proyectos"}
             </Link>
             <Link href="/cv" className="button button-secondary">
-              Ver CV
+              {messages.hero?.cta_cv || "Ver CV"}
             </Link>
           </div>
         </div>
