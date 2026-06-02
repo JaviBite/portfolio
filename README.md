@@ -69,6 +69,18 @@ npm run dev
 npm run build
 ```
 
+### 5. Tests visuales
+
+Para regenerar las capturas de referencia en el mismo entorno Linux que usa CI:
+
+```bash
+npm run test:visual:update:linux
+```
+
+El script instala dependencias y también los navegadores de Playwright antes de ejecutar la actualización.
+
+Si ejecutas sólo en macOS, las imágenes se generarán con sufijo `darwin` y pueden no coincidir con el repo de CI.
+
 ---
 
 ## 📦 Despliegue en Vercel
