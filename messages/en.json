@@ -50,11 +50,17 @@
     "subtitle": "LIVING CV — updated 2026",
     "experience": "Experience",
     "education": "Education",
+    "languages": "Languages",
     "skills": "Skills",
     "achievements": "Achievements",
     "download": "Download PDF",
     "chat_cta": "Ask my CV →",
     "present": "Present"
+  },
+  "labels": {
+    "email": "EMAIL:",
+    "location": "LOCATION:",
+    "portrait_quote": "I don't see problems, only solutions."
   },
   "chat": {
     "title": "Ask my CV",

@@ -50,11 +50,17 @@
     "subtitle": "LIVING CV — actualizado 2026",
     "experience": "Experiencia",
     "education": "Formación",
+    "languages": "Idiomas",
     "skills": "Skills",
     "achievements": "Logros",
     "download": "Descargar PDF",
     "chat_cta": "Pregunta a mi CV →",
     "present": "Presente"
+  },
+  "labels": {
+    "email": "EMAIL:",
+    "location": "UBICACIÓN:",
+    "portrait_quote": "No veo problemas, solo soluciones."
   },
   "chat": {
     "title": "Pregunta a mi CV",
