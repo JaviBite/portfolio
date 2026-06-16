@@ -54,7 +54,9 @@
     "achievements": "Logros",
     "download": "Descargar PDF",
     "chat_cta": "Pregunta a mi CV →",
-    "present": "Presente"
+    "present": "Presente",
+    "read_more": "Leer más",
+    "read_less": "Leer menos"
   },
   "chat": {
     "title": "Pregunta a mi CV",

@@ -237,8 +237,8 @@
       "demos": ["saliency-slider"],
       "gridSpan": 8,
       "gridRowSpan": 1,
-      "demoPercentage": 60,
-      "layout": "horizontal-right"
+      "demoPercentage": 40,
+      "layout": "horizontal-left"
     },
     {
       "id": "personal-selfhosted",

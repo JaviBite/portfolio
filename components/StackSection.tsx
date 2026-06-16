@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale } from "@/i18n/LocaleContext";
+import { Icon } from "@/components/Icon";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/Reveal";
 
 export function StackSection() {
@@ -10,22 +11,22 @@ export function StackSection() {
     {
       key: "vision",
       color: "var(--accent-cyan)",
-      icon: "👁",
+      icon: "visibility",
     },
     {
       key: "ai",
       color: "var(--accent-purple)",
-      icon: "🧠",
+      icon: "psychology",
     },
     {
       key: "infra",
       color: "#22c55e",
-      icon: "⚙️",
+      icon: "settings",
     },
     {
       key: "languages",
       color: "#f59e0b",
-      icon: "⌨️",
+      icon: "code",
     },
   ];
   return (
@@ -50,7 +51,7 @@ export function StackSection() {
               style={{ "--accent-color": color } as React.CSSProperties & { "--accent-color": string }}
             >
               <div className="block-card-heading">
-                <span className="domain-icon">{icon}</span>
+                <Icon name={icon} size={22} className="domain-icon" style={{ color }} />
                 <h3 className="block-card-title">{domain}</h3>
               </div>
 
