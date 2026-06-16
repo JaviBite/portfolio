@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale } from "@/i18n/LocaleContext";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/Reveal";
 
 export function StackSection() {
   const { messages } = useLocale();
@@ -30,20 +31,20 @@ export function StackSection() {
   return (
     <section className="section-standard">
       {/* Header */}
-      <div className="section-header-compact">
+      <Reveal className="section-header-compact">
         <p className="section-subtitle">{messages.stack?.expertise_header || "// 01_EXPERTISE"}</p>
         <h2 className="section-title">{messages.stack?.title || "Stack & Expertise"}</h2>
         <p className="section-copy">{messages.stack?.subtitle || "Herramientas que uso en producción real. No teoría."}</p>
-      </div>
+      </Reveal>
 
       {/* Grid */}
-      <div className="grid-auto-fit">
+      <Stagger className="grid-auto-fit">
         {stackDomains.map(({ key, color, icon }) => {
           const domain = messages.stack?.domains?.[key as keyof typeof messages.stack.domains];
           const items = messages.stack?.items?.[key as keyof typeof messages.stack.items] || [];
-          
+
           return (
-            <div
+            <StaggerItem
               key={key}
               className="block-card"
               style={{ "--accent-color": color } as React.CSSProperties & { "--accent-color": string }}
@@ -60,10 +61,10 @@ export function StackSection() {
                   </span>
                 ))}
               </div>
-            </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </Stagger>
     </section>
   );
 }

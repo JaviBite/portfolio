@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleContext";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/Reveal";
 
 interface Project {
   id: string;
@@ -32,7 +33,7 @@ export function ProjectsPreview({ projects }: Props) {
     <section className="section-with-borders">
       <div className="section-container">
         {/* Header */}
-        <div className="section-header">
+        <Reveal className="section-header">
           <div>
             <p className="section-subtitle">{messages.projects?.header || "// 02_PROYECTOS"}</p>
             <h2 className="section-title">{messages.projects?.title || "Proyectos Destacados"}</h2>
@@ -40,14 +41,16 @@ export function ProjectsPreview({ projects }: Props) {
           <Link href="/projects" className="view-all-link">
             {messages.projects?.view_all || "Ver todos →"}
           </Link>
-        </div>
+        </Reveal>
 
         {/* Bento grid */}
-        <div className="bento-grid">
+        <Stagger className="bento-grid">
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} color={clientColors[project.client] ?? "var(--accent-cyan)"} messages={messages} />
+            <StaggerItem key={project.id}>
+              <ProjectCard project={project} color={clientColors[project.client] ?? "var(--accent-cyan)"} messages={messages} />
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </div>
     </section>
   );

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
-import { Navbar } from "@/components/ui/Navbar";
 import { NavbarWrapper } from "@/components/ui/NavbarWrapper";
 import { LocaleProvider } from "@/i18n/LocaleContext";
 
