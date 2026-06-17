@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { DemoRenderer, hasDemo } from "@/components/demos";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useData } from "@/lib/useData";
 
@@ -288,29 +289,36 @@ export default function ProjectsPage() {
                     >
                       Demo Panel
                     </span>
-                    <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: 16 }}>
-                      Espacio reservado para una demo interactiva en la tarjeta. Ya está preparado para mostrar contenido en un panel separado.
-                    </p>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
-                    {project.demos.map((demo) => (
-                      <div
-                        key={demo}
-                        style={{
-                          padding: "10px 12px",
-                          borderRadius: 2,
-                          backgroundColor: "var(--surface-card)",
-                          border: "2px solid var(--surface-card-border)",
-                          fontSize: 11,
-                          fontFamily: "var(--font-geist-mono)",
-                          color: "var(--text-muted)",
-                        }}
-                      >
-                        {demo.replace(/[-_]/g, " ")}
+                  {(() => {
+                    const primaryDemo = project.demos.find((d) => hasDemo(d));
+                    if (primaryDemo) {
+                      return (
+                        <DemoRenderer demoId={primaryDemo} project={project as any} accent={color} />
+                      );
+                    }
+                    return (
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
+                        {project.demos.map((demo) => (
+                          <div
+                            key={demo}
+                            style={{
+                              padding: "10px 12px",
+                              borderRadius: 2,
+                              backgroundColor: "var(--surface-card)",
+                              border: "2px solid var(--surface-card-border)",
+                              fontSize: 11,
+                              fontFamily: "var(--font-geist-mono)",
+                              color: "var(--text-muted)",
+                            }}
+                          >
+                            {demo.replace(/[-_]/g, " ")}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })()}
                 </div>
               </div>
             );
