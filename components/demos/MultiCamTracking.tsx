@@ -99,7 +99,19 @@ export function MultiCamTracking({
   const camIds = Object.keys(matrices).slice(0, 2);
 
   return (
-    <figure style={{ margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+    <figure
+      style={{
+        margin: 0,
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 10,
+        padding: 16,
+        overflow: "hidden",
+      }}
+    >
       {/* Camera viewports */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {camIds.map((id, idx) => (

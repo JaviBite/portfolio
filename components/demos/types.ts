@@ -10,6 +10,13 @@ export interface DemoMedia {
   alt?: string;
 }
 
+/**
+ * How a demo fills its panel:
+ * - "cover": scale to fill, cropping overflow (no gaps / black bands).
+ * - "contain": fit the whole media inside, may show gaps / bands.
+ */
+export type DemoFit = "cover" | "contain";
+
 /** Props shared by every demo so the card can theme them consistently. */
 export interface DemoBaseProps {
   /** Accent color (a CSS var or hex) inherited from the project card. */
@@ -19,8 +26,4 @@ export interface DemoBaseProps {
 }
 
 /** A 3x3 homography matrix (row-major). */
-export type Homography = [
-  [number, number, number],
-  [number, number, number],
-  [number, number, number],
-];
+export type Homography = number[][];

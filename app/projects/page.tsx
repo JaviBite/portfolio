@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
-import { DemoRenderer, hasDemo } from "@/components/demos";
+import { DemoRenderer, hasProjectDemo } from "@/components/demos";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useData } from "@/lib/useData";
 
@@ -79,10 +79,10 @@ export default function ProjectsPage() {
           {data.projects.map((project) => {
             const color = clientColors[project.client] ?? "var(--accent-cyan)";
             const iconData = projectIcons[project.id] ?? { icon: "settings" };
-            const gridSpan = (project as any).gridSpan ?? 5;
-            const gridRowSpan = (project as any).gridRowSpan ?? 1;
-            const demoPercentage = (project as any).demoPercentage ?? 50;
-            const layout = (project as any).layout ?? "horizontal-right";
+            const gridSpan = (project).gridSpan ?? 5;
+            const gridRowSpan = (project).gridRowSpan ?? 1;
+            const demoPercentage = (project).demoPercentage ?? 50;
+            const layout = (project).layout ?? "horizontal-right";
             
             // Calcular proporciones dinámicamente basadas en demoPercentage
             const infoPct = 100 - demoPercentage;
@@ -263,63 +263,67 @@ export default function ProjectsPage() {
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    gridArea: "demo",
-                    padding: "32px",
-                    borderRadius: 0,
-                    backgroundColor: "var(--bg)",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        marginBottom: 16,
-                        fontSize: 11,
-                        fontFamily: "var(--font-geist-mono)",
-                        fontWeight: 700,
-                        letterSpacing: "0.14em",
-                        textTransform: "uppercase",
-                        color: color,
-                      }}
-                    >
-                      Demo Panel
-                    </span>
+                {hasProjectDemo(project) ? (
+                  <div
+                    className="demo-cell-full"
+                    style={{
+                      gridArea: "demo",
+                      position: "relative",
+                      backgroundColor: "var(--bg)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <DemoRenderer project={project} accent={color} />
                   </div>
+                ) : (
+                  <div
+                    style={{
+                      gridArea: "demo",
+                      padding: "32px",
+                      borderRadius: 0,
+                      backgroundColor: "var(--bg)",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          marginBottom: 16,
+                          fontSize: 11,
+                          fontFamily: "var(--font-geist-mono)",
+                          fontWeight: 700,
+                          letterSpacing: "0.14em",
+                          textTransform: "uppercase",
+                          color: color,
+                        }}
+                      >
+                        Demo Panel
+                      </span>
+                    </div>
 
-                  {(() => {
-                    const primaryDemo = project.demos.find((d) => hasDemo(d));
-                    if (primaryDemo) {
-                      return (
-                        <DemoRenderer demoId={primaryDemo} project={project as any} accent={color} />
-                      );
-                    }
-                    return (
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
-                        {project.demos.map((demo) => (
-                          <div
-                            key={demo}
-                            style={{
-                              padding: "10px 12px",
-                              borderRadius: 2,
-                              backgroundColor: "var(--surface-card)",
-                              border: "2px solid var(--surface-card-border)",
-                              fontSize: 11,
-                              fontFamily: "var(--font-geist-mono)",
-                              color: "var(--text-muted)",
-                            }}
-                          >
-                            {demo.replace(/[-_]/g, " ")}
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
-                </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
+                      {project.demos.map((demo) => (
+                        <div
+                          key={demo}
+                          style={{
+                            padding: "10px 12px",
+                            borderRadius: 2,
+                            backgroundColor: "var(--surface-card)",
+                            border: "2px solid var(--surface-card-border)",
+                            fontSize: 11,
+                            fontFamily: "var(--font-geist-mono)",
+                            color: "var(--text-muted)",
+                          }}
+                        >
+                          {demo.replace(/[-_]/g, " ")}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}

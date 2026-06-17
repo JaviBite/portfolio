@@ -1,8 +1,13 @@
 export { DemoFrame, MediaPlaceholder } from "./DemoFrame";
 export { CompareSlider } from "./CompareSlider";
 export { VideoPanel } from "./VideoPanel";
+export { YouTubeEmbed } from "./YouTubeEmbed";
+export { ImagePanel } from "./ImagePanel";
 export { HotspotImage } from "./HotspotImage";
+export { NetworkGraph } from "./NetworkGraph";
 export { MultiCamTracking } from "./MultiCamTracking";
-export { DemoRenderer, hasDemo } from "./DemoRenderer";
+export { DemoRenderer, hasProjectDemo } from "./DemoRenderer";
 export type { DemoBaseProps, DemoMedia, Homography } from "./types";
 export type { Hotspot } from "./HotspotImage";
+export type { DetectionBox } from "./ImagePanel";
+export type { GraphNode, GraphEdge } from "./NetworkGraph";

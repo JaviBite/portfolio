@@ -2,85 +2,93 @@
 
 import type { ReactNode } from "react";
 import { CompareSlider } from "./CompareSlider";
-import { HotspotImage } from "./HotspotImage";
+import { ImagePanel, type DetectionBox } from "./ImagePanel";
 import { MultiCamTracking } from "./MultiCamTracking";
+import { NetworkGraph, type GraphEdge, type GraphNode } from "./NetworkGraph";
 import { VideoPanel } from "./VideoPanel";
-import type { Homography } from "./types";
+import { YouTubeEmbed } from "./YouTubeEmbed";
+import type { DemoFit, DemoMedia, Homography } from "./types";
+
+/**
+ * Demo configuration, authored per-project in lib/data.json under `demo`.
+ * `type` selects the component; `badge` is the configurable corner title; the
+ * remaining fields are the asset/props for that component.
+ */
+export type DemoConfig =
+  | { type: "youtube"; badge?: string; youtubeId?: string; title?: string; fit?: DemoFit }
+  | { type: "video"; badge?: string; src?: string; poster?: DemoMedia; autoPlay?: boolean; fit?: DemoFit }
+  | { type: "image"; badge?: string; image?: DemoMedia; boxes?: DetectionBox[]; placeholderIcon?: string; fit?: DemoFit }
+  | { type: "compare"; badge?: string; before?: DemoMedia; after?: DemoMedia; initial?: number }
+  | { type: "network"; badge?: string; nodes?: GraphNode[]; edges?: GraphEdge[] }
+  | { type: "multicam"; badge?: string };
 
 /** Minimal shape the renderer needs from a project. */
 interface ProjectLike {
   id: string;
   matrices?: Record<string, Homography>;
+  // Loose because JSON widens `type` to string; narrowed to DemoConfig inside.
+  demo?: { type: string } & Record<string, unknown>;
 }
 
 /**
- * Maps a demo id (from data.json `demos[]`) to a concrete demo component.
- * Each entry receives the owning project and the card accent color and returns
- * the element to render. Unknown ids return null so the card can fall back to
- * its chip list.
+ * Renders a project's demo from its `demo` config in data.json. Returns null
+ * when the project has no demo, so the card falls back to its chip list.
  */
-const REGISTRY: Record<string, (project: ProjectLike, accent: string) => ReactNode> = {
-  // ── Concrete demos ──────────────────────────────────────────────
-  "multicam-homography": (project, accent) => (
-    <MultiCamTracking matrices={project.matrices} accent={accent} />
-  ),
-
-  // ── Generic before/after sliders ────────────────────────────────
-  "congestion-overlay": (_p, accent) => (
-    <CompareSlider
-      accent={accent}
-      badge="raw / detección"
-      before={{ label: "Raw feed" }}
-      after={{ label: "Congestion mask" }}
-      caption="Wipe para comparar el feed con la máscara de congestión"
-    />
-  ),
-  "capacity-slider": (_p, accent) => (
-    <CompareSlider
-      accent={accent}
-      badge="vacío / lleno"
-      before={{ label: "Zona vacía" }}
-      after={{ label: "Zona al 80%" }}
-      caption="Ocupación estimada por zona de almacén"
-    />
-  ),
-  "heatmap-slider": (_p, accent) => (
-    <CompareSlider
-      accent={accent}
-      badge="t0 / t1"
-      before={{ label: "Imagen aérea t0" }}
-      after={{ label: "Heatmap de cambios" }}
-      caption="Detección de cambios urbanos por similitud de embeddings"
-    />
-  ),
-  "saliency-slider": (_p, accent) => (
-    <CompareSlider
-      accent={accent}
-      badge="original / crop"
-      before={{ label: "Frame 16:9" }}
-      after={{ label: "Saliency + crop 9:16" }}
-      caption="Reencuadre automático guiado por saliency"
-    />
-  ),
-};
-
 export function DemoRenderer({
-  demoId,
   project,
   accent = "var(--accent-cyan)",
 }: {
-  demoId: string;
   project: ProjectLike;
   accent?: string;
 }): ReactNode {
-  const render = REGISTRY[demoId];
-  return render ? render(project, accent) : null;
+  const demo = project.demo as DemoConfig | undefined;
+  if (!demo) return null;
+
+  switch (demo.type) {
+    case "youtube":
+      return <YouTubeEmbed videoId={demo.youtubeId} title={demo.title} fit={demo.fit} accent={accent} badge={demo.badge} />;
+
+    case "video":
+      return <VideoPanel src={demo.src} poster={demo.poster} autoPlay={demo.autoPlay} fit={demo.fit} accent={accent} badge={demo.badge} />;
+
+    case "image":
+      return (
+        <ImagePanel
+          image={demo.image ?? {}}
+          boxes={demo.boxes}
+          placeholderIcon={demo.placeholderIcon}
+          fit={demo.fit}
+          accent={accent}
+          badge={demo.badge}
+        />
+      );
+
+    case "compare":
+      return (
+        <CompareSlider
+          before={demo.before ?? {}}
+          after={demo.after ?? {}}
+          initial={demo.initial}
+          accent={accent}
+          badge={demo.badge}
+        />
+      );
+
+    case "network":
+      return <NetworkGraph nodes={demo.nodes} edges={demo.edges} accent={accent} badge={demo.badge} />;
+
+    case "multicam":
+      return <MultiCamTracking matrices={project.matrices} accent={accent} />;
+
+    default:
+      return null;
+  }
 }
 
-/** Whether a demo id has a concrete renderer registered. */
-export function hasDemo(demoId: string): boolean {
-  return demoId in REGISTRY;
+/** Whether a project has a demo configured. */
+export function hasProjectDemo(project: ProjectLike): boolean {
+  return !!project.demo;
 }
 
 // Re-export generics so demos/index stays the single import surface.
-export { CompareSlider, VideoPanel, HotspotImage, MultiCamTracking };
+export { CompareSlider, VideoPanel, YouTubeEmbed, ImagePanel, NetworkGraph, MultiCamTracking };

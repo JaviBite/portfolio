@@ -228,6 +228,12 @@ body {
   border-bottom: none !important;
 }
 
+/* Full-bleed demo cell: media fills the panel edge-to-edge, no padding/border. */
+.demo-cell-full[style*="grid-area: demo"] {
+  padding: 0 !important;
+  border-left: none !important;
+}
+
 .project-card-glow {
   position: absolute;
   top: -40px;

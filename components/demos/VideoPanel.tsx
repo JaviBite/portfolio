@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { DemoFrame, MediaPlaceholder } from "./DemoFrame";
-import type { DemoBaseProps, DemoMedia } from "./types";
+import type { DemoBaseProps, DemoFit, DemoMedia } from "./types";
 
 interface VideoPanelProps extends DemoBaseProps {
   /** Video source under /public or a URL. */
@@ -12,7 +12,8 @@ interface VideoPanelProps extends DemoBaseProps {
   /** Autoplay muted loop instead of click-to-play. Default false. */
   autoPlay?: boolean;
   badge?: string;
-  ratio?: string;
+  /** "cover" crops to fill the panel (no bands); "contain" fits the whole frame. */
+  fit?: DemoFit;
 }
 
 /**
@@ -27,8 +28,7 @@ export function VideoPanel({
   autoPlay = false,
   accent = "var(--accent-cyan)",
   badge = "demo",
-  caption,
-  ratio,
+  fit = "cover",
 }: VideoPanelProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(autoPlay);
@@ -40,7 +40,7 @@ export function VideoPanel({
   };
 
   return (
-    <DemoFrame accent={accent} badge={badge} caption={caption} ratio={ratio}>
+    <DemoFrame accent={accent} badge={badge}>
       {src && playing ? (
         <video
           ref={videoRef}
@@ -51,7 +51,7 @@ export function VideoPanel({
           playsInline
           autoPlay
           controls={!autoPlay}
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: fit }}
         />
       ) : (
         <>
@@ -59,7 +59,7 @@ export function VideoPanel({
             <img
               src={poster.src}
               alt={poster.alt ?? poster.label ?? ""}
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: fit }}
             />
           ) : (
             <MediaPlaceholder label={poster?.label ?? "video"} accent={accent} icon="movie" />

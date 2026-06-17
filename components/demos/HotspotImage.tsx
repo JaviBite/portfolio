@@ -18,7 +18,6 @@ interface HotspotImageProps extends DemoBaseProps {
   image: DemoMedia;
   hotspots: Hotspot[];
   badge?: string;
-  ratio?: string;
 }
 
 /**
@@ -31,13 +30,11 @@ export function HotspotImage({
   hotspots,
   accent = "var(--accent-cyan)",
   badge = "detections",
-  caption,
-  ratio,
 }: HotspotImageProps) {
   const [active, setActive] = useState<number | null>(null);
 
   return (
-    <DemoFrame accent={accent} badge={badge} caption={caption} ratio={ratio}>
+    <DemoFrame accent={accent} badge={badge}>
       {image.src ? (
         <img
           src={image.src}

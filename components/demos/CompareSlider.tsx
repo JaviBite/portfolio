@@ -12,7 +12,6 @@ interface CompareSliderProps extends DemoBaseProps {
   /** Initial handle position as a percentage 0–100. Default 50. */
   initial?: number;
   badge?: string;
-  ratio?: string;
 }
 
 /**
@@ -27,8 +26,6 @@ export function CompareSlider({
   initial = 50,
   accent = "var(--accent-cyan)",
   badge = "before / after",
-  caption,
-  ratio,
 }: CompareSliderProps) {
   const [pos, setPos] = useState(initial);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,7 +56,7 @@ export function CompareSlider({
   };
 
   return (
-    <DemoFrame accent={accent} badge={badge} caption={caption} ratio={ratio}>
+    <DemoFrame accent={accent} badge={badge}>
       <div
         ref={containerRef}
         onPointerDown={onPointerDown}
