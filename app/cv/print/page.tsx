@@ -66,7 +66,7 @@ export default function CVPrintPage() {
         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24, marginBottom: 20, pageBreakAfter: "auto", alignItems: "start" }}>
           {/* LEFT COLUMN - Experience */}
           <div style={{ display: "flex", flexDirection: "column", gap: 16, minHeight: "100%" }}>
-            <ExperienceSection experience={experience} isPrint={true} />
+            <ExperienceSection experience={experience} isPrint={true} printCharLimit={200} />
           </div>
 
           {/* RIGHT COLUMN - Education, Languages, Skills */}
@@ -203,13 +203,13 @@ export default function CVPrintPage() {
           }
           main > div {
             max-width: 100%;
-            padding: 12mm 15mm;
+            padding: 10mm 14mm;
             margin: 0;
           }
           header {
             page-break-inside: avoid;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
+            margin-bottom: 10px !important;
+            padding-bottom: 10px !important;
           }
           section {
             page-break-inside: avoid;
@@ -217,6 +217,10 @@ export default function CVPrintPage() {
           h1, h2, h3, h4 {
             orphans: 3;
             widows: 3;
+          }
+          p {
+            line-height: 1.35 !important;
+            margin: 1px 0 !important;
           }
         }
       `}</style>

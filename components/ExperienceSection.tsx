@@ -20,6 +20,7 @@ interface ExperienceSectionProps {
     }>;
   }>;
   isPrint?: boolean;
+  printCharLimit?: number;
   messages?: any;
 }
 
@@ -29,19 +30,24 @@ function RoleDescription({
   text,
   fontSize,
   isPrint,
+  printCharLimit,
   readMore,
   readLess,
 }: {
   text: string;
   fontSize: number;
   isPrint?: boolean;
+  printCharLimit?: number;
   readMore: string;
   readLess: string;
 }) {
   const [expanded, setExpanded] = useState(false);
   const needsTruncate = !isPrint && text.length > CHAR_LIMIT;
+  const printTruncated = isPrint && printCharLimit && text.length > printCharLimit;
   const shown =
-    needsTruncate && !expanded
+    printTruncated
+      ? text.slice(0, printCharLimit).replace(/\s+\S*$/, "").trimEnd() + "…"
+      : needsTruncate && !expanded
       ? text.slice(0, CHAR_LIMIT).replace(/\s+\S*$/, "").trimEnd() + "… "
       : text;
 
@@ -72,7 +78,7 @@ function RoleDescription({
   );
 }
 
-export function ExperienceSection({ experience, isPrint = false, messages }: ExperienceSectionProps) {
+export function ExperienceSection({ experience, isPrint = false, printCharLimit, messages }: ExperienceSectionProps) {
   const { locale } = useLocale();
 
   const getText = (text: { es: string; en: string } | string) => {
@@ -137,7 +143,7 @@ export function ExperienceSection({ experience, isPrint = false, messages }: Exp
                           <div>
                             <h4 style={{ fontSize: 13, fontWeight: 600, margin: 0 }}>{getText(role.role)}</h4>
                             <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0" }}>{role.start} – {getText(role.end || messages?.cv?.present || "Presente")}</p>
-                            <RoleDescription text={getText(role.description)} fontSize={13} isPrint={isPrint} readMore={readMore} readLess={readLess} />
+                            <RoleDescription text={getText(role.description)} fontSize={13} isPrint={isPrint} printCharLimit={printCharLimit} readMore={readMore} readLess={readLess} />
                           </div>
                         </div>
                       ))}
