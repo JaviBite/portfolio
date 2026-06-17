@@ -55,7 +55,9 @@
     "achievements": "Achievements",
     "download": "Download PDF",
     "chat_cta": "Ask my CV →",
-    "present": "Present"
+    "present": "Present",
+    "read_more": "Read more",
+    "read_less": "Read less"
   },
   "labels": {
     "email": "EMAIL:",

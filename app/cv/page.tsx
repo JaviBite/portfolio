@@ -38,7 +38,7 @@ export default function CVPage() {
               <p style={{ fontSize: 14, color: "var(--accent-cyan)", fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", marginBottom: 12, textTransform: "uppercase" }}>
                 {profile.title}
               </p>
-              <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: 12, maxWidth: 600 }}>
+              <p style={{ fontSize: 15, color: "var(--text-secondary)", lineHeight: 1.65, marginBottom: 12, maxWidth: 600 }}>
                 {profile.bio}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 12, color: "var(--text-secondary)" }}>
@@ -92,14 +92,14 @@ export default function CVPage() {
           </div>
         </header>
 
-        {/* Single Column Layout - Experiencia Full Width First */}
-        <div style={{ marginBottom: 32 }}>
-          <ExperienceSection experience={experience} messages={messages} />
-        </div>
+        {/* Two Column Layout - Experience (main) + Sidebar */}
+        <div className="cv-body-grid" style={{ display: "grid", gridTemplateColumns: "1.7fr 1fr", gap: 48, alignItems: "start" }}>
+          {/* MAIN COLUMN - Experience */}
+          <div>
+            <ExperienceSection experience={experience} messages={messages} />
+          </div>
 
-        {/* Secondary Content - Education, Languages, Skills, Achievements */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }}>
-          {/* LEFT COLUMN - Education & Languages */}
+          {/* SIDEBAR - Education, Languages, Skills, Achievements */}
           <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
             {/* Education */}
             <section style={{ pageBreakInside: "avoid" }}>
@@ -112,11 +112,11 @@ export default function CVPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {education.map((edu, idx) => (
                   <div key={idx} style={{ paddingBottom: 12, borderBottom: idx < education.length - 1 ? "1px solid var(--surface-card-border)" : "none" }}>
-                    <h4 style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{edu.degree}</h4>
-                    <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", marginBottom: 4 }}>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 2 }}>{edu.degree}</h4>
+                    <p style={{ fontSize: 12, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", marginBottom: 4 }}>
                       {edu.institution}
                     </p>
-                    <p style={{ fontSize: 10, color: "var(--text-secondary)" }}>
+                    <p style={{ fontSize: 11, color: "var(--text-secondary)" }}>
                       {edu.start} – {edu.end}
                     </p>
                   </div>
@@ -136,7 +136,7 @@ export default function CVPage() {
                 {languages.map((lang, idx) => (
                   <div key={idx}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600 }}>{lang.language}</span>
+                      <span style={{ fontSize: 14, fontWeight: 600 }}>{lang.language}</span>
                     </div>
                     <div style={{ display: "flex", gap: 3 }}>
                       {[...Array(5)].map((_, i) => (
@@ -151,15 +151,12 @@ export default function CVPage() {
                         />
                       ))}
                     </div>
-                    {lang.note && <p style={{ fontSize: 10, color: "var(--text-secondary)", marginTop: 4 }}>{lang.note}</p>}
+                    {lang.note && <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>{lang.note}</p>}
                   </div>
                 ))}
               </div>
             </section>
-          </div>
 
-          {/* RIGHT COLUMN - Skills & Achievements */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
             {/* Skills */}
             <section style={{ pageBreakInside: "avoid" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
@@ -171,13 +168,13 @@ export default function CVPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 {skills.map((skillGroup, idx) => (
                   <div key={idx}>
-                    <h4 style={{ fontSize: 11, fontWeight: 700, color: "var(--accent-cyan)", marginBottom: 8, textTransform: "uppercase", fontFamily: "var(--font-geist-mono)" }}>
+                    <h4 style={{ fontSize: 13, fontWeight: 700, color: "var(--accent-cyan)", marginBottom: 8, textTransform: "uppercase", fontFamily: "var(--font-geist-mono)" }}>
                       {skillGroup.category}
                     </h4>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {Array.isArray(skillGroup.items)
                         ? skillGroup.items.map((item: any) => (
-                            <span key={typeof item === "string" ? item : item.name} style={{ padding: "3px 8px", borderRadius: 4, fontSize: 10, fontFamily: "var(--font-geist-mono)", color: "var(--text-secondary)", backgroundColor: "var(--surface-card)", border: "1px solid var(--surface-card-border)" }}>
+                            <span key={typeof item === "string" ? item : item.name} style={{ padding: "4px 10px", borderRadius: 4, fontSize: 12, fontFamily: "var(--font-geist-mono)", color: "var(--text-secondary)", backgroundColor: "var(--surface-card)", border: "1px solid var(--surface-card-border)" }}>
                               {typeof item === "string" ? item : item.name}
                             </span>
                           ))
@@ -200,7 +197,7 @@ export default function CVPage() {
                 {profile.achievements.map((achievement, idx) => (
                   <div key={idx} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
                     <Icon name="check_circle" size={16} style={{ color: "var(--accent-cyan)", marginTop: 2, flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.4 }}>{achievement}</span>
+                    <span style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.45 }}>{achievement}</span>
                   </div>
                 ))}
               </div>
@@ -211,7 +208,18 @@ export default function CVPage() {
 
       {/* Print styles */}
       <style>{`
+        @media (max-width: 860px) {
+          .cv-body-grid {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
+        }
+
         @media print {
+          .cv-body-grid {
+            display: block !important;
+          }
+
           main {
             padding: 0 !important;
             margin: 0 !important;

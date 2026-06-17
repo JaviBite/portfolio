@@ -249,7 +249,7 @@ export default function ChatPage() {
                 Has agotado las preguntas de esta sesión. ¿Quieres saber más?
               </p>
               <a
-                href={`mailto:javier@example.com`}
+                href="mailto:javiergimenezgarces@gmail.com"
                 style={{
                   padding: "10px 24px",
                   borderRadius: 8,

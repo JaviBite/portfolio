@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useLocale } from "@/i18n/LocaleContext";
 import rawData from "./data.json";
 
@@ -19,8 +20,8 @@ function getTranslated<T extends Record<string, any>>(field: T | string | undefi
 export function useData() {
   const { locale } = useLocale();
 
-  // Get all data with translations applied
-  const getData = () => {
+  // Get all data with translations applied (recomputed only when locale changes)
+  return useMemo(() => {
     return {
       ...rawData,
       profile: {
@@ -80,7 +81,5 @@ export function useData() {
         description: getTranslated(rawData.homelab.description, locale),
       },
     };
-  };
-
-  return getData();
+  }, [locale]);
 }

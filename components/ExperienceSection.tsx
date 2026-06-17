@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { useLocale } from "@/i18n/LocaleContext";
 
@@ -22,6 +23,55 @@ interface ExperienceSectionProps {
   messages?: any;
 }
 
+const CHAR_LIMIT = 240;
+
+function RoleDescription({
+  text,
+  fontSize,
+  isPrint,
+  readMore,
+  readLess,
+}: {
+  text: string;
+  fontSize: number;
+  isPrint?: boolean;
+  readMore: string;
+  readLess: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const needsTruncate = !isPrint && text.length > CHAR_LIMIT;
+  const shown =
+    needsTruncate && !expanded
+      ? text.slice(0, CHAR_LIMIT).replace(/\s+\S*$/, "").trimEnd() + "… "
+      : text;
+
+  return (
+    <p style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.55, margin: 0 }}>
+      {shown}
+      {needsTruncate && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="no-print"
+          style={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            color: "var(--accent-cyan)",
+            cursor: "pointer",
+            fontSize,
+            fontWeight: 600,
+            fontFamily: "inherit",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {expanded ? readLess : `${readMore}…`}
+        </button>
+      )}
+    </p>
+  );
+}
+
 export function ExperienceSection({ experience, isPrint = false, messages }: ExperienceSectionProps) {
   const { locale } = useLocale();
 
@@ -29,12 +79,15 @@ export function ExperienceSection({ experience, isPrint = false, messages }: Exp
     if (typeof text === "string") return text;
     return text[locale as keyof typeof text] || text.es;
   };
+
+  const readMore = messages?.cv?.read_more || "Leer más";
+  const readLess = messages?.cv?.read_less || "Leer menos";
   // Unified layout for web and print: left line column, logo column, content column
   return (
     <section>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
         <Icon name="work_history" size={20} style={{ color: "var(--accent-cyan)" }} />
-        <h2 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
+        <h2 style={{ fontSize: 14, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
           {messages?.cv?.experience || "Experiencia"}
         </h2>
       </div>
@@ -59,15 +112,15 @@ export function ExperienceSection({ experience, isPrint = false, messages }: Exp
                 {exp.roles.length > 1 ? (
                   <>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <h3 style={{ fontSize: 12, fontWeight: 700, margin: 0 }}>{exp.company}</h3>
+                      <h3 style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>{exp.company}</h3>
                       {exp.website && (
-                        <a href={exp.website} target="_blank" rel="noopener noreferrer" title={`Visitar ${exp.company}`} aria-label={`Visitar ${exp.company}`} style={{ textDecoration: "none", color: "var(--accent-cyan)", fontSize: 11 }}>
+                        <a href={exp.website} target="_blank" rel="noopener noreferrer" title={`Visitar ${exp.company}`} aria-label={`Visitar ${exp.company}`} style={{ textDecoration: "none", color: "var(--accent-cyan)", fontSize: 12 }}>
                           ↗
                         </a>
                       )}
                     </div>
 
-                    <p style={{ fontSize: 9, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0 4px" }}>{exp.roles[0].start} – {getText(exp.roles[exp.roles.length - 1].end || messages?.cv?.present || "Presente")}{exp.roles[0].location && ` • ${exp.roles[0].location}`}</p>
+                    <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0 4px" }}>{exp.roles[0].start} – {getText(exp.roles[exp.roles.length - 1].end || messages?.cv?.present || "Presente")}{exp.roles[0].location && ` • ${exp.roles[0].location}`}</p>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: 6, position: "relative" }}>
                       {exp.roles.map((role, idx) => (
@@ -82,9 +135,9 @@ export function ExperienceSection({ experience, isPrint = false, messages }: Exp
                           )}
 
                           <div>
-                            <h4 style={{ fontSize: 11, fontWeight: 600, margin: 0 }}>{getText(role.role)}</h4>
-                            <p style={{ fontSize: 10, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0" }}>{role.start} – {getText(role.end || messages?.cv?.present || "Presente")}</p>
-                            <p style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.5, margin: 0 }}>{getText(role.description)}</p>
+                            <h4 style={{ fontSize: 13, fontWeight: 600, margin: 0 }}>{getText(role.role)}</h4>
+                            <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0" }}>{role.start} – {getText(role.end || messages?.cv?.present || "Presente")}</p>
+                            <RoleDescription text={getText(role.description)} fontSize={13} isPrint={isPrint} readMore={readMore} readLess={readLess} />
                           </div>
                         </div>
                       ))}
@@ -93,20 +146,20 @@ export function ExperienceSection({ experience, isPrint = false, messages }: Exp
                 ) : (
                   <>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                      <h3 style={{ fontSize: 12, fontWeight: 800, margin: 0 }}>{getText(exp.roles[0].role)}</h3>
+                      <h3 style={{ fontSize: 15, fontWeight: 800, margin: 0 }}>{getText(exp.roles[0].role)}</h3>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", margin: "2px 0 2px" }}>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: "var(--text-secondary)", margin: 0 }}>{exp.company}</p>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", margin: 0 }}>{exp.company}</p>
                       {exp.website && (
-                        <a href={exp.website} target="_blank" rel="noopener noreferrer" title={`Visitar ${exp.company}`} aria-label={`Visitar ${exp.company}`} style={{ textDecoration: "none", color: "var(--accent-cyan)", fontSize: 11 }}>
+                        <a href={exp.website} target="_blank" rel="noopener noreferrer" title={`Visitar ${exp.company}`} aria-label={`Visitar ${exp.company}`} style={{ textDecoration: "none", color: "var(--accent-cyan)", fontSize: 12 }}>
                           ↗
                         </a>
                       )}
                     </div>
-                    <p style={{ fontSize: 9, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "0 0 4px" }}>
+                    <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "0 0 4px" }}>
                       {exp.roles[0].start} – {getText(exp.roles[0].end || messages?.cv?.present || "Presente")}{exp.roles[0].location && ` • ${exp.roles[0].location}`}
                     </p>
-                    <p style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.5, margin: 0 }}>{getText(exp.roles[0].description)}</p>
+                    <RoleDescription text={getText(exp.roles[0].description)} fontSize={13} isPrint={isPrint} readMore={readMore} readLess={readLess} />
                   </>
                 )}
               </div>

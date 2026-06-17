@@ -1,6 +1,8 @@
 "use client";
 
 import { useLocale } from "@/i18n/LocaleContext";
+import { Icon } from "@/components/Icon";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/Reveal";
 
 export function StackSection() {
   const { messages } = useLocale();
@@ -9,47 +11,47 @@ export function StackSection() {
     {
       key: "vision",
       color: "var(--accent-cyan)",
-      icon: "👁",
+      icon: "visibility",
     },
     {
       key: "ai",
       color: "var(--accent-purple)",
-      icon: "🧠",
+      icon: "psychology",
     },
     {
       key: "infra",
       color: "#22c55e",
-      icon: "⚙️",
+      icon: "settings",
     },
     {
       key: "languages",
       color: "#f59e0b",
-      icon: "⌨️",
+      icon: "code",
     },
   ];
   return (
     <section className="section-standard">
       {/* Header */}
-      <div className="section-header-compact">
+      <Reveal className="section-header-compact">
         <p className="section-subtitle">{messages.stack?.expertise_header || "// 01_EXPERTISE"}</p>
         <h2 className="section-title">{messages.stack?.title || "Stack & Expertise"}</h2>
         <p className="section-copy">{messages.stack?.subtitle || "Herramientas que uso en producción real. No teoría."}</p>
-      </div>
+      </Reveal>
 
       {/* Grid */}
-      <div className="grid-auto-fit">
+      <Stagger className="grid-auto-fit">
         {stackDomains.map(({ key, color, icon }) => {
           const domain = messages.stack?.domains?.[key as keyof typeof messages.stack.domains];
           const items = messages.stack?.items?.[key as keyof typeof messages.stack.items] || [];
-          
+
           return (
-            <div
+            <StaggerItem
               key={key}
               className="block-card"
               style={{ "--accent-color": color } as React.CSSProperties & { "--accent-color": string }}
             >
               <div className="block-card-heading">
-                <span className="domain-icon">{icon}</span>
+                <Icon name={icon} size={22} className="domain-icon" style={{ color }} />
                 <h3 className="block-card-title">{domain}</h3>
               </div>
 
@@ -60,10 +62,10 @@ export function StackSection() {
                   </span>
                 ))}
               </div>
-            </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </Stagger>
     </section>
   );
 }
