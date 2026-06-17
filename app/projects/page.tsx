@@ -6,6 +6,7 @@ import { Icon } from "@/components/Icon";
 import { DemoRenderer, hasProjectDemo } from "@/components/demos";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useData } from "@/lib/useData";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/Reveal";
 
 const clientColors: Record<string, string> = {
   "Würth": "var(--accent-cyan)",
@@ -130,8 +131,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
     return (
       <div
         style={{
-          gridColumn: `span ${gridSpan}`,
-          gridRow: `span ${gridRowSpan}`,
+          flex: 1,
           minHeight: 320,
           borderRadius: 4,
           border: "2px dashed var(--surface-card-border)",
@@ -218,8 +218,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
   }
 
   const cardStyle: React.CSSProperties = {
-    gridColumn: `span ${gridSpan}`,
-    gridRow: `span ${gridRowSpan}`,
+    flex: 1,
     backgroundColor: "var(--surface-card)",
     border: "2px solid var(--surface-card-border)",
     borderRadius: 4,
@@ -434,6 +433,7 @@ export default function ProjectsPage() {
 
         {/* Enterprise header + section shortcuts */}
         <section ref={empresaRef} style={{ scrollMarginTop: 96 }}>
+        <Reveal>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 24, flexWrap: "wrap", marginBottom: 64, paddingTop: 40 }}>
           <div style={{ flex: "1 1 420px", minWidth: 280 }}>
             <p
@@ -465,18 +465,22 @@ export default function ProjectsPage() {
 
           {personal.length > 0 && <SectionNav active={active} onSelect={goTo} />}
         </div>
+        </Reveal>
 
         {/* Enterprise bento */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
+        <Stagger style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
           {enterprise.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <StaggerItem key={project.id} style={{ gridColumn: `span ${project.gridSpan ?? 5}`, gridRow: `span ${project.gridRowSpan ?? 1}`, display: "flex", flexDirection: "column" }}>
+              <ProjectCard project={project} />
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
         </section>
 
         {/* Personal section */}
         {personal.length > 0 && (
           <section ref={personalRef} style={{ scrollMarginTop: 96 }}>
+            <Reveal>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 24, flexWrap: "wrap", marginTop: 96, marginBottom: 64 }}>
               <div style={{ flex: "1 1 420px", minWidth: 280 }}>
                 <p
@@ -508,12 +512,15 @@ export default function ProjectsPage() {
 
               <SectionNav active={active} onSelect={goTo} />
             </div>
+            </Reveal>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
+            <Stagger style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
               {personal.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+                <StaggerItem key={project.id} style={{ gridColumn: `span ${project.gridSpan ?? 5}`, gridRow: `span ${project.gridRowSpan ?? 1}`, display: "flex", flexDirection: "column" }}>
+                  <ProjectCard project={project} />
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </section>
         )}
 
