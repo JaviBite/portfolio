@@ -242,11 +242,11 @@
       "description": { "es": "Sistema AutoFlip para reencuadre automático de contenido audiovisual de 16:9 a 9:16. Combina transcripción ASR, análisis de saliency y tracking de sujetos.", "en": "AutoFlip system for automatic audio-visual content reframing from 16:9 to 9:16. Combines ASR transcription, saliency analysis and subject tracking." },
       "stack": ["Whisper", "NLP", "Tracking", "Saliency Detection", "FFmpeg"],
       "demos": ["saliency-slider"],
-      "demo": { "type": "video", "badge": "autoflip", "src": "", "poster": { "label": "Reencuadre automático" } },
+      "demo": { "type": "video", "badge": "autoflip", "src": "/demos/smartcrop-autoflip/autoflip-demo.mp4", "poster": { "src": "/demos/smartcrop-autoflip/autoflip-poster.jpg", "label": "Reencuadre automático" }, "autoPlay": true, "fit": "contain" },
       "category": "enterprise",
       "gridSpan": 8,
       "gridRowSpan": 1,
-      "demoPercentage": 40,
+      "demoPercentage": 60,
       "layout": "horizontal-left"
     },
     {
