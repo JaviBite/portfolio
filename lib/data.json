@@ -211,7 +211,7 @@
       "description": { "es": "Análisis semántico de imágenes aéreas para detección de cambios urbanos. Resistente a variaciones de iluminación y sombras mediante embeddings visuales.", "en": "Semantic analysis of aerial imagery for urban change detection. Robust to lighting and shadow variations through visual embeddings." },
       "stack": ["SAM", "Cosine Similarity", "PyTorch"],
       "demos": ["heatmap-slider"],
-      "demo": { "type": "compare", "badge": "t0 / t1", "before": { "label": "Imagen aérea t0" }, "after": { "label": "Heatmap de cambios" } },
+      "demo": { "type": "compare", "badge": "Plaza de España", "before": { "src": "/demos/gis-madrid/plaza-espana-2019.jpg", "label": "2019", "alt": "Ortofoto verdadera de Plaza de España en 2019 (Ayuntamiento de Madrid, 10 cm)" }, "after": { "src": "/demos/gis-madrid/plaza-espana-2023-heatmap.jpg", "label": "2023 · cambios", "alt": "Ortofoto verdadera de Plaza de España en 2023 con heatmap de cambios urbanos detectados" }, "afterClean": { "src": "/demos/gis-madrid/plaza-espana-2023.jpg", "label": "2023", "alt": "Ortofoto verdadera de Plaza de España en 2023 (Ayuntamiento de Madrid, 10 cm)" }, "toggleLabel": "Hide Heatmap", "initial": 50 },
       "category": "enterprise",
       "gridSpan": 8,
       "gridRowSpan": 1,

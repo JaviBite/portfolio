@@ -18,7 +18,7 @@ export type DemoConfig =
   | { type: "youtube"; badge?: string; youtubeId?: string; title?: string; fit?: DemoFit }
   | { type: "video"; badge?: string; src?: string; poster?: DemoMedia; autoPlay?: boolean; fit?: DemoFit }
   | { type: "image"; badge?: string; image?: DemoMedia; boxes?: DetectionBox[]; placeholderIcon?: string; fit?: DemoFit }
-  | { type: "compare"; badge?: string; before?: DemoMedia; after?: DemoMedia; initial?: number }
+  | { type: "compare"; badge?: string; before?: DemoMedia; after?: DemoMedia; afterClean?: DemoMedia; toggleLabel?: string; initial?: number }
   | { type: "network"; badge?: string; nodes?: GraphNode[]; edges?: GraphEdge[] }
   | { type: "multicam"; badge?: string };
 
@@ -68,6 +68,8 @@ export function DemoRenderer({
         <CompareSlider
           before={demo.before ?? {}}
           after={demo.after ?? {}}
+          afterClean={demo.afterClean}
+          toggleLabel={demo.toggleLabel}
           initial={demo.initial}
           accent={accent}
           badge={demo.badge}

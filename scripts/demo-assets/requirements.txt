@@ -1,0 +1,17 @@
+# Generación de assets para las demos (Python 3.11).
+#
+# El venv se crea heredando el Python del sistema, que ya trae torch (con MPS),
+# numpy, opencv-python, pillow y requests:
+#
+#   python3 -m venv --system-site-packages .venv
+#   .venv/bin/pip install -r requirements.txt
+#
+# Solo añadimos lo específico de este pipeline. torchvision se fija sin deps para
+# no tocar el torch del sistema (0.27.0 empareja con torch 2.12).
+torchvision==0.27.0
+segment-anything @ git+https://github.com/facebookresearch/segment-anything.git
+# DINOv2 / DINOv3 se cargan vía torch.hub (no requieren paquete pip).
+# DINOv3 necesita acceso (gated) a los pesos en Hugging Face: huggingface-cli login.
+# El backend `sam3` usa las clases nativas de transformers (Sam3ViTModel):
+transformers>=5.12
+safetensors

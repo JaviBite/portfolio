@@ -43,3 +43,13 @@ next-env.d.ts
 screenshots/*
 test-results/*
 playwright-report/**
+
+#python
+**/.venv/**
+
+# demo-asset generation: pesos de modelos y material intermedio.
+# Los assets finales viven en /public y SÍ se versionan.
+scripts/demo-assets/models/
+scripts/demo-assets/**/raw/
+scripts/demo-assets/**/out/
+scripts/demo-assets/**/probe/
