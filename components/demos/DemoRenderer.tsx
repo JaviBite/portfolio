@@ -7,7 +7,7 @@ import { MultiCamTracking } from "./MultiCamTracking";
 import { NetworkGraph, type GraphEdge, type GraphNode } from "./NetworkGraph";
 import { VideoPanel } from "./VideoPanel";
 import { YouTubeEmbed } from "./YouTubeEmbed";
-import type { DemoFit, DemoMedia, Homography } from "./types";
+import type { DemoFit, DemoMedia } from "./types";
 
 /**
  * Demo configuration, authored per-project in lib/data.json under `demo`.
@@ -25,7 +25,6 @@ export type DemoConfig =
 /** Minimal shape the renderer needs from a project. */
 interface ProjectLike {
   id: string;
-  matrices?: Record<string, Homography>;
   // Loose because JSON widens `type` to string; narrowed to DemoConfig inside.
   demo?: { type: string } & Record<string, unknown>;
 }
@@ -80,7 +79,7 @@ export function DemoRenderer({
       return <NetworkGraph nodes={demo.nodes} edges={demo.edges} accent={accent} badge={demo.badge} />;
 
     case "multicam":
-      return <MultiCamTracking matrices={project.matrices} accent={accent} />;
+      return <MultiCamTracking accent={accent} badge={demo.badge} />;
 
     default:
       return null;

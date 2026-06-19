@@ -1,42 +1,23 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { DemoBaseProps, Homography } from "./types";
+import { useTheme } from "next-themes";
+import { DemoFrame } from "./DemoFrame";
+import type { DemoBaseProps, Homography, MulticamScene, SceneCamera } from "./types";
+import sceneData from "./multicam-scene.json";
 
-interface MultiCamTrackingProps extends DemoBaseProps {
-  /** Per-camera homography matrices (world → camera image). Keyed by camera id. */
-  matrices?: Record<string, Homography>;
-}
-
-/** A tracked target moving across the shared world plane (coords in [0,1]). */
-interface Target {
-  id: string;
-  lane: number; // 0..1 vertical position of the lane
-  phase: number; // 0..1 starting offset along the lane
-  speed: number; // laps per second
-  color: string;
-}
-
-const DEFAULT_MATRICES: Record<string, Homography> = {
-  cam_a: [
-    [1.2, 0.2, 100],
-    [0.1, 1.1, 50],
-    [0, 0, 1],
-  ],
-  cam_b: [
-    [0.9, -0.1, 200],
-    [0.05, 1, 30],
-    [0, 0, 1],
-  ],
-};
-
-// Deterministic targets (no Math.random → stable across SSR/CSR).
-const TARGETS: Target[] = [
-  { id: "V-01", lane: 0.22, phase: 0.0, speed: 0.12, color: "#4bc4d9" },
-  { id: "V-02", lane: 0.5, phase: 0.35, speed: 0.16, color: "#c578c6" },
-  { id: "V-03", lane: 0.78, phase: 0.6, speed: 0.1, color: "#f59e0b" },
-  { id: "V-04", lane: 0.5, phase: 0.82, speed: 0.16, color: "#22c55e" },
-];
+/**
+ * Interactive multi-camera tracking via a real planar homography.
+ *
+ * The scene (a fictional parking lot) is rendered offline from cameras of known
+ * pose by scripts/demo-assets/multicam, so each camera's ground→image homography
+ * `H` (and its inverse) is exact. The viewer drags a single ground point in ANY
+ * view; the SAME homography places it in every other view — exactly the
+ * technique behind the real Stellantis multi-camera tracking (per-camera views →
+ * one unified 2D world plane). Day/night backgrounds swap with the theme; the
+ * matrices are shared.
+ */
+const scene = sceneData as unknown as MulticamScene;
 
 /** Apply a 3x3 homography to a point. */
 function applyH(H: Homography, x: number, y: number): [number, number] {
@@ -44,210 +25,243 @@ function applyH(H: Homography, x: number, y: number): [number, number] {
   return [(H[0][0] * x + H[0][1] * y + H[0][2]) / d, (H[1][0] * x + H[1][1] * y + H[1][2]) / d];
 }
 
-/**
- * Project a world point [0,1]² into a camera viewport [0,1]² by warping with the
- * camera's homography and normalising to the projected image bounds, so any
- * matrix fits the preview while still skewing the view per camera.
- */
-function projectToView(H: Homography, x: number, y: number): [number, number] {
-  const corners = [
-    [0, 0],
-    [1, 0],
-    [1, 1],
-    [0, 1],
-  ].map(([cx, cy]) => applyH(H, cx, cy));
-  const xs = corners.map((c) => c[0]);
-  const ys = corners.map((c) => c[1]);
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
-  const minY = Math.min(...ys);
-  const maxY = Math.max(...ys);
-  const [px, py] = applyH(H, x, y);
-  return [(px - minX) / (maxX - minX || 1), (py - minY) / (maxY - minY || 1)];
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
+interface MultiCamTrackingProps extends DemoBaseProps {
+  badge?: string;
 }
 
-/** World x for a target at time t (wraps 0→1). */
-function worldX(target: Target, t: number): number {
-  return (target.phase + target.speed * t) % 1;
-}
-
-export function MultiCamTracking({
-  matrices = DEFAULT_MATRICES,
-  accent = "var(--accent-cyan)",
-  caption,
-}: MultiCamTrackingProps) {
-  const [t, setT] = useState(0);
-  const rafRef = useRef<number>(0);
-  const startRef = useRef<number | null>(null);
+export function MultiCamTracking({ accent = "var(--accent-cyan)", badge, caption }: MultiCamTrackingProps) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  // World-plane point in [0,1]² — the single source of truth shared by all views.
+  const [pt, setPt] = useState({ x: 0.5, y: 0.56 });
+  // The hint disappears for good the moment the viewer drives the point.
+  const [interacted, setInteracted] = useState(false);
 
   useEffect(() => {
-    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      // a static, representative frame (deferred to avoid sync setState in effect)
-      const id = requestAnimationFrame(() => setT(2.5));
-      return () => cancelAnimationFrame(id);
-    }
-    const loop = (now: number) => {
-      if (startRef.current === null) startRef.current = now;
-      setT((now - startRef.current) / 1000);
-      rafRef.current = requestAnimationFrame(loop);
-    };
-    rafRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(rafRef.current);
+    setMounted(true);
   }, []);
 
-  const camIds = Object.keys(matrices).slice(0, 2);
+  // Before mount we render the light asset (the SSR default) to avoid a hydration
+  // mismatch on the <img src>, then swap once the theme is known.
+  const bgKey: "light" | "dark" = mounted && resolvedTheme === "dark" ? "dark" : "light";
+
+  const obliques = scene.cameras.filter((c) => c.kind !== "ortho");
+  const top = scene.cameras.find((c) => c.kind === "ortho");
+  const markInteracted = () => setInteracted(true);
+
+  const nudge = (dx: number, dy: number) => {
+    markInteracted();
+    setPt((p) => ({ x: clamp01(p.x + dx), y: clamp01(p.y + dy) }));
+  };
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const step = e.shiftKey ? 0.1 : 0.025;
+    if (e.key === "ArrowLeft") { nudge(-step, 0); e.preventDefault(); }
+    else if (e.key === "ArrowRight") { nudge(step, 0); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { nudge(0, -step); e.preventDefault(); }
+    else if (e.key === "ArrowDown") { nudge(0, step); e.preventDefault(); }
+  };
 
   return (
-    <figure
-      style={{
-        margin: 0,
-        position: "absolute",
-        inset: 0,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        gap: 10,
-        padding: 16,
-        overflow: "hidden",
-      }}
-    >
-      {/* Camera viewports */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        {camIds.map((id, idx) => (
-          <CameraView key={id} id={id} H={matrices[id]} t={t} accent={accent} label={`CAM ${String.fromCharCode(65 + idx)}`} />
+    <DemoFrame accent={accent} badge={badge}>
+      <div
+        role="group"
+        aria-label="Tracking multicámara: arrastra el punto en cualquier vista para reproyectarlo en las demás"
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+          gridTemplateRows: "minmax(0, 42fr) minmax(0, 58fr)",
+          gap: 2,
+          // The 2px gaps reveal this accent background as interior dividers; the
+          // panels run edge to edge so no card background ever shows through.
+          backgroundColor: accent,
+          overflow: "hidden",
+          outline: "none",
+        }}
+      >
+        {obliques.map((cam, i) => (
+          <Panel key={cam.id} cam={cam} pt={pt} setPt={setPt} accent={accent} bgKey={bgKey} label={`CAM ${String.fromCharCode(65 + i)}`} onInteract={markInteracted} />
         ))}
+
+        {top && <Panel cam={top} pt={pt} setPt={setPt} accent={accent} bgKey={bgKey} label="2D · plano unificado" onInteract={markInteracted} wide />}
+
+        {/* One-time hint, styled like a tooltip; fades out the moment the viewer interacts. */}
+        <div
+          role="status"
+          aria-hidden={interacted}
+          style={{
+            position: "absolute",
+            top: 12,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 5,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "5px 11px",
+            borderRadius: 999,
+            fontSize: 11,
+            fontFamily: "var(--font-geist-mono)",
+            letterSpacing: "0.03em",
+            color: "#fff",
+            backgroundColor: "rgba(0,0,0,0.6)",
+            backdropFilter: "blur(4px)",
+            whiteSpace: "nowrap",
+            pointerEvents: "none",
+            opacity: interacted ? 0 : 1,
+            transition: "opacity 0.4s ease",
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+            open_with
+          </span>
+          {caption ?? "Arrastra el punto en cualquier vista"}
+        </div>
       </div>
-
-      {/* Unified top-down map */}
-      <FloorPlan t={t} accent={accent} />
-
-      <figcaption style={{ fontSize: 12, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", lineHeight: 1.5 }}>
-        {caption ?? "2 cámaras → proyección a plano 2D unificado mediante homografía"}
-      </figcaption>
-    </figure>
+    </DemoFrame>
   );
 }
 
-function CameraView({ id, H, t, accent, label }: { id: string; H: Homography; t: number; accent: string; label: string }) {
+function Panel({
+  cam,
+  pt,
+  setPt,
+  accent,
+  bgKey,
+  label,
+  onInteract,
+  wide = false,
+}: {
+  cam: SceneCamera;
+  pt: { x: number; y: number };
+  setPt: (p: { x: number; y: number }) => void;
+  accent: string;
+  bgKey: "light" | "dark";
+  label: string;
+  onInteract: () => void;
+  wide?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+
+  const setFromClient = (clientX: number, clientY: number) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    // Client → image pixels → world plane via this camera's inverse homography.
+    const u = ((clientX - r.left) / r.width) * cam.imgW;
+    const v = ((clientY - r.top) / r.height) * cam.imgH;
+    const [wx, wy] = applyH(cam.Hinv, u, v);
+    setPt({ x: clamp01(wx), y: clamp01(wy) });
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    dragging.current = true;
+    onInteract();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setFromClient(e.clientX, e.clientY);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (dragging.current) setFromClient(e.clientX, e.clientY);
+  };
+  const onPointerUp = () => {
+    dragging.current = false;
+  };
+
+  // Place the shared world point in THIS view via the forward homography.
+  const [u, v] = applyH(cam.H, pt.x, pt.y);
+  const leftPct = (u / cam.imgW) * 100;
+  const topPct = (v / cam.imgH) * 100;
+  const inView = leftPct >= -1 && leftPct <= 101 && topPct >= -1 && topPct <= 101;
+
   return (
     <div
+      ref={ref}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
       style={{
         position: "relative",
-        aspectRatio: "4 / 3",
-        borderRadius: 4,
+        gridColumn: wide ? "1 / 3" : "auto",
+        minWidth: 0,
+        minHeight: 0,
         overflow: "hidden",
-        border: "2px solid var(--surface-card-border)",
-        backgroundColor: "#0e1216",
+        cursor: "crosshair",
+        touchAction: "none",
+        userSelect: "none",
       }}
     >
-      <svg viewBox="0 0 100 75" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-        {/* perspective floor grid */}
-        {Array.from({ length: 6 }).map((_, i) => {
-          const u = i / 5;
-          const [, ay] = projectToView(H, u, 0);
-          const [, by] = projectToView(H, u, 1);
-          const [ax] = projectToView(H, u, 0);
-          const [bx] = projectToView(H, u, 1);
-          return <line key={`v${i}`} x1={ax * 100} y1={ay * 75} x2={bx * 100} y2={by * 75} stroke="rgba(255,255,255,0.07)" strokeWidth={0.4} />;
-        })}
-        {Array.from({ length: 4 }).map((_, i) => {
-          const v = i / 3;
-          const [ax, ay] = projectToView(H, 0, v);
-          const [bx, by] = projectToView(H, 1, v);
-          return <line key={`h${i}`} x1={ax * 100} y1={ay * 75} x2={bx * 100} y2={by * 75} stroke="rgba(255,255,255,0.07)" strokeWidth={0.4} />;
-        })}
+      <img
+        src={cam.bg[bgKey]}
+        alt=""
+        draggable={false}
+        style={{ width: "100%", height: "100%", objectFit: "fill", display: "block", pointerEvents: "none" }}
+      />
 
-        {/* tracked targets as bounding boxes */}
-        {TARGETS.map((tg) => {
-          const wx = worldX(tg, t);
-          const [vx, vy] = projectToView(H, wx, tg.lane);
-          const cx = vx * 100;
-          const cy = vy * 75;
-          return (
-            <g key={tg.id}>
-              <rect x={cx - 6} y={cy - 5} width={12} height={10} fill="none" stroke={tg.color} strokeWidth={0.8} />
-              <rect x={cx - 6} y={cy - 9} width={12} height={3.4} fill={tg.color} opacity={0.9} />
-              <text x={cx} y={cy - 6.4} fontSize={2.6} textAnchor="middle" fill="#0b0b0b" fontFamily="monospace">
-                {tg.id}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
+      {inView && <Marker leftPct={leftPct} topPct={topPct} accent={accent} />}
 
-      <span style={cornerBadge(accent, "left")}>{label}</span>
-      <span style={{ ...cornerBadge("rgba(255,255,255,0.6)", "right"), border: "none", color: "rgba(255,255,255,0.6)" }}>{id}</span>
+      <span style={cornerBadge(accent)}>{label}</span>
+
+      {!inView && (
+        <span
+          style={{
+            position: "absolute",
+            bottom: 8,
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "2px 7px",
+            borderRadius: 2,
+            fontSize: 9,
+            letterSpacing: "0.08em",
+            fontFamily: "var(--font-geist-mono)",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.85)",
+            backgroundColor: "rgba(0,0,0,0.55)",
+          }}
+        >
+          fuera de campo
+        </span>
+      )}
     </div>
   );
 }
 
-function FloorPlan({ t, accent }: { t: number; accent: string }) {
+function Marker({ leftPct, topPct, accent }: { leftPct: number; topPct: number; accent: string }) {
   return (
-    <div
-      style={{
-        position: "relative",
-        aspectRatio: "16 / 9",
-        borderRadius: 4,
-        overflow: "hidden",
-        border: `2px solid ${accent}`,
-        backgroundColor: "var(--bg-secondary)",
-      }}
-    >
-      <svg viewBox="0 0 160 90" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-        {/* floor grid */}
-        {Array.from({ length: 17 }).map((_, i) => (
-          <line key={`gx${i}`} x1={i * 10} y1={0} x2={i * 10} y2={90} stroke="var(--grid-line)" strokeWidth={0.5} />
-        ))}
-        {Array.from({ length: 10 }).map((_, i) => (
-          <line key={`gy${i}`} x1={0} y1={i * 10} x2={160} y2={i * 10} stroke="var(--grid-line)" strokeWidth={0.5} />
-        ))}
-
-        {/* assembly lanes */}
-        {[0.22, 0.5, 0.78].map((lane, i) => (
-          <line key={i} x1={0} y1={lane * 90} x2={160} y2={lane * 90} stroke={accent} strokeWidth={0.4} strokeDasharray="3 3" opacity={0.35} />
-        ))}
-
-        {/* tracked targets + trails */}
-        {TARGETS.map((tg) => {
-          const wx = worldX(tg, t);
-          const cx = wx * 160;
-          const cy = tg.lane * 90;
-          const trail = Array.from({ length: 6 }).map((_, k) => ((wx - k * 0.02 + 1) % 1) * 160);
-          return (
-            <g key={tg.id}>
-              {trail.map((tx, k) => (
-                <circle key={k} cx={tx} cy={cy} r={2.4 - k * 0.32} fill={tg.color} opacity={0.18 - k * 0.025} />
-              ))}
-              <circle cx={cx} cy={cy} r={2.8} fill={tg.color} />
-              <circle cx={cx} cy={cy} r={4.6} fill="none" stroke={tg.color} strokeWidth={0.5} opacity={0.5} />
-              <text x={cx} y={cy - 5.5} fontSize={3} textAnchor="middle" fill="var(--text-secondary)" fontFamily="monospace">
-                {tg.id}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-
-      <span style={cornerBadge(accent, "left")}>2D · world plane</span>
+    <div style={{ position: "absolute", left: `${leftPct}%`, top: `${topPct}%`, transform: "translate(-50%, -50%)", pointerEvents: "none", zIndex: 3 }}>
+      <div
+        style={{
+          width: 18,
+          height: 18,
+          borderRadius: "50%",
+          border: "2px solid #fff",
+          backgroundColor: accent,
+          boxShadow: `0 0 0 2px ${accent}, 0 0 10px ${accent}, 0 1px 4px rgba(0,0,0,0.5)`,
+        }}
+      />
     </div>
   );
 }
 
-function cornerBadge(color: string, side: "left" | "right"): React.CSSProperties {
+function cornerBadge(color: string): React.CSSProperties {
   return {
     position: "absolute",
-    top: 8,
-    [side]: 8,
-    padding: "2px 7px",
+    // Bottom-left so it never collides with the DemoFrame badge (always top-left).
+    bottom: 7,
+    left: 7,
+    padding: "2px 6px",
     borderRadius: 2,
-    fontSize: 9,
+    fontSize: 8.5,
     fontWeight: 700,
     letterSpacing: "0.1em",
     fontFamily: "var(--font-geist-mono)",
     textTransform: "uppercase",
     color,
     backgroundColor: "rgba(0,0,0,0.5)",
-    border: `1px solid ${color}`,
   };
 }

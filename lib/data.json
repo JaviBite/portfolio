@@ -190,12 +190,8 @@
       "end": "2022",
       "description": { "es": "Tracking multi-cámara de vehículos en planta de producción con proyección 2D mediante homografía para supervisión de líneas de montaje.", "en": "Multi-camera vehicle tracking in production plant with 2D projection via homography for assembly line supervision." },
       "stack": ["Python", "OpenCV", "Homography", "Background Subtraction"],
-      "matrices": {
-        "cam_a": [[1.2, 0.2, 100], [0.1, 1.1, 50], [0, 0, 1]],
-        "cam_b": [[0.9, -0.1, 200], [0.05, 1.0, 30], [0, 0, 1]]
-      },
       "demos": ["multicam-homography"],
-      "demo": { "type": "multicam", "badge": "multicam · homografía" },
+      "demo": { "type": "multicam" },
       "category": "enterprise",
       "gridSpan": 4,
       "gridRowSpan": 2,

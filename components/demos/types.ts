@@ -27,3 +27,27 @@ export interface DemoBaseProps {
 
 /** A 3x3 homography matrix (row-major). */
 export type Homography = number[][];
+
+/**
+ * A single camera in the multicam scene, generated offline by
+ * scripts/demo-assets/multicam. `H` maps a world-normalised ground point
+ * [0,1]² to image pixels; `Hinv` is its inverse (pixel → world). Both are
+ * exact because the render uses a camera of known pose. `bg` holds the day/night
+ * backgrounds for light/dark themes (the matrices are shared between themes).
+ */
+export interface SceneCamera {
+  id: string;
+  label: string;
+  kind: "persp" | "ortho";
+  imgW: number;
+  imgH: number;
+  H: Homography;
+  Hinv: Homography;
+  bg: { light: string; dark: string };
+}
+
+/** The full multicam scene: ground footprint + the per-camera projections. */
+export interface MulticamScene {
+  ground: { W: number; D: number };
+  cameras: SceneCamera[];
+}
