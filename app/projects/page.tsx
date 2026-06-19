@@ -242,6 +242,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
 
   return (
     <div
+      className="projects-bento-card"
       style={cardStyle}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLDivElement;
@@ -516,7 +517,7 @@ export default function ProjectsPage() {
         </Reveal>
 
         {/* Enterprise bento */}
-        <Stagger style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
+        <Stagger className="projects-bento" style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
           {enterprise.map((project) => (
             <StaggerItem key={project.id} style={{ gridColumn: `span ${project.gridSpan ?? 5}`, gridRow: `span ${project.gridRowSpan ?? 1}`, display: "flex", flexDirection: "column" }}>
               <ProjectCard project={project} />
@@ -562,7 +563,7 @@ export default function ProjectsPage() {
             </div>
             </Reveal>
 
-            <Stagger style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
+            <Stagger className="projects-bento" style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
               {personal.map((project) => (
                 <StaggerItem key={project.id} style={{ gridColumn: `span ${project.gridSpan ?? 5}`, gridRow: `span ${project.gridRowSpan ?? 1}`, display: "flex", flexDirection: "column" }}>
                   <ProjectCard project={project} />

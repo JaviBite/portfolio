@@ -121,6 +121,32 @@ body {
   align-items: stretch;
 }
 
+@media (max-width: 900px) {
+  .bento-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .bento-grid { grid-template-columns: 1fr; }
+}
+
+/* Página de proyectos: bento → lista de una columna en móvil */
+@media (max-width: 768px) {
+  .projects-bento { grid-template-columns: 1fr !important; }
+
+  .projects-bento > * {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+
+  .projects-bento-card {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto !important;
+    grid-template-areas: "demo" "info" !important;
+  }
+
+  .projects-bento-card .demo-cell-full { min-height: 240px; }
+}
+
 /* Make every card fill its grid row so they all end at the same height */
 .bento-grid > * {
   display: flex;
@@ -573,6 +599,46 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Hero apilado y centrado cuando no caben copy + retrato en una fila */
+@media (max-width: 900px) {
+  .hero-inner {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 36px;
+    padding: 56px 0;
+  }
+
+  .hero-copy {
+    flex: 0 1 auto;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .hero-paragraph {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-portrait {
+    order: -1;
+    flex: 0 0 auto;
+    width: 220px;
+    height: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-portrait {
+    width: 180px;
+    height: 180px;
+  }
 }
 
 .scroll-indicator {

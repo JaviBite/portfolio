@@ -30,7 +30,7 @@ export default function CVPage() {
 
         {/* Header - Top Section */}
         <header style={{ marginBottom: 32, paddingBottom: 24, borderBottom: "2px solid var(--surface-card-border)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "start" }}>
+          <div className="cv-header-grid" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "start" }}>
             <div>
               <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4, textTransform: "uppercase" }}>
                 {profile.name}
@@ -65,7 +65,7 @@ export default function CVPage() {
               </div>
             </div>
             {/* Photo - Hidden in print */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+            <div className="cv-header-photo" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
               <div
                 className="no-print"
                 style={{
@@ -209,6 +209,15 @@ export default function CVPage() {
       {/* Print styles */}
       <style>{`
         @media (max-width: 860px) {
+          .cv-header-grid {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+
+          .cv-header-photo {
+            order: -1;
+          }
+
           .cv-body-grid {
             grid-template-columns: 1fr !important;
             gap: 32px !important;
