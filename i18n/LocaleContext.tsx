@@ -57,6 +57,18 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 export function useLocale() {
   const context = useContext(LocaleContext);
   if (context === undefined) {
+    // If there is no provider (e.g. during first render of some client pages),
+    // try to read the locale cookie synchronously so pages like `/cv/print`
+    // can pick up the currently selected language instead of always falling back to "es".
+    if (typeof document !== "undefined") {
+      const saved = document.cookie.match(/locale=([^;]+)/)?.[1] as Locale | undefined;
+      return {
+        locale: (saved as Locale) || ("es" as const),
+        setLocale: () => {},
+        messages: {},
+      };
+    }
+
     return {
       locale: "es" as const,
       setLocale: () => {},
