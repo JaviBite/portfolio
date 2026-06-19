@@ -51,3 +51,48 @@ export interface MulticamScene {
   ground: { W: number; D: number };
   cameras: SceneCamera[];
 }
+
+/**
+ * A detected object in the Würth warehouse demo. Coordinates are percentages of
+ * the frame (0–100), matching the convention in ImagePanel's DetectionBox.
+ * `state` drives the box colour: "flow" → moving (accent), "stop" → jammed (red).
+ */
+export interface WarehouseBox {
+  id: number;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  state: "flow" | "slow" | "stop";
+  label?: string;
+}
+
+/** A measured region of interest (the outbound-staging area), in % of frame. */
+export interface WarehouseRoi {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * The Würth warehouse demo scene (components/demos/wurth-scene.json), built from
+ * real footage frames. Two interactive scenes share one card via a toggle:
+ * `conveyor` (jam detection with bounding boxes) and `yard` (free-space capacity
+ * with an animated ROI + the real algorithm `score`).
+ */
+export interface WarehouseScene {
+  conveyor: { src?: string; label?: string; boxes: WarehouseBox[] };
+  yard: {
+    /** Clean base frame. */
+    src?: string;
+    /** Transparent PNG of the SAM free-space shape, overlaid + wiped in on scroll. */
+    mask?: string;
+    label?: string;
+    /** Bounding box of the mask, drawn as the green ROI outline (in % of frame). */
+    roi: WarehouseRoi;
+    /** Real algorithm score (0–1). */
+    score: number;
+    scoreLabel?: string;
+  };
+}

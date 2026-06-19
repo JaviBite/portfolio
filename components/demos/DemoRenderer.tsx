@@ -6,6 +6,7 @@ import { ImagePanel, type DetectionBox } from "./ImagePanel";
 import { MultiCamTracking } from "./MultiCamTracking";
 import { NetworkGraph, type GraphEdge, type GraphNode } from "./NetworkGraph";
 import { VideoPanel } from "./VideoPanel";
+import { WarehouseCongestion } from "./WarehouseCongestion";
 import { YouTubeEmbed } from "./YouTubeEmbed";
 import type { DemoFit, DemoMedia } from "./types";
 
@@ -20,7 +21,8 @@ export type DemoConfig =
   | { type: "image"; badge?: string; image?: DemoMedia; boxes?: DetectionBox[]; placeholderIcon?: string; fit?: DemoFit }
   | { type: "compare"; badge?: string; before?: DemoMedia; after?: DemoMedia; afterClean?: DemoMedia; toggleLabel?: string; initial?: number }
   | { type: "network"; badge?: string; nodes?: GraphNode[]; edges?: GraphEdge[] }
-  | { type: "multicam"; badge?: string };
+  | { type: "multicam"; badge?: string }
+  | { type: "warehouse"; badge?: string };
 
 /** Minimal shape the renderer needs from a project. */
 interface ProjectLike {
@@ -81,6 +83,9 @@ export function DemoRenderer({
     case "multicam":
       return <MultiCamTracking accent={accent} badge={demo.badge} />;
 
+    case "warehouse":
+      return <WarehouseCongestion accent={accent} badge={demo.badge} />;
+
     default:
       return null;
   }
@@ -92,4 +97,4 @@ export function hasProjectDemo(project: ProjectLike): boolean {
 }
 
 // Re-export generics so demos/index stays the single import surface.
-export { CompareSlider, VideoPanel, YouTubeEmbed, ImagePanel, NetworkGraph, MultiCamTracking };
+export { CompareSlider, VideoPanel, YouTubeEmbed, ImagePanel, NetworkGraph, MultiCamTracking, WarehouseCongestion };

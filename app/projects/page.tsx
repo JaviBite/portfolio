@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { DemoRenderer, hasProjectDemo } from "@/components/demos";
+import { VideoLightbox } from "@/components/VideoLightbox";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useData } from "@/lib/useData";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/Reveal";
@@ -125,6 +126,9 @@ function ProjectCard({ project }: { project: ProjectItem }) {
   const layout = project.layout ?? "horizontal-right";
   const showDemo = hasProjectDemo(project);
   const isWip = (project as { status?: string }).status === "wip";
+  const { locale } = useLocale();
+  const videoId = (project as { video?: string }).video;
+  const [videoOpen, setVideoOpen] = useState(false);
 
   // "Working on it" placeholder: translucent, ghosted card for upcoming work.
   if (isWip) {
@@ -346,6 +350,42 @@ function ProjectCard({ project }: { project: ProjectItem }) {
           >
             {project.description}
           </p>
+
+          {videoId && (
+            <button
+              type="button"
+              onClick={() => setVideoOpen(true)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 7,
+                padding: "7px 13px",
+                borderRadius: 3,
+                fontSize: 12,
+                fontWeight: 700,
+                fontFamily: "var(--font-geist-mono)",
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+                color: color,
+                backgroundColor: "transparent",
+                border: `2px solid ${color}`,
+                cursor: "pointer",
+                width: "fit-content",
+                transition: "background-color 0.2s ease, color 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = color;
+                e.currentTarget.style.color = "#0b0b0b";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = color;
+              }}
+            >
+              <Icon name="play_circle" size={18} />
+              {locale === "en" ? "Watch promo video" : "Ver vídeo promocional"}
+            </button>
+          )}
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 16 }}>
@@ -380,6 +420,14 @@ function ProjectCard({ project }: { project: ProjectItem }) {
         >
           <DemoRenderer project={project} accent={color} />
         </div>
+      )}
+
+      {videoOpen && videoId && (
+        <VideoLightbox
+          youtubeId={videoId}
+          title={project.client}
+          onClose={() => setVideoOpen(false)}
+        />
       )}
     </div>
   );

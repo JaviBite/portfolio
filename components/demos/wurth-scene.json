@@ -1,0 +1,17 @@
+{
+  "conveyor": {
+    "src": "/demos/logistics-wurth/conveyor-atasco.webp",
+    "label": "Transportador de rodillos",
+    "boxes": [
+      { "id": 1, "x": 23, "y": 19, "w": 21, "h": 31, "state": "stop", "label": "ATASCO · caja detenida" }
+    ]
+  },
+  "yard": {
+    "src": "/demos/logistics-wurth/playa-salida.webp",
+    "mask": "/demos/logistics-wurth/playa-salida-mask.png",
+    "label": "Playa de salida",
+    "roi": { "x": 0.4, "y": 20.6, "w": 94.2, "h": 48.8 },
+    "score": 0.443621,
+    "scoreLabel": "ocupación playa"
+  }
+}
