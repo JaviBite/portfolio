@@ -40,19 +40,21 @@ export default function CVPrintPage() {
                 {profile.bio}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 10, color: "var(--text-secondary)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Icon name="mail" size={12} style={{ color: "var(--accent-cyan)" }} />
-                  <span style={{ fontSize: 9, fontWeight: 600, minWidth: 60 }}>{labels.email}</span>
-                  <a href={`mailto:${profile.contact.email}`} style={{ textDecoration: "none", color: "inherit" }}>
-                    {profile.contact.email}
-                  </a>
+                <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px 20px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Icon name="mail" size={12} style={{ color: "var(--accent-cyan)" }} />
+                    <span style={{ fontSize: 9, fontWeight: 600 }}>{labels.email}</span>
+                    <a href={`mailto:${profile.contact.email}`} style={{ textDecoration: "none", color: "inherit" }}>
+                      {profile.contact.email}
+                    </a>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Icon name="location_on" size={12} style={{ color: "var(--accent-cyan)" }} />
+                    <span style={{ fontSize: 9, fontWeight: 600 }}>{labels.location}</span>
+                    <span>{profile.contact.location}</span>
+                  </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Icon name="location_on" size={12} style={{ color: "var(--accent-cyan)" }} />
-                  <span style={{ fontSize: 9, fontWeight: 600, minWidth: 60 }}>{labels.location}</span>
-                  <span>{profile.contact.location}</span>
-                </div>
-                <div style={{ display: "flex", gap: 16, marginTop: 4 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 4 }}>
                   <a href={profile.contact.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "var(--accent-cyan)", fontSize: 10, fontWeight: 600 }}>
                     <Icon name="work" size={14} />
                     LinkedIn
@@ -61,6 +63,12 @@ export default function CVPrintPage() {
                     <Icon name="code" size={14} />
                     GitHub
                   </a>
+                  {profile.contact.website && (
+                    <a href={profile.contact.website} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "var(--accent-cyan)", fontSize: 10, fontWeight: 600 }}>
+                      <Icon name="language" size={14} />
+                      Portfolio
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

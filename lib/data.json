@@ -9,6 +9,7 @@
       "email": "javiergimenezgarces@gmail.com",
       "linkedin": "https://linkedin.com/in/jgimenez",
       "github": "https://github.com/javiergimenez",
+      "website": "https://javigg-portfolio.vercel.app/",
       "location": "Zaragoza, España"
     },
     "bio": { "es": "Soy un chico muy curioso, organizado e interesado por el aprendizaje automático, la informática gráfica y visión por computador, así como la realidad virtual o aumentada.", "en": "I'm a curious, organized guy interested in machine learning, computer graphics, computer vision, virtual and augmented reality." },
@@ -24,13 +25,13 @@
       "website": "https://multiversecomputing.com",
       "roles": [
         {
-          "role": { "es": "Ingeniero de preventa", "en": "Pre-sales Engineer" },
+          "role": { "es": "AI Solution Engineer | Ingeniero de Preventa", "en": "AI Solution Engineer | Pre-sales Engineer" },
           "start": "Enero 2026",
           "end": null,
           "current": true,
           "location": "Zaragoza, España",
-          "description": { "es": "Implicado en el proceso de preventa en múltiples proyectos clave vinculados a CompactifAI y soluciones IA de Computer Vision y GenAI (LLM, Agentes), impulsando oportunidades de alto impacto. Participación destacada en un proyecto estratégico de primer nivel con MediaPro.", "en": "Involved in pre-sales processes for key projects linked to CompactifAI and AI solutions for Computer Vision and GenAI (LLM, Agents), driving high-impact opportunities. Outstanding participation in a top-level strategic project with MediaPro." },
-          "stack": ["CompactifAI", "LLM", "Agentes", "Computer Vision", "GenAI"]
+          "description": { "es": "Diseño de propuestas y arquitecturas de IA en preventa. Propuesta de IA (RAG + Computer Vision) para el departamento de seguridad de una administración provincial, aprobada y actualmente en ejecución. Diseño técnico de un partnership con una importante productora (indexación audiovisual con IA, generación de contenido y visión espacial). Arquitecturas multi-agente, IA on-edge integrada en hardware y optimización de modelos (Intel OpenVINO, CompactifAI). Soporte técnico en reuniones comerciales, licitaciones públicas (Elkartek, Horizon) y mentoría de onboarding.", "en": "Design of AI pre-sales proposals and architectures. AI proposal (RAG + Computer Vision) for the security department of a provincial administration, approved and currently in execution. Technical design of a partnership with a major media producer (AI-based audiovisual indexing, content generation and spatial vision). Multi-agent architectures, on-edge AI embedded in hardware and model optimization (Intel OpenVINO, CompactifAI). Technical support in sales meetings, public tenders (Elkartek, Horizon) and onboarding mentoring." },
+          "stack": ["CompactifAI", "LLM", "RAG", "Agentes", "Computer Vision", "OpenVINO"]
         }
       ]
     },
@@ -44,8 +45,8 @@
           "end": "Enero 2026",
           "current": false,
           "location": "Zaragoza, España",
-          "description": { "es": "Gestión del departamento de vídeo/imagen y visión por computador. Desarrollo y gestión de proyectos/PoCs: lectura de códigos en contenedores y matrículas (JSV Logistics, STEF), detección de atascos logísticos (Würth), control de accesos biométrico en residencia (Adm. Pública Castilla y León), tracking multicámara (Stellantis), descripción de imágenes interactiva y detección de incendios. Análisis de ortofotografías (GIS Madrid). Segmentación y generación automática de contenido con NLP y CV.", "en": "Management of video/image and computer vision department. Development and management of projects/PoCs: container and license plate reading (JSV Logistics, STEF), logistics congestion detection (Würth), biometric access control (Public Administration Castilla y León), multi-camera tracking (Stellantis), interactive image description and fire detection. Orthophoto analysis (GIS Madrid). Segmentation and automatic content generation with NLP and CV." },
-          "stack": ["Python", "C++", "OpenCV", "NLP", "CV", "Docker"]
+          "description": { "es": "Gestión del departamento de vídeo/imagen e innovación en visión por computador. Optimización extrema: integración de TensorRT en servidores críticos y desarrollo de un servidor de inferencia VLM (Visual Language Model) en C++ basado en llama.cpp, 3x más rápido que las implementaciones en Python. Liderazgo técnico en proyectos y PoCs: detección de errantes en residencias para una administración pública, análisis de cambios urbanos en ortofotografías, detección de atascos logísticos (Würth) y tracking multicámara en parkings con homografía para una planta de automoción. Media e IA generativa: generación automática de contenido con reencuadre inteligente (verticalización con trayectorias suavizadas) para clientes del sector audiovisual, y minutado/análisis de audiencias TDT. Estandarización con Label Studio y documentación técnica en Confluence.", "en": "Management of the video/image and computer vision innovation department. Extreme optimization: TensorRT integration in critical servers and development of a VLM (Visual Language Model) inference server in C++ based on llama.cpp, 3x faster than Python implementations. Technical leadership in projects and PoCs: wandering-resident detection in care homes for a public administration, urban change analysis in orthophotos, logistics congestion detection (Würth) and multi-camera parking tracking via homography for an automotive plant. Media and generative AI: automatic content generation with intelligent reframing (verticalization with smoothed trajectories) for audiovisual-sector clients, plus TDT audience analysis. Standardization with Label Studio and technical documentation in Confluence." },
+          "stack": ["C++", "TensorRT", "llama.cpp", "OpenCV", "Homography", "Whisper", "FFmpeg"]
         },
         {
           "role": { "es": "Desarrollador e investigador de computer vision y arquitectura backend", "en": "Computer Vision Developer and Backend Architecture Researcher" },
@@ -53,8 +54,8 @@
           "end": "Diciembre 2022",
           "current": false,
           "location": "Zaragoza, España",
-          "description": { "es": "Desarrollo e integración de sistemas de IA para visión por computadora e indexación de video: detección de caras, objetos y texto (OCR), segmentación y comprensión de imágenes y búsqueda semántica. Optimización de modelos con TensorRT y despliegue eficiente con ONNX.", "en": "Development and integration of AI systems for computer vision and video indexing: face, object and text detection (OCR), image segmentation and understanding, semantic search. Model optimization with TensorRT and efficient deployment with ONNX." },
-          "stack": ["Python", "TensorRT", "ONNX", "OCR", "PyTorch"]
+          "description": { "es": "Diseño y desarrollo de los motores de procesamiento y la infraestructura backend de visión artificial. Motores core en C++/OpenCV (VideoProcessor) y servidores de alto rendimiento (ONNX) para reconocimiento facial, detección de objetos, OCR y embeddings visuales. Infraestructura: CI/CD con Jenkins, librería de comunicaciones por sockets en C++ y base del sistema de búsqueda semántica de imágenes. Algoritmos de visión: lectura de códigos (QR/barras), detección de banners y procesamiento de colorimetría para la indexación de vídeo.", "en": "Design and development of the processing engines and backend infrastructure for computer vision. Core engines in C++/OpenCV (VideoProcessor) and high-performance servers (ONNX) for facial recognition, object detection, OCR and visual embeddings. Infrastructure: CI/CD with Jenkins, a C++ socket communications library and the foundation of the semantic image search system. Vision algorithms: code reading (QR/barcode), banner detection and colorimetry processing for video indexing." },
+          "stack": ["C++", "OpenCV", "ONNX", "OCR", "Jenkins", "TensorRT"]
         }
       ]
     },
@@ -63,13 +64,13 @@
       "website": "https://unizar.es",
       "roles": [
         {
-          "role": { "es": "Prácticas en visión por computador y aprendizaje profundo (deep learning)", "en": "Internship in Computer Vision and Deep Learning" },
+          "role": { "es": "Investigador en deep learning", "en": "Deep Learning Researcher" },
           "start": "Febrero 2021",
           "end": "Junio 2021",
           "current": false,
           "location": "Zaragoza, España",
-          "description": { "es": "Grupo de Investigación: Graphics and Imaging Lab", "en": "Research Group: Graphics and Imaging Lab" },
-          "stack": ["Python", "Deep Learning", "Computer Vision"]
+          "description": { "es": "Grupo de investigación Graphics and Imaging Lab. Procesado de vídeos de cocina con detección y clasificación de objetos mediante deep learning (Detectron2), e implementación de un sistema de seguimiento (tracking) de objetos basado en SiamRPN++ combinando detección y seguimiento.", "en": "Graphics and Imaging Lab research group. Processing of cooking videos with object detection and classification via deep learning (Detectron2), and implementation of an object tracking system based on SiamRPN++ combining detection and tracking." },
+          "stack": ["Python", "PyTorch", "Detectron2", "SiamRPN++", "Deep Learning"]
         }
       ]
     }
@@ -114,25 +115,51 @@
       "category": { "es": "Lenguajes", "en": "Languages" },
       "items": [
         { "name": "C++", "level": 5 },
-        { "name": "C#", "level": 5 },
         { "name": "Python", "level": 5 },
+        { "name": "C#", "level": 5 },
         { "name": "Java", "level": 4 },
+        { "name": "C", "level": 4 },
+        { "name": "SQL", "level": 4 },
         { "name": "TypeScript", "level": 4 }
       ]
     },
     {
-      "category": { "es": "Frameworks & Tools", "en": "Frameworks & Tools" },
+      "category": { "es": "IA & Visión", "en": "AI & Vision" },
+      "items": [
+        "Deep Learning",
+        "Machine Learning",
+        "LLM",
+        "RAG",
+        { "es": "Agentes", "en": "Agents" },
+        { "es": "Visión por Computador", "en": "Computer Vision" },
+        { "es": "Redes Neuronales", "en": "Neural Networks" },
+        { "es": "Reconocimiento de Patrones", "en": "Pattern Recognition" }
+      ]
+    },
+    {
+      "category": { "es": "Frameworks & Modelos", "en": "Frameworks & Models" },
       "items": [
         "PyTorch",
         "TensorRT",
         "ONNX",
+        "OpenVINO",
         "OpenCV",
         "SAM",
         "YOLO",
-        "Whisper",
-        "FFmpeg",
+        "Whisper"
+      ]
+    },
+    {
+      "category": { "es": "Herramientas & DevOps", "en": "Tools & DevOps" },
+      "items": [
         "Docker",
-        "PyTorch & Keras & TF"
+        "CMake",
+        "llama.cpp",
+        "FFmpeg",
+        "Git",
+        "GitHub",
+        "Linux",
+        "Label Studio"
       ]
     },
     {
@@ -141,7 +168,7 @@
         { "es": "Trabajador", "en": "Hardworking" },
         { "es": "Motivador & Optimista", "en": "Motivator & Optimist" },
         { "es": "Resolución de problemas", "en": "Problem Solving" },
-        "GIT",
+        { "es": "Liderazgo de equipos", "en": "Team Leadership" },
         { "es": "Músico", "en": "Musician" },
         "ISTJ"
       ]
@@ -169,7 +196,7 @@
     {
       "id": "logistics-wurth",
       "client": "Würth",
-      "tag": { "es": "Enterprise", "en": "Enterprise" },
+      "tag": { "es": "Logística", "en": "Logistics" },
       "start": "2022",
       "end": "2023",
       "description": { "es": "Sistema de monitorización logística en tiempo real para detectar atascos y medir capacidad de zonas de almacén usando visión artificial.", "en": "Real-time logistics monitoring system to detect congestion and measure warehouse zone capacity using computer vision." },
@@ -185,8 +212,8 @@
     },
     {
       "id": "tracking-stellantis",
-      "client": "Stellantis",
-      "tag": { "es": "Enterprise", "en": "Enterprise" },
+      "client": { "es": "Tracking multicámara", "en": "Multi-camera Tracking" },
+      "tag": { "es": "Automoción", "en": "Automotive" },
       "start": "2022",
       "end": "2022",
       "description": { "es": "Tracking multi-cámara de vehículos en planta de producción con proyección 2D mediante homografía para supervisión de líneas de montaje.", "en": "Multi-camera vehicle tracking in production plant with 2D projection via homography for assembly line supervision." },
@@ -201,8 +228,8 @@
     },
     {
       "id": "aerial-gis-madrid",
-      "client": "GIS Madrid",
-      "tag": { "es": "Enterprise", "en": "Enterprise" },
+      "client": { "es": "Detección de cambios urbanos", "en": "Urban Change Detection" },
+      "tag": { "es": "Administración pública", "en": "Public Administration" },
       "start": "2023",
       "end": "2023",
       "description": { "es": "Análisis semántico de imágenes aéreas para detección de cambios urbanos. Resistente a variaciones de iluminación y sombras mediante embeddings visuales.", "en": "Semantic analysis of aerial imagery for urban change detection. Robust to lighting and shadow variations through visual embeddings." },
@@ -217,8 +244,8 @@
     },
     {
       "id": "biometric-id",
-      "client": "Administración Pública",
-      "tag": { "es": "Enterprise", "en": "Enterprise" },
+      "client": { "es": "Identificación biométrica", "en": "Biometric Identification" },
+      "tag": { "es": "Administración pública", "en": "Public Administration" },
       "start": "2021",
       "end": "2022",
       "description": { "es": "Sistema de identificación biométrica facial para acceso seguro en instalaciones públicas. Pipeline de extracción de feature vectors y matching con KNN.", "en": "Facial biometric identification system for secure access to public facilities. Feature vector extraction and KNN matching pipeline." },
@@ -232,8 +259,8 @@
     },
     {
       "id": "smartcrop-autoflip",
-      "client": "VIC, EITB",
-      "tag": { "es": "Enterprise", "en": "Enterprise" },
+      "client": { "es": "Reencuadre automático", "en": "Automatic Reframing" },
+      "tag": { "es": "Audiovisual", "en": "Media & Broadcast" },
       "start": "2023",
       "end": "2024",
       "description": { "es": "Sistema AutoFlip para reencuadre automático de contenido audiovisual de 16:9 a 9:16. Combina transcripción ASR, análisis de saliency y tracking de sujetos.", "en": "AutoFlip system for automatic audio-visual content reframing from 16:9 to 9:16. Combines ASR transcription, saliency analysis and subject tracking." },

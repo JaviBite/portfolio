@@ -9,13 +9,13 @@ import { useLocale } from "@/i18n/LocaleContext";
 import { useData } from "@/lib/useData";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/Reveal";
 
-const clientColors: Record<string, string> = {
-  "Würth": "var(--accent-cyan)",
-  "Stellantis": "var(--accent-purple)",
-  "GIS Madrid": "#22c55e",
-  "Administración Pública": "#f59e0b",
-  "VIC, EITB": "#f97316",
-  "Self-hosted Lab": "#ec4899",
+const projectColors: Record<string, string> = {
+  "logistics-wurth": "var(--accent-cyan)",
+  "tracking-stellantis": "var(--accent-purple)",
+  "aerial-gis-madrid": "#22c55e",
+  "biometric-id": "#f59e0b",
+  "smartcrop-autoflip": "#f97316",
+  "personal-selfhosted": "#ec4899",
 };
 
 const projectIcons: Record<string, { icon: string; fill?: boolean }> = {
@@ -118,7 +118,7 @@ function SectionNav({ active, onSelect }: { active: SectionKey; onSelect: (key: 
 }
 
 function ProjectCard({ project }: { project: ProjectItem }) {
-  const color = clientColors[project.client] ?? "var(--accent-cyan)";
+  const color = projectColors[project.id] ?? "var(--accent-cyan)";
   const iconData = projectIcons[project.id] ?? { icon: "settings" };
   const gridSpan = project.gridSpan ?? 5;
   const gridRowSpan = project.gridRowSpan ?? 1;

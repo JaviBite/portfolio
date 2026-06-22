@@ -72,6 +72,7 @@ export function useData() {
       })),
       projects: rawData.projects.map((project) => ({
         ...project,
+        client: getTranslated(project.client, locale),
         tag: getTranslated(project.tag, locale),
         description: getTranslated(project.description, locale),
         end: typeof project.end === "object" ? getTranslated(project.end, locale) : project.end,

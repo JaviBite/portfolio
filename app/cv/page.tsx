@@ -42,17 +42,19 @@ export default function CVPage() {
                 {profile.bio}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 12, color: "var(--text-secondary)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Icon name="mail" size={18} style={{ color: "var(--accent-cyan)" }} />
-                  <a href={`mailto:${profile.contact.email}`} style={{ textDecoration: "none", color: "inherit" }}>
-                    {profile.contact.email}
-                  </a>
+                <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px 24px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <Icon name="mail" size={18} style={{ color: "var(--accent-cyan)" }} />
+                    <a href={`mailto:${profile.contact.email}`} style={{ textDecoration: "none", color: "inherit" }}>
+                      {profile.contact.email}
+                    </a>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <Icon name="location_on" size={18} style={{ color: "var(--accent-cyan)" }} />
+                    <span>{profile.contact.location}</span>
+                  </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Icon name="location_on" size={18} style={{ color: "var(--accent-cyan)" }} />
-                  <span>{profile.contact.location}</span>
-                </div>
-                <div style={{ display: "flex", gap: 20, marginTop: 4 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 20, marginTop: 4 }}>
                   <a href={profile.contact.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "var(--accent-cyan)", fontSize: 12, fontWeight: 600 }}>
                     <Icon name="work" size={16} />
                     LinkedIn
@@ -61,6 +63,12 @@ export default function CVPage() {
                     <Icon name="code" size={16} />
                     GitHub
                   </a>
+                  {profile.contact.website && (
+                    <a href={profile.contact.website} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "var(--accent-cyan)", fontSize: 12, fontWeight: 600 }}>
+                      <Icon name="language" size={16} />
+                      Portfolio
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

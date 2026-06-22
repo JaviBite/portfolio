@@ -19,12 +19,13 @@ interface Props {
   projects: Project[];
 }
 
-const clientColors: Record<string, string> = {
-  "Würth": "var(--accent-cyan)",
-  "Stellantis": "var(--accent-purple)",
-  "GIS Madrid": "#22c55e",
-  "Administración Pública": "#f59e0b",
-  "VIC, EITB": "#f97316",
+const projectColors: Record<string, string> = {
+  "logistics-wurth": "var(--accent-cyan)",
+  "tracking-stellantis": "var(--accent-purple)",
+  "aerial-gis-madrid": "#22c55e",
+  "biometric-id": "#f59e0b",
+  "smartcrop-autoflip": "#f97316",
+  "personal-selfhosted": "#ec4899",
 };
 
 export function ProjectsPreview({ projects }: Props) {
@@ -47,7 +48,7 @@ export function ProjectsPreview({ projects }: Props) {
         <Stagger className="bento-grid">
           {projects.map((project) => (
             <StaggerItem key={project.id}>
-              <ProjectCard project={project} color={clientColors[project.client] ?? "var(--accent-cyan)"} messages={messages} />
+              <ProjectCard project={project} color={projectColors[project.id] ?? "var(--accent-cyan)"} messages={messages} />
             </StaggerItem>
           ))}
         </Stagger>
@@ -68,7 +69,7 @@ function ProjectCard({ project, color, messages }: { project: Project; color: st
         {/* Tag */}
         <div className="project-card-header">
           <span className="tag-chip" style={{ color, borderColor: color }}>
-            {messages.projects?.tag_enterprise || "ENTERPRISE"}
+            {(project.tag || messages.projects?.tag_enterprise || "ENTERPRISE").toUpperCase()}
           </span>
           <span className="arrow-icon">→</span>
         </div>
