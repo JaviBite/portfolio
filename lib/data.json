@@ -22,6 +22,7 @@
   "experience": [
     {
       "company": "Multiverse Computing",
+      "logo": "/logos/mvc.jpeg",
       "website": "https://multiversecomputing.com",
       "roles": [
         {
@@ -37,6 +38,7 @@
     },
     {
       "company": "ETIQMEDIA",
+      "logo": "/logos/etiq.jpeg",
       "website": "https://etiqmedia.com",
       "roles": [
         {
@@ -61,6 +63,7 @@
     },
     {
       "company": "Universidad de Zaragoza (Colaboración con BSH)",
+      "logo": "/logos/unizar.jpeg",
       "website": "https://unizar.es",
       "roles": [
         {
