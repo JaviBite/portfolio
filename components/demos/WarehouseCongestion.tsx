@@ -8,7 +8,7 @@ import type { DemoBaseProps, WarehouseScene } from "./types";
 const scene = sceneData as WarehouseScene;
 
 /** Jam / alert colour for stopped objects and over-capacity zones. */
-const RED = "#ef4444";
+const BLUE = "#3b82f6";
 /** ROI border colour — matches the green box drawn by the real algorithm. */
 const GREEN = "#22c55e";
 /** Auto-advance between scenes every N ms (paused on hover / off-screen). */
@@ -242,7 +242,7 @@ export function WarehouseCongestion({ accent = "var(--accent-cyan)", badge }: Wa
           {mappedConveyor &&
             conveyor.boxes.map((b, i) => {
               const isStop = b.state === "stop";
-              const c = isStop ? RED : accent;
+              const c = isStop ? BLUE : accent;
               const r = coverRect(b, size.w, size.h, natConveyor.w, natConveyor.h);
               return (
                 <div
@@ -255,7 +255,7 @@ export function WarehouseCongestion({ accent = "var(--accent-cyan)", badge }: Wa
                     height: r.height,
                     border: `2px solid ${c}`,
                     borderRadius: 2,
-                    backgroundColor: isStop ? "rgba(239,68,68,0.12)" : "transparent",
+                    backgroundColor: isStop ? "rgba(59,130,246,0.12)" : "transparent",
                     boxShadow: "0 0 0 1px rgba(0,0,0,0.3)",
                     opacity: boxesOn ? 1 : 0,
                     transform: boxesOn ? "scale(1)" : "scale(0.92)",
@@ -269,10 +269,10 @@ export function WarehouseCongestion({ accent = "var(--accent-cyan)", badge }: Wa
                     <span
                       style={{
                         position: "absolute",
-                        top: -17,
+                        top: -21,
                         left: -2,
-                        padding: "1px 6px",
-                        fontSize: 9,
+                        padding: "2px 7px",
+                        fontSize: 11,
                         fontWeight: 700,
                         fontFamily: "var(--font-geist-mono)",
                         letterSpacing: "0.06em",
