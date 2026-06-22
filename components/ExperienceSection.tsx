@@ -1,8 +1,39 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { useLocale } from "@/i18n/LocaleContext";
+
+// Roles the user expanded with "Leer más" on the web CV are persisted here so the
+// print/PDF page (a separate window, same origin) can show those roles in full.
+const EXPANDED_STORE_KEY = "cv:expandedRoles";
+
+// Stable, locale-independent identity for a role: company + its start date.
+export function roleStorageKey(company: string, start: string): string {
+  return `${company}__${start}`;
+}
+
+export function readExpandedRoles(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = window.localStorage.getItem(EXPANDED_STORE_KEY);
+    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function writeExpandedRole(key: string, expanded: boolean) {
+  if (typeof window === "undefined") return;
+  try {
+    const set = readExpandedRoles();
+    if (expanded) set.add(key);
+    else set.delete(key);
+    window.localStorage.setItem(EXPANDED_STORE_KEY, JSON.stringify([...set]));
+  } catch {
+    /* localStorage unavailable (private mode, etc.) — expansion just won't persist */
+  }
+}
 
 // Wraps its children in a link to the company website when one exists, otherwise
 // renders them untouched. Keeps the original colour (the title/logo look the same)
@@ -50,6 +81,9 @@ interface ExperienceSectionProps {
   }>;
   isPrint?: boolean;
   printBudget?: number;
+  // Print only: role keys (see roleStorageKey) the user expanded on the web CV,
+  // which should be shown in full regardless of the auto-fit budget.
+  expandedKeys?: Set<string>;
   messages?: any;
 }
 
@@ -140,13 +174,13 @@ function parseDescription(text: string): { lead: string; bullets: string[] } {
 
 function ReadToggle({
   expanded,
-  setExpanded,
+  onToggle,
   fontSize,
   readMore,
   readLess,
 }: {
   expanded: boolean;
-  setExpanded: (fn: (v: boolean) => boolean) => void;
+  onToggle: () => void;
   fontSize: number;
   readMore: string;
   readLess: string;
@@ -154,7 +188,7 @@ function ReadToggle({
   return (
     <button
       type="button"
-      onClick={() => setExpanded((v) => !v)}
+      onClick={onToggle}
       className="no-print"
       style={{
         background: "none",
@@ -178,6 +212,8 @@ function RoleDescription({
   fontSize,
   isPrint,
   printBudget,
+  forceFull,
+  roleKey,
   readMore,
   readLess,
 }: {
@@ -185,18 +221,37 @@ function RoleDescription({
   fontSize: number;
   isPrint?: boolean;
   printBudget?: number;
+  // Print only: ignore the budget and show every bullet (role expanded on the web).
+  forceFull?: boolean;
+  roleKey?: string;
   readMore: string;
   readLess: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+
+  // Web: restore the persisted "Leer más" state on mount (after hydration to avoid
+  // a mismatch), and persist every toggle so the print/PDF page can mirror it.
+  useEffect(() => {
+    if (isPrint || !roleKey) return;
+    if (readExpandedRoles().has(roleKey)) setExpanded(true);
+  }, [isPrint, roleKey]);
+
+  const toggle = () =>
+    setExpanded((v) => {
+      const next = !v;
+      if (!isPrint && roleKey) writeExpandedRole(roleKey, next);
+      return next;
+    });
+
   const { lead, bullets } = parseDescription(text);
 
   // Print: render bullets like the web, but truncated to a per-role character
   // budget. The lead and at least one bullet are always kept; remaining bullets
   // are dropped whole (never cut mid-sentence) so the print auto-fit on the page
-  // can grow or shrink the budget cleanly to fill the available space.
+  // can grow or shrink the budget cleanly to fill the available space. A role the
+  // user expanded on the web (forceFull) ignores the budget and shows everything.
   if (isPrint) {
-    const budget = printBudget ?? Infinity;
+    const budget = forceFull ? Infinity : printBudget ?? Infinity;
     if (bullets.length === 0) {
       const shown =
         budget < lead.length ? lead.slice(0, budget).replace(/\s+\S*$/, "").trimEnd() + "…" : lead;
@@ -233,7 +288,7 @@ function RoleDescription({
       <p style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.55, margin: 0 }}>
         {shown}
         {needsTruncate && (
-          <ReadToggle expanded={expanded} setExpanded={setExpanded} fontSize={fontSize} readMore={readMore} readLess={readLess} />
+          <ReadToggle expanded={expanded} onToggle={toggle} fontSize={fontSize} readMore={readMore} readLess={readLess} />
         )}
       </p>
     );
@@ -265,13 +320,13 @@ function RoleDescription({
         ))}
       </ul>
       {needsTruncate && (
-        <ReadToggle expanded={expanded} setExpanded={setExpanded} fontSize={fontSize} readMore={readMore} readLess={readLess} />
+        <ReadToggle expanded={expanded} onToggle={toggle} fontSize={fontSize} readMore={readMore} readLess={readLess} />
       )}
     </div>
   );
 }
 
-export function ExperienceSection({ experience, isPrint = false, printBudget, messages }: ExperienceSectionProps) {
+export function ExperienceSection({ experience, isPrint = false, printBudget, expandedKeys, messages }: ExperienceSectionProps) {
   const { locale } = useLocale();
 
   const getText = (text: { es: string; en: string } | string) => {
@@ -291,7 +346,9 @@ export function ExperienceSection({ experience, isPrint = false, printBudget, me
         </h2>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: isPrint ? 9 : 18 }}>
+      {/* Print uses normal block flow (not flex) so each company block flows
+          around the floated sidebar and goes full-width once past it (page 2). */}
+      <div style={{ display: isPrint ? "block" : "flex", flexDirection: "column", gap: isPrint ? undefined : 18 }}>
         {experience.map((exp, compIdx) => {
           const firstRole = exp.roles[0];
           const lastRole = exp.roles[exp.roles.length - 1];
@@ -301,7 +358,7 @@ export function ExperienceSection({ experience, isPrint = false, printBudget, me
           const companyEnd = rawDate(firstRole.end);
           const companyDuration = formatDuration(companyStart, companyEnd, locale);
           return (
-          <div key={exp.company} style={{ pageBreakInside: "avoid" }}>
+          <div key={exp.company} style={{ pageBreakInside: "avoid", breakInside: "avoid", marginBottom: isPrint ? 9 : 0, display: isPrint ? "flow-root" : undefined }}>
             <div style={{ display: "grid", gridTemplateColumns: "44px 1fr", gap: 12, alignItems: "start" }}>
               {/* Logo */}
               <div style={{ gridColumn: "1 / 2", display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
@@ -348,7 +405,7 @@ export function ExperienceSection({ experience, isPrint = false, printBudget, me
                           <div>
                             <h4 style={{ fontSize: 13, fontWeight: 600, margin: 0 }}>{getText(role.role)}</h4>
                             <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0" }}>{role.start} – {getText(role.end || messages?.cv?.present || "Presente")}{(() => { const d = formatDuration(role.start, rawDate(role.end), locale); return d ? <span style={{ opacity: 0.75 }}> · ({d})</span> : null; })()}</p>
-                            <RoleDescription text={getText(role.description)} fontSize={isPrint ? 10.5 : 13} isPrint={isPrint} printBudget={printBudget} readMore={readMore} readLess={readLess} />
+                            <RoleDescription text={getText(role.description)} fontSize={isPrint ? 10.5 : 13} isPrint={isPrint} printBudget={printBudget} roleKey={roleStorageKey(exp.company, role.start)} forceFull={isPrint && !!expandedKeys?.has(roleStorageKey(exp.company, role.start))} readMore={readMore} readLess={readLess} />
                           </div>
                         </div>
                       ))}
@@ -372,7 +429,7 @@ export function ExperienceSection({ experience, isPrint = false, printBudget, me
                     <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "0 0 4px" }}>
                       {exp.roles[0].start} – {getText(exp.roles[0].end || messages?.cv?.present || "Presente")}{companyDuration && <span style={{ opacity: 0.75 }}> · ({companyDuration})</span>}{exp.roles[0].location && ` • ${exp.roles[0].location}`}
                     </p>
-                    <RoleDescription text={getText(exp.roles[0].description)} fontSize={isPrint ? 10.5 : 13} isPrint={isPrint} printBudget={printBudget} readMore={readMore} readLess={readLess} />
+                    <RoleDescription text={getText(exp.roles[0].description)} fontSize={isPrint ? 10.5 : 13} isPrint={isPrint} printBudget={printBudget} roleKey={roleStorageKey(exp.company, exp.roles[0].start)} forceFull={isPrint && !!expandedKeys?.has(roleStorageKey(exp.company, exp.roles[0].start))} readMore={readMore} readLess={readLess} />
                   </>
                 )}
               </div>

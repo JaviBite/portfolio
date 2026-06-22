@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ExperienceSection } from "@/components/ExperienceSection";
+import { ExperienceSection, readExpandedRoles } from "@/components/ExperienceSection";
 import { Icon } from "@/components/Icon";
 import { useData } from "@/lib/useData";
 import { useLocale } from "@/i18n/LocaleContext";
 
-// Auto-fit tuning. The container is pinned to the A4 width and the print spacing
-// rules are applied on screen too (see the <style> block), so the measured height
-// equals the printed height — measurements are in true page pixels.
+// Auto-fit tuning. The container is pinned to the printable width and the print
+// spacing rules are applied on screen too (see the <style> block), so the measured
+// height equals the printed height — measurements are in true page pixels.
 const PAGE_MM = 297; // A4 height
+const PAGE_V_MARGIN_MM = 12; // @page top/bottom margin → printable height per page
+const PAGE_CONTENT_MM = PAGE_MM - 2 * PAGE_V_MARGIN_MM;
 // We grow the experience column to fill the space the rest of the page leaves
 // free, stopping this many pixels short of the page bottom. The fit targets the
 // experience column directly (not the whole page) because the right column alone
@@ -85,9 +87,35 @@ export default function CVPrintPage() {
     };
   }, []);
 
+  // Roles the user expanded on the web CV ("Leer más"). They're shown in full
+  // regardless of the auto-fit budget. We run the auto-fit with expansion OFF so
+  // the non-expanded roles keep their normal one-page detail, then apply expansion
+  // on top — the expanded roles' extra bullets spill onto a second page if needed.
+  const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => new Set());
+  const [storeLoaded, setStoreLoaded] = useState(false);
+  const [applyExpanded, setApplyExpanded] = useState(false);
+  const [tick, setTick] = useState(0); // forces a re-render to reach finalization
+  useEffect(() => {
+    setExpandedKeys(readExpandedRoles());
+    setStoreLoaded(true);
+  }, []);
+
   useIsoLayoutEffect(() => {
     const f = fit.current;
-    if (f.done || !fontsReady) return;
+    if (!fontsReady || !storeLoaded) return;
+
+    // Finalization: the fit has converged. Reached only via a re-render, so the
+    // layout is settled. Apply any expanded roles first (one more render), then
+    // signal ready — printing therefore always captures the final layout.
+    if (f.done) {
+      if (expandedKeys.size > 0 && !applyExpanded) {
+        setApplyExpanded(true);
+        return;
+      }
+      signalReady();
+      return;
+    }
+
     const container = containerRef.current;
     const ruler = rulerRef.current;
     const grid = gridRef.current;
@@ -95,31 +123,31 @@ export default function CVPrintPage() {
 
     if (f.iters++ > MAX_ITERS) {
       f.done = true;
-      signalReady();
+      setTick((t) => t + 1);
       return;
     }
 
     const pxPerMm = ruler.getBoundingClientRect().height / 100;
-    const pageH = pxPerMm * PAGE_MM;
-    const expSection = grid.firstElementChild?.querySelector("section");
-    const expH = expSection ? expSection.getBoundingClientRect().height : 0;
+    const pageH = pxPerMm * PAGE_CONTENT_MM; // usable height per page (inside @page margins)
+    // The flow-root contains both the floated sidebar and the experience that wraps
+    // around it, so its height is the taller of the two. We grow the experience
+    // until the block fills one page (the sidebar sets the floor on page 1).
+    const flowH = grid.getBoundingClientRect().height;
 
-    // Chrome = everything on the page that isn't the two-column grid (header,
-    // paddings, margins). It's constant, so capture it once. The experience
-    // column can grow until it fills the page minus that chrome (and a safety gap).
-    if (f.chrome == null) f.chrome = container.getBoundingClientRect().height - grid.getBoundingClientRect().height;
+    // Chrome = everything that isn't the content block (header, margins). Constant,
+    // so capture it once. The block can grow until it fills the page minus chrome.
+    if (f.chrome == null) f.chrome = container.getBoundingClientRect().height - flowH;
     const expBudgetPx = pageH - f.chrome - SAFETY_PX;
 
     if (f.mode === "full") {
       // Measured with every bullet visible.
-      if (expH <= expBudgetPx) {
+      if (flowH <= expBudgetPx) {
         f.done = true; // Everything already fits — keep all bullets.
-        signalReady();
+        setTick((t) => t + 1); // re-render to reach finalization
       } else {
-        // Too tall: trim the least-important trailing bullets until the
-        // experience column fills (but doesn't exceed) the space available to it.
-        // We always aim for a single full page — a 2-column print layout doesn't
-        // paginate cleanly onto a second.
+        // Too tall: trim the least-important trailing bullets until the content
+        // block fills (but doesn't exceed) the space available on page 1. Overflow
+        // (expanded roles) then runs onto page 2, full-width past the sidebar.
         f.mode = "search";
         f.lo = 1; // floor: each role keeps its lead + at least one bullet
         f.hi = fullBudget;
@@ -128,27 +156,29 @@ export default function CVPrintPage() {
       return;
     }
 
-    // mode === "search": converge on the largest budget that still fits the column.
-    if (expH <= expBudgetPx) f.lo = budget;
+    // mode === "search": converge on the largest budget that still fits one page.
+    if (flowH <= expBudgetPx) f.lo = budget;
     else f.hi = budget;
 
     if (f.hi - f.lo <= SEARCH_STEP) {
-      if (budget !== f.lo) setBudget(f.lo); // settle on the largest fitting budget
       f.done = true;
-      signalReady();
+      if (budget !== f.lo) setBudget(f.lo); // settle on the largest fitting budget
+      else setTick((t) => t + 1); // already at f.lo → force the finalization render
       return;
     }
     setBudget(Math.round((f.lo + f.hi) / 2));
-  }, [budget, fullBudget, fontsReady]);
+  }, [budget, fullBudget, fontsReady, storeLoaded, applyExpanded, expandedKeys, tick]);
 
   return (
     <main style={{ minHeight: "100vh", paddingTop: 0, paddingBottom: 0 }}>
       {/* Invisible 100mm ruler: converts mm → px for the page-height math above. */}
       <div ref={rulerRef} aria-hidden style={{ position: "absolute", top: 0, left: 0, height: "100mm", width: 0, visibility: "hidden", pointerEvents: "none" }} />
-      {/* Fixed to the A4 page width so the on-screen layout (and therefore the
-          measured height) wraps exactly like the printed page — independent of
-          the preview window width. box-sizing:border-box keeps padding inside. */}
-      <div ref={containerRef} style={{ width: "210mm", maxWidth: "100%", margin: "0 auto", padding: "12mm 15mm" }}>
+      {/* Fixed to the printable width (A4 minus the @page side margins) so the
+          on-screen layout — and therefore the measured height — wraps exactly like
+          the printed page, independent of the preview window width. Page margins
+          come from @page (so every page, including breaks, gets top/bottom space),
+          not from container padding. */}
+      <div ref={containerRef} style={{ width: "180mm", maxWidth: "100%", margin: "0 auto", padding: 0 }}>
         {/* Header - Top Section */}
         <header style={{ marginBottom: 20, paddingBottom: 16, borderBottom: "2px solid var(--surface-card-border)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24, alignItems: "start" }}>
@@ -208,17 +238,14 @@ export default function CVPrintPage() {
           </div>
         </header>
 
-        {/* Two Column Layout - Page 1 Optimized */}
-        <div ref={gridRef} style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24, marginBottom: 20, pageBreakAfter: "auto", alignItems: "start" }}>
-          {/* LEFT COLUMN - Experience */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 16, minHeight: "100%" }}>
-            <ExperienceSection experience={experience} isPrint={true} printBudget={budget} />
-          </div>
-
-          {/* RIGHT COLUMN - Education, Languages, Skills */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {/* The sidebar floats right so the experience wraps beside it on page 1 and
+            runs full-width once past it. The sidebar fits entirely on page 1, so any
+            overflow (page 2) is full-width experience with no empty right column. */}
+        <div ref={gridRef} style={{ display: "flow-root", marginBottom: 20 }}>
+          {/* SIDEBAR (floated right) - Education, Languages, Skills, Achievements */}
+          <div style={{ float: "right", width: "58mm", marginLeft: "6mm", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Education */}
-            <section style={{ pageBreakInside: "avoid" }}>
+            <section>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                 <Icon name="school" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
@@ -241,7 +268,7 @@ export default function CVPrintPage() {
             </section>
 
             {/* Languages */}
-            <section style={{ pageBreakInside: "avoid" }}>
+            <section>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                 <Icon name="translate" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
@@ -273,7 +300,7 @@ export default function CVPrintPage() {
             </section>
 
             {/* Skills */}
-            <section style={{ pageBreakInside: "avoid" }}>
+            <section>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                 <Icon name="build" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
@@ -304,7 +331,7 @@ export default function CVPrintPage() {
             </section>
 
             {/* Achievements */}
-            <section style={{ pageBreakInside: "avoid" }}>
+            <section>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                 <Icon name="star" size={18} style={{ color: "var(--accent-cyan)" }} />
                 <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
@@ -321,6 +348,9 @@ export default function CVPrintPage() {
               </div>
             </section>
           </div>
+
+          {/* EXPERIENCE - flows around the floated sidebar, full-width past it */}
+          <ExperienceSection experience={experience} isPrint={true} printBudget={budget} expandedKeys={applyExpanded ? expandedKeys : undefined} />
         </div>
       </div>
 
@@ -328,8 +358,10 @@ export default function CVPrintPage() {
       <style>{`
         @page {
           size: A4;
-          margin: 0;
-          padding: 0;
+          /* Margins on every page (including page breaks) so content never touches
+             the edges and there's always breathing room at the bottom. Must match
+             PAGE_V_MARGIN_MM (12mm) and the container width (180mm = 210 - 2·15mm). */
+          margin: 12mm 15mm;
         }
         /* These spacing rules are applied on screen AND in print so the on-screen
            preview height equals the printed height — that's what lets the auto-fit
@@ -365,9 +397,9 @@ export default function CVPrintPage() {
           header {
             page-break-inside: avoid;
           }
-          section {
-            page-break-inside: avoid;
-          }
+          /* No page-break-inside:avoid on sections/blocks: when content runs onto
+             a second page we let it flow and fill page 1 to the bottom instead of
+             pushing whole blocks down and leaving a gap. */
           h1, h2, h3, h4 {
             orphans: 3;
             widows: 3;
