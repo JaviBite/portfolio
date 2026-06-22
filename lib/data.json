@@ -3,7 +3,7 @@
     "name": "JAVIER GIMÉNEZ GARCÉS",
     "title": { "es": "Ingeniero Informático", "en": "Computer Science Engineer" },
     "birthDate": "25-08-1998",
-    "portrait": "/portrait.svg",
+    "portrait": "/portrait.jpg",
     "motto": { "es": "No veo problemas, solo soluciones", "en": "I don't see problems, only solutions" },
     "contact": {
       "email": "javiergimenezgarces@gmail.com",
