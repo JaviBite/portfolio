@@ -28,7 +28,7 @@ export default function CVPrintPage() {
       <div style={{ maxWidth: "100%", margin: 0, padding: "12mm 15mm" }}>
         {/* Header - Top Section */}
         <header style={{ marginBottom: 20, paddingBottom: 16, borderBottom: "2px solid var(--surface-card-border)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "start" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24, alignItems: "start" }}>
             <div>
               <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4, textTransform: "uppercase" }}>
                 {profile.name}

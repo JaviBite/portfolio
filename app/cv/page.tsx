@@ -30,7 +30,7 @@ export default function CVPage() {
 
         {/* Header - Top Section */}
         <header style={{ marginBottom: 32, paddingBottom: 24, borderBottom: "2px solid var(--surface-card-border)" }}>
-          <div className="cv-header-grid" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "start" }}>
+          <div className="cv-header-grid" style={{ display: "grid", gridTemplateColumns: "1.7fr 1fr", gap: 48, alignItems: "start" }}>
             <div>
               <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4, textTransform: "uppercase" }}>
                 {profile.name}
