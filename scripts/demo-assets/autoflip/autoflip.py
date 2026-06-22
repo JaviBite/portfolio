@@ -173,17 +173,25 @@ def build_crop_panel(frame, crop_x, cw, accent):
     dark = (base.astype(np.float32) * 0.30).astype(np.uint8)
     out = dark.copy()
     out[:, x0:x1] = base[:, x0:x1]
-    cv2.rectangle(out, (x0, 1), (x1 - 1, PH - 2), accent, 3, cv2.LINE_AA)
+    # Ventana de recorte: SOLO las dos verticales (no un rectángulo cerrado). El
+    # crop es a alto completo, así que las verticales ya lo definen; evitamos
+    # pintar líneas sobre los bordes superior/inferior del panel (exteriores del
+    # composite), que daban sensación de «cortado».
+    x1l = max(0, min(x1 - 1, LW - 1))
+    cv2.line(out, (x0, 0), (x0, PH - 1), accent, 3, cv2.LINE_AA)
+    cv2.line(out, (x1l, 0), (x1l, PH - 1), accent, 3, cv2.LINE_AA)
     draw_tag(out, (10, 10), "16:9 / CROP", accent)
     return out
 
 
 def build_result(frame, crop_x, cw, rw, rh, accent):
-    """Panel 9:16 derecho: el recorte vertical real, en marco tipo móvil."""
+    """Panel 9:16 derecho: el recorte vertical real. Sin marco propio: sus bordes
+    son exteriores del composite y un marco ahí da sensación de «cortado». El
+    único borde de acento de este panel es su lado interior (izquierdo), que lo
+    aporta el divisor de acento del gap."""
     H0 = frame.shape[0]
     crop = frame[0:H0, crop_x:crop_x + cw]
     vert = cv2.resize(crop, (rw, rh), interpolation=cv2.INTER_AREA)
-    panel_border(vert, accent, 3)
     draw_tag(vert, (10, 10), "9:16 / RESULTADO", accent)
     return vert
 
@@ -345,7 +353,11 @@ def main() -> None:
         bot = build_crop_panel(frame, int(crop_x[i]), cw, accent)
         res = build_result(frame, int(crop_x[i]), cw, RW, COLH, accent)
 
-        canvas = np.full((CH, CW, 3), (20, 18, 16), np.uint8)
+        # Fondo = acento: como las 3 regiones cubren todo salvo los dos GAPs, lo
+        # único que asoma es ese acento en los GAPs = divisores INTERIORES (entre
+        # análisis/crop y entre la columna izquierda y el resultado). El perímetro
+        # exterior queda sin acento.
+        canvas = np.full((CH, CW, 3), accent, np.uint8)
         canvas[0:PH, 0:LW] = top
         canvas[PH + GAP:2 * PH + GAP, 0:LW] = bot
         rx = LW + GAP

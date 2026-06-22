@@ -26,6 +26,60 @@ interface ExperienceSectionProps {
 
 const CHAR_LIMIT = 240;
 
+// Bullets are authored with a " - " marker (space-dash-space). A description like
+// "Intro. - Punto uno. - Punto dos." becomes a lead paragraph + a bullet list.
+// The marker is unambiguous: hyphenated words (on-edge, multi-agente) have no
+// surrounding spaces, and date ranges use an en-dash (–), not a hyphen.
+const BULLET_SPLIT = /\s+-\s+/;
+
+function parseDescription(text: string): { lead: string; bullets: string[] } {
+  const trimmed = text.trim();
+  // A leading "- " marks a first bullet with no lead paragraph.
+  const normalized = trimmed.startsWith("- ") ? ` ${trimmed}` : trimmed;
+  const segments = normalized
+    .split(BULLET_SPLIT)
+    .map((s) => s.trim())
+    .filter((s, i) => s.length > 0 || i === 0);
+  if (segments.length <= 1) return { lead: trimmed, bullets: [] };
+  const [lead, ...bullets] = segments;
+  return { lead, bullets: bullets.filter(Boolean) };
+}
+
+function ReadToggle({
+  expanded,
+  setExpanded,
+  fontSize,
+  readMore,
+  readLess,
+}: {
+  expanded: boolean;
+  setExpanded: (fn: (v: boolean) => boolean) => void;
+  fontSize: number;
+  readMore: string;
+  readLess: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => setExpanded((v) => !v)}
+      className="no-print"
+      style={{
+        background: "none",
+        border: "none",
+        padding: 0,
+        color: "var(--accent-cyan)",
+        cursor: "pointer",
+        fontSize,
+        fontWeight: 600,
+        fontFamily: "inherit",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {expanded ? readLess : `${readMore}…`}
+    </button>
+  );
+}
+
 function RoleDescription({
   text,
   fontSize,
@@ -42,39 +96,58 @@ function RoleDescription({
   readLess: string;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const needsTruncate = !isPrint && text.length > CHAR_LIMIT;
-  const printTruncated = isPrint && printCharLimit && text.length > printCharLimit;
-  const shown =
-    printTruncated
-      ? text.slice(0, printCharLimit).replace(/\s+\S*$/, "").trimEnd() + "…"
+  const { lead, bullets } = parseDescription(text);
+
+  // Print, or descriptions without bullets: render flowing prose (markers stripped).
+  if (isPrint || bullets.length === 0) {
+    const prose = bullets.length ? [lead, ...bullets].filter(Boolean).join(" ") : text;
+    const needsTruncate = !isPrint && prose.length > CHAR_LIMIT;
+    const printTruncated = isPrint && printCharLimit && prose.length > printCharLimit;
+    const shown = printTruncated
+      ? prose.slice(0, printCharLimit).replace(/\s+\S*$/, "").trimEnd() + "…"
       : needsTruncate && !expanded
-      ? text.slice(0, CHAR_LIMIT).replace(/\s+\S*$/, "").trimEnd() + "… "
-      : text;
+      ? prose.slice(0, CHAR_LIMIT).replace(/\s+\S*$/, "").trimEnd() + "… "
+      : prose;
+
+    return (
+      <p style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.55, margin: 0 }}>
+        {shown}
+        {needsTruncate && (
+          <ReadToggle expanded={expanded} setExpanded={setExpanded} fontSize={fontSize} readMore={readMore} readLess={readLess} />
+        )}
+      </p>
+    );
+  }
+
+  // Web with bullets: lead paragraph + bullet list, truncated by character budget
+  // so collapsed cards stay compact (always shows at least one bullet).
+  const total = [lead, ...bullets].join(" ").length;
+  const needsTruncate = total > CHAR_LIMIT;
+  let shownBullets = bullets;
+  if (needsTruncate && !expanded) {
+    shownBullets = [];
+    let used = lead.length;
+    for (const b of bullets) {
+      if (shownBullets.length >= 1 && used + b.length > CHAR_LIMIT) break;
+      shownBullets.push(b);
+      used += b.length;
+    }
+  }
 
   return (
-    <p style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.55, margin: 0 }}>
-      {shown}
+    <div style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.55 }}>
+      {lead && <p style={{ margin: 0 }}>{lead}</p>}
+      <ul style={{ margin: lead ? "4px 0 0" : 0, paddingLeft: 18, listStyleType: "disc" }}>
+        {shownBullets.map((b, i) => (
+          <li key={i} style={{ color: "var(--accent-cyan)", marginBottom: 3 }}>
+            <span style={{ color: "var(--text-secondary)" }}>{b}</span>
+          </li>
+        ))}
+      </ul>
       {needsTruncate && (
-        <button
-          type="button"
-          onClick={() => setExpanded((v) => !v)}
-          className="no-print"
-          style={{
-            background: "none",
-            border: "none",
-            padding: 0,
-            color: "var(--accent-cyan)",
-            cursor: "pointer",
-            fontSize,
-            fontWeight: 600,
-            fontFamily: "inherit",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {expanded ? readLess : `${readMore}…`}
-        </button>
+        <ReadToggle expanded={expanded} setExpanded={setExpanded} fontSize={fontSize} readMore={readMore} readLess={readLess} />
       )}
-    </p>
+    </div>
   );
 }
 

@@ -17,7 +17,7 @@ import type { DemoFit, DemoMedia } from "./types";
  */
 export type DemoConfig =
   | { type: "youtube"; badge?: string; youtubeId?: string; title?: string; fit?: DemoFit }
-  | { type: "video"; badge?: string; src?: string; poster?: DemoMedia; autoPlay?: boolean; fit?: DemoFit }
+  | { type: "video"; badge?: string; src?: string; poster?: DemoMedia; autoPlay?: boolean; fit?: DemoFit; fitPosition?: string }
   | { type: "image"; badge?: string; image?: DemoMedia; boxes?: DetectionBox[]; placeholderIcon?: string; fit?: DemoFit }
   | { type: "compare"; badge?: string; before?: DemoMedia; after?: DemoMedia; afterClean?: DemoMedia; toggleLabel?: string; initial?: number }
   | { type: "network"; badge?: string; nodes?: GraphNode[]; edges?: GraphEdge[] }
@@ -50,7 +50,7 @@ export function DemoRenderer({
       return <YouTubeEmbed videoId={demo.youtubeId} title={demo.title} fit={demo.fit} accent={accent} badge={demo.badge} />;
 
     case "video":
-      return <VideoPanel src={demo.src} poster={demo.poster} autoPlay={demo.autoPlay} fit={demo.fit} accent={accent} badge={demo.badge} />;
+      return <VideoPanel src={demo.src} poster={demo.poster} autoPlay={demo.autoPlay} fit={demo.fit} fitPosition={demo.fitPosition} accent={accent} badge={demo.badge} />;
 
     case "image":
       return (

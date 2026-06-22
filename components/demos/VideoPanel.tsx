@@ -14,6 +14,9 @@ interface VideoPanelProps extends DemoBaseProps {
   badge?: string;
   /** "cover" crops to fill the panel (no bands); "contain" fits the whole frame. */
   fit?: DemoFit;
+  /** CSS object-position for the media (e.g. "right" to keep the right edge when
+   * `cover` crops horizontally). Default "center". */
+  fitPosition?: string;
 }
 
 /**
@@ -29,6 +32,7 @@ export function VideoPanel({
   accent = "var(--accent-cyan)",
   badge = "demo",
   fit = "cover",
+  fitPosition = "center",
 }: VideoPanelProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(autoPlay);
@@ -51,7 +55,7 @@ export function VideoPanel({
           playsInline
           autoPlay
           controls={!autoPlay}
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: fit }}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: fit, objectPosition: fitPosition }}
         />
       ) : (
         <>
@@ -59,7 +63,7 @@ export function VideoPanel({
             <img
               src={poster.src}
               alt={poster.alt ?? poster.label ?? ""}
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: fit }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: fit, objectPosition: fitPosition }}
             />
           ) : (
             <MediaPlaceholder label={poster?.label ?? "video"} accent={accent} icon="movie" />
