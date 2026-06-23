@@ -4,6 +4,11 @@ import { useState } from "react";
 import { CVPrintButton } from "@/components/CVPrintButton";
 import { CVChatBubble } from "@/components/CVChatBubble";
 import { ExperienceSection } from "@/components/ExperienceSection";
+import {
+  MusicEasterEggProvider,
+  MusicianTrait,
+  MusicianPortrait,
+} from "@/components/MusicEasterEgg";
 import { Icon } from "@/components/Icon";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useData } from "@/lib/useData";
@@ -15,6 +20,7 @@ export default function CVPage() {
   const [chatOpen, setChatOpen] = useState(false);
 
   return (
+    <MusicEasterEggProvider>
     <main style={{ minHeight: "100vh", paddingTop: 80, paddingBottom: 120 }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
         {/* Actions bar */}
@@ -76,25 +82,7 @@ export default function CVPage() {
             </div>
             {/* Photo - Hidden in print */}
             <div className="cv-header-photo" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-              <div
-                className="no-print"
-                style={{
-                  borderRadius: "50%",
-                  overflow: "hidden",
-                  border: "3px solid var(--accent-cyan)",
-                  backgroundColor: "var(--surface-card)",
-                  width: 160,
-                  height: 160,
-                  boxShadow: "0 0 24px rgba(6, 182, 212, 0.3)",
-                  flexShrink: 0,
-                }}
-              >
-                <img
-                  src={profile.portrait}
-                  alt={`Portrait of ${profile.name}`}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                />
-              </div>
+              <MusicianPortrait src={profile.portrait} alt={`Portrait of ${profile.name}`} />
               <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)", textAlign: "center", maxWidth: 180 }}>
                 "No veo problemas, solo soluciones."
               </p>
@@ -183,11 +171,18 @@ export default function CVPage() {
                     </h4>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {Array.isArray(skillGroup.items)
-                        ? skillGroup.items.map((item: any) => (
-                            <span key={typeof item === "string" ? item : item.name} style={{ padding: "4px 10px", borderRadius: 4, fontSize: 12, fontFamily: "var(--font-geist-mono)", color: "var(--text-secondary)", backgroundColor: "var(--surface-card)", border: "1px solid var(--surface-card-border)" }}>
-                              {typeof item === "string" ? item : item.name}
-                            </span>
-                          ))
+                        ? skillGroup.items.map((item) => {
+                            const label = typeof item === "string" ? item : item.name;
+                            // Music easter egg lives on the "Músico" / "Musician" badge.
+                            if (label === "Músico" || label === "Musician") {
+                              return <MusicianTrait key={label} label={label} />;
+                            }
+                            return (
+                              <span key={label} style={{ padding: "4px 10px", borderRadius: 4, fontSize: 12, fontFamily: "var(--font-geist-mono)", color: "var(--text-secondary)", backgroundColor: "var(--surface-card)", border: "1px solid var(--surface-card-border)" }}>
+                                {label}
+                              </span>
+                            );
+                          })
                         : null}
                     </div>
                   </div>
@@ -344,5 +339,6 @@ export default function CVPage() {
 
       <CVChatBubble open={chatOpen} onOpenChange={setChatOpen} />
     </main>
+    </MusicEasterEggProvider>
   );
 }

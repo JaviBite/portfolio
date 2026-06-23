@@ -1650,11 +1650,56 @@ body {
   border-color: var(--accent-cyan);
 }
 
+/* ===== Music easter egg ===== */
+/* The badge's base look, the portrait shape, the shades position and the beat
+   reaction all live as INLINE styles in components/MusicEasterEgg.tsx, so the
+   feature renders correctly even if this stylesheet hasn't hot-reloaded. Here
+   we only add the decorative animations (CSS animations override inline styles
+   automatically, so no !important games are needed). --beat (0..1) is published
+   on <html> every frame by the provider. */
+:root { --beat: 0; }
+
+/* Idle: a gentle "click me" breathing glow + an occasional nudge. */
+.musician-trait { animation: trait-glow 2.6s ease-in-out infinite, trait-nudge 5s ease-in-out infinite; }
+.musician-trait.is-playing { animation: none; }
+.musician-trait:focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
+
+@keyframes trait-glow {
+  0%, 100% { box-shadow: 0 0 5px var(--accent-cyan-glow); border-color: var(--surface-card-border); }
+  50%      { box-shadow: 0 0 16px var(--accent-cyan-glow); border-color: var(--accent-cyan); }
+}
+@keyframes trait-nudge {
+  0%, 82%, 100% { transform: translateX(0) rotate(0deg); }
+  86% { transform: translateX(-1.8px) rotate(-2.6deg); }
+  90% { transform: translateX(1.8px) rotate(2.6deg); }
+  94% { transform: translateX(-1.2px) rotate(-1.5deg); }
+}
+
+/* The SVG sunglasses drop onto the face. */
+.shades-overlay { animation: shades-drop 0.7s cubic-bezier(.2, 1.3, .4, 1) both; }
+@keyframes shades-drop {
+  0%   { transform: translate(-50%, -260%) rotate(-12deg); opacity: 0; }
+  60%  { transform: translate(-50%, -42%) rotate(4deg); opacity: 1; }
+  80%  { transform: translate(-50%, -54%) rotate(-2deg); }
+  100% { transform: translate(-50%, -50%) rotate(0deg); opacity: 1; }
+}
+
 /* Respect user's reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* Reduced motion: freeze the beat-driven *motion* (the inline scale/translate
+   reference --beat directly, so the rule above can't catch them) but let the
+   glow keep reacting — a non-motion way to still feel the rhythm. */
+@media (prefers-reduced-motion: reduce) {
+  .musician-trait.is-playing,
+  .musician-trait.is-playing .musician-trait__note,
+  .portrait-ring.is-playing {
+    transform: none !important;
   }
 }
 
