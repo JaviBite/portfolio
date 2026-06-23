@@ -363,6 +363,33 @@ export default function CVPrintPage() {
              PAGE_V_MARGIN_MM (12mm) and the container width (180mm = 210 - 2·15mm). */
           margin: 12mm 15mm;
         }
+        /* The printable CV always renders in light ("day") mode, independent of the
+           site-wide dark/light theme. next-themes toggles the .dark class on <html>,
+           so re-declaring the :root (light) palette on <body> here wins for the whole
+           page subtree without touching the global theme state. Mirrors globals.css.
+           The @media print rules below still force a white paper background. */
+        html {
+          /* next-themes writes color-scheme:dark to the <html> inline style in dark
+             mode, which paints the browser canvas (page gutters, scrollbar, overscroll)
+             black. Force light here — !important is required to beat the inline style. */
+          color-scheme: light !important;
+          background-color: #f5f1e8;
+        }
+        body {
+          --bg: #f5f1e8;
+          --bg-secondary: #ebe6dd;
+          --text-primary: #221b14;
+          --text-secondary: #473a30;
+          --text-muted: #756b60;
+          --accent-cyan: #4bc4d9;
+          --accent-cyan-glow: rgba(75, 196, 217, 0.22);
+          --accent-purple: #c578c6;
+          --accent-purple-glow: rgba(197, 120, 198, 0.18);
+          --surface-card: #ffffff;
+          --surface-card-border: rgba(0, 0, 0, 0.12);
+          --grid-line: rgba(0, 0, 0, 0.03);
+          --shadow-card: 0 16px 40px rgba(0,0,0,0.08);
+        }
         /* These spacing rules are applied on screen AND in print so the on-screen
            preview height equals the printed height — that's what lets the auto-fit
            above measure the real page and decide 1 vs 2 pages accurately. */
@@ -378,6 +405,12 @@ export default function CVPrintPage() {
           * {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+          }
+          html {
+            /* The root background is painted across every printed page; the on-screen
+               cream (#f5f1e8) above would otherwise show through wherever page 2's
+               content doesn't reach the bottom. Force the whole paper white. */
+            background: white;
           }
           body {
             margin: 0;

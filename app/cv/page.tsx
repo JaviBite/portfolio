@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import { CVPrintButton } from "@/components/CVPrintButton";
+import { CVChatBubble } from "@/components/CVChatBubble";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { Icon } from "@/components/Icon";
 import { useLocale } from "@/i18n/LocaleContext";
@@ -11,6 +12,7 @@ export default function CVPage() {
   const { messages } = useLocale();
   const data = useData();
   const { profile, experience, education, languages, skills } = data;
+  const [chatOpen, setChatOpen] = useState(false);
 
   return (
     <main style={{ minHeight: "100vh", paddingTop: 80, paddingBottom: 120 }}>
@@ -21,9 +23,9 @@ export default function CVPage() {
             {messages.cv?.subtitle || "LIVING CV — actualizado 2026"}
           </span>
           <div style={{ display: "flex", gap: 12 }}>
-            <Link href="/cv/chat" style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid var(--accent-cyan)", backgroundColor: "var(--accent-cyan-glow)", color: "var(--accent-cyan)", fontSize: 13, fontWeight: 600, textDecoration: "none", fontFamily: "var(--font-geist-mono)" }}>
+            <button onClick={() => setChatOpen(true)} style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid var(--accent-cyan)", backgroundColor: "var(--accent-cyan-glow)", color: "var(--accent-cyan)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-geist-mono)" }}>
               {messages.cv?.chat_cta || "Pregunta a mi CV →"}
-            </Link>
+            </button>
             <CVPrintButton />
           </div>
         </div>
@@ -339,6 +341,8 @@ export default function CVPage() {
           }
         }
       `}</style>
+
+      <CVChatBubble open={chatOpen} onOpenChange={setChatOpen} />
     </main>
   );
 }

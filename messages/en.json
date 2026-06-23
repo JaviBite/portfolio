@@ -70,8 +70,11 @@
     "placeholder": "How many years of experience does he have in Computer Vision?",
     "send": "Send",
     "questions_left": "questions left",
+    "no_questions": "No questions left",
     "limit_reached": "You've used all your questions for this session. Want to know more? Reach out directly.",
-    "contact": "Contact",
-    "thinking": "Thinking..."
+    "contact": "Contact directly",
+    "thinking": "Thinking...",
+    "greeting": "Hi, I'm Javier's assistant. I have access to his full CV and professional background. What would you like to know?",
+    "error": "Sorry, there was an error processing your question. Please try again."
   }
 }

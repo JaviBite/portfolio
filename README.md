@@ -195,10 +195,10 @@ Todos los colores son variables CSS — nunca hardcodeados en componentes.
 - [x] Setup Next.js + Tailwind + temas + i18n
 - [x] Landing completa (Hero, Stack, Proyectos, Filosofía, HomeLab)
 - [x] Living CV con print CSS
-- [x] Chatbot Gemini con rate limiting por sesión
+- [ ] Chatbot en burbuja con rate limiting por sesión
 - [x] Galería de proyectos Bento Grid
 - [x] Build limpio, TypeScript sin errores
-- [ ] Demos interactivas (homografía JS, sliders, overlays de vídeo, log console simulado)
+- [x] Demos interactivas (homografía JS, sliders, overlays de vídeo, log console simulado)
 - [ ] Easter egg musical (Web Audio API + AnalyserNode, glow reactivo al BPM)
 - [ ] Animaciones Framer Motion
 - [ ] Optimización Core Web Vitals

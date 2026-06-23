@@ -70,8 +70,11 @@
     "placeholder": "¿Cuántos años de experiencia tiene en Computer Vision?",
     "send": "Enviar",
     "questions_left": "preguntas restantes",
+    "no_questions": "Sin preguntas",
     "limit_reached": "Has agotado las preguntas de esta sesión. ¿Quieres saber más? Contacta directamente.",
-    "contact": "Contactar",
-    "thinking": "Pensando..."
+    "contact": "Contactar directamente",
+    "thinking": "Pensando...",
+    "greeting": "Hola, soy el asistente de Javier. Tengo acceso a todo su CV y trayectoria profesional. ¿Qué quieres saber?",
+    "error": "Lo siento, ha habido un error al procesar tu pregunta. Por favor, inténtalo de nuevo."
   }
 }
