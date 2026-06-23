@@ -4,35 +4,55 @@ import { ReactNode, useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { useLocale } from "@/i18n/LocaleContext";
 
-// Roles the user expanded with "Leer más" on the web CV are persisted here so the
-// print/PDF page (a separate window, same origin) can show those roles in full.
-const EXPANDED_STORE_KEY = "cv:expandedRoles";
+// How much of a role's description is shown. The user cycles through these on the
+// web CV by clicking the toggle: cut (truncated) → full → summary → empty → cut…
+// The button always advertises the NEXT state, so it's clear what one more click does.
+export type RoleState = "cut" | "full" | "summary" | "empty";
+
+// The non-default per-role states chosen on the web CV are persisted here so the
+// print/PDF page (a separate window, same origin) can mirror the exact same layout.
+// Roles left at their default (see buildCycle) are absent from the map.
+const ROLE_STATES_KEY = "cv:roleStates";
 
 // Stable, locale-independent identity for a role: company + its start date.
 export function roleStorageKey(company: string, start: string): string {
   return `${company}__${start}`;
 }
 
-export function readExpandedRoles(): Set<string> {
-  if (typeof window === "undefined") return new Set();
+export function readRoleStates(): Record<string, RoleState> {
+  if (typeof window === "undefined") return {};
   try {
-    const raw = window.localStorage.getItem(EXPANDED_STORE_KEY);
-    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+    const raw = window.localStorage.getItem(ROLE_STATES_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, RoleState>) : {};
   } catch {
-    return new Set();
+    return {};
   }
 }
 
-function writeExpandedRole(key: string, expanded: boolean) {
+function writeRoleState(key: string, state: RoleState, isDefault: boolean) {
   if (typeof window === "undefined") return;
   try {
-    const set = readExpandedRoles();
-    if (expanded) set.add(key);
-    else set.delete(key);
-    window.localStorage.setItem(EXPANDED_STORE_KEY, JSON.stringify([...set]));
+    const map = readRoleStates();
+    // Default state == "untouched": drop the entry so the print page treats the
+    // role exactly like one the user never cycled (normal auto-fit budget).
+    if (isDefault) delete map[key];
+    else map[key] = state;
+    window.localStorage.setItem(ROLE_STATES_KEY, JSON.stringify(map));
   } catch {
-    /* localStorage unavailable (private mode, etc.) — expansion just won't persist */
+    /* localStorage unavailable (private mode, etc.) — the choice just won't persist */
   }
+}
+
+// The ordered cycle of states available for a role. "cut" only exists when the
+// description is long enough to truncate; "summary" only when one was authored.
+// The first entry is the default (what an untouched role shows).
+function buildCycle(needsTruncate: boolean, hasSummary: boolean): RoleState[] {
+  const cycle: RoleState[] = [];
+  if (needsTruncate) cycle.push("cut");
+  cycle.push("full");
+  if (hasSummary) cycle.push("summary");
+  cycle.push("empty");
+  return cycle;
 }
 
 // Wraps its children in a link to the company website when one exists, otherwise
@@ -75,16 +95,34 @@ interface ExperienceSectionProps {
       end?: { es: string; en: string } | string | null;
       current?: boolean;
       description: { es: string; en: string } | string;
+      summary?: { es: string; en: string } | string;
       stack: string[];
       location?: string;
     }>;
   }>;
   isPrint?: boolean;
   printBudget?: number;
-  // Print only: role keys (see roleStorageKey) the user expanded on the web CV,
-  // which should be shown in full regardless of the auto-fit budget.
-  expandedKeys?: Set<string>;
+  // Print only: the per-role display state (see RoleState) chosen on the web CV,
+  // keyed by roleStorageKey. Absent roles fall back to the normal auto-fit budget.
+  roleStates?: Record<string, RoleState>;
   messages?: any;
+}
+
+interface CycleLabels {
+  readMore: string;
+  summary: string;
+  empty: string;
+  read: string;
+}
+
+// The toggle always names the NEXT state. "Leer" is the wrap-around back to the
+// start (from "empty"); the others describe the state the click moves to.
+function transitionLabel(current: RoleState, next: RoleState, labels: CycleLabels): string {
+  if (current === "empty") return labels.read;
+  if (next === "full") return `${labels.readMore}…`;
+  if (next === "summary") return labels.summary;
+  if (next === "empty") return labels.empty;
+  return labels.read;
 }
 
 const CHAR_LIMIT = 240;
@@ -172,23 +210,19 @@ function parseDescription(text: string): { lead: string; bullets: string[] } {
   return { lead, bullets: bullets.filter(Boolean) };
 }
 
-function ReadToggle({
-  expanded,
-  onToggle,
+function CycleToggle({
+  label,
+  onClick,
   fontSize,
-  readMore,
-  readLess,
 }: {
-  expanded: boolean;
-  onToggle: () => void;
+  label: string;
+  onClick: () => void;
   fontSize: number;
-  readMore: string;
-  readLess: string;
 }) {
   return (
     <button
       type="button"
-      onClick={onToggle}
+      onClick={onClick}
       className="no-print"
       style={{
         background: "none",
@@ -202,60 +236,59 @@ function ReadToggle({
         whiteSpace: "nowrap",
       }}
     >
-      {expanded ? readLess : `${readMore}…`}
+      {label}
     </button>
   );
 }
 
 function RoleDescription({
   text,
+  summary,
   fontSize,
   isPrint,
   printBudget,
-  forceFull,
+  printState,
   roleKey,
-  readMore,
-  readLess,
+  labels,
 }: {
   text: string;
+  summary: string;
   fontSize: number;
   isPrint?: boolean;
   printBudget?: number;
-  // Print only: ignore the budget and show every bullet (role expanded on the web).
-  forceFull?: boolean;
+  // Print only: the state chosen on the web for this role (undefined → default).
+  printState?: RoleState;
   roleKey?: string;
-  readMore: string;
-  readLess: string;
+  labels: CycleLabels;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const { lead, bullets } = parseDescription(text);
+  const hasBullets = bullets.length > 0;
+  const total = hasBullets ? [lead, ...bullets].join(" ").length : text.length;
+  const needsTruncate = total > CHAR_LIMIT;
+  const hasSummary = summary.trim().length > 0;
+  const cycle = buildCycle(needsTruncate, hasSummary);
+  const defaultState = cycle[0];
 
-  // Web: restore the persisted "Leer más" state on mount (after hydration to avoid
-  // a mismatch), and persist every toggle so the print/PDF page can mirror it.
+  // Web state. Hooks must run unconditionally (print branches below in render only).
+  const [state, setState] = useState<RoleState>(defaultState);
+
+  // Web: restore the persisted state on mount (after hydration to avoid a mismatch),
+  // and persist every change so the print/PDF page can mirror it.
   useEffect(() => {
     if (isPrint || !roleKey) return;
-    if (readExpandedRoles().has(roleKey)) setExpanded(true);
+    const stored = readRoleStates()[roleKey];
+    if (stored && cycle.includes(stored)) setState(stored);
+    // cycle is derived from stable props; roleKey identifies the role uniquely.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPrint, roleKey]);
 
-  const toggle = () =>
-    setExpanded((v) => {
-      const next = !v;
-      if (!isPrint && roleKey) writeExpandedRole(roleKey, next);
-      return next;
-    });
-
-  const { lead, bullets } = parseDescription(text);
-
-  // Print: render bullets like the web, but truncated to a per-role character
-  // budget. The lead and at least one bullet are always kept; remaining bullets
-  // are dropped whole (never cut mid-sentence) so the print auto-fit on the page
-  // can grow or shrink the budget cleanly to fill the available space. A role the
-  // user expanded on the web (forceFull) ignores the budget and shows everything.
-  if (isPrint) {
-    const budget = forceFull ? Infinity : printBudget ?? Infinity;
-    if (bullets.length === 0) {
+  // Renders the lead + bullet list (or plain prose), trimmed to `budget` characters.
+  // Used by both the web "cut" state (CHAR_LIMIT) and every print state (page budget).
+  const renderBudgeted = (budget: number) => {
+    if (!hasBullets) {
       const shown =
-        budget < lead.length ? lead.slice(0, budget).replace(/\s+\S*$/, "").trimEnd() + "…" : lead;
-      return <p style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.4, margin: 0 }}>{shown}</p>;
+        budget < text.length ? text.slice(0, budget).replace(/\s+\S*$/, "").trimEnd() + "…" : text;
+      return shown;
     }
     const shownBullets: string[] = [];
     let used = lead.length;
@@ -264,6 +297,22 @@ function RoleDescription({
       shownBullets.push(b);
       used += b.length;
     }
+    return shownBullets;
+  };
+
+  // --- PRINT: no toggle; render exactly the state the user left the role in. ---
+  if (isPrint) {
+    const printResolved: RoleState = printState ?? defaultState;
+    if (printResolved === "empty") return null;
+    if (printResolved === "summary" && hasSummary) {
+      return <p style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.4, margin: 0 }}>{summary}</p>;
+    }
+    // "full" ignores the budget; "cut"/default uses the page auto-fit budget.
+    const budget = printResolved === "full" ? Infinity : printBudget ?? Infinity;
+    if (!hasBullets) {
+      return <p style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.4, margin: 0 }}>{renderBudgeted(budget) as string}</p>;
+    }
+    const shownBullets = renderBudgeted(budget) as string[];
     return (
       <div style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.4 }}>
         {lead && <p style={{ margin: 0 }}>{lead}</p>}
@@ -278,37 +327,42 @@ function RoleDescription({
     );
   }
 
-  // Web without bullets: flowing prose with a read-more toggle.
-  if (bullets.length === 0) {
-    const needsTruncate = text.length > CHAR_LIMIT;
-    const shown =
-      needsTruncate && !expanded ? text.slice(0, CHAR_LIMIT).replace(/\s+\S*$/, "").trimEnd() + "… " : text;
+  // --- WEB: cycle through the states; the toggle always names the next one. ---
+  const idx = Math.max(0, cycle.indexOf(state));
+  const next = cycle[(idx + 1) % cycle.length];
+  const cycleNext = () => {
+    setState(next);
+    if (roleKey) writeRoleState(roleKey, next, next === defaultState);
+  };
+  const button = <CycleToggle label={transitionLabel(state, next, labels)} onClick={cycleNext} fontSize={fontSize} />;
 
+  if (state === "empty") {
+    return <div style={{ fontSize, lineHeight: 1.55 }}>{button}</div>;
+  }
+
+  if (state === "summary") {
     return (
       <p style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.55, margin: 0 }}>
-        {shown}
-        {needsTruncate && (
-          <ReadToggle expanded={expanded} onToggle={toggle} fontSize={fontSize} readMore={readMore} readLess={readLess} />
-        )}
+        {summary}{" "}
+        {button}
       </p>
     );
   }
 
-  // Web with bullets: lead paragraph + bullet list, truncated by character budget
-  // so collapsed cards stay compact (always shows at least one bullet).
-  const total = [lead, ...bullets].join(" ").length;
-  const needsTruncate = total > CHAR_LIMIT;
-  let shownBullets = bullets;
-  if (needsTruncate && !expanded) {
-    shownBullets = [];
-    let used = lead.length;
-    for (const b of bullets) {
-      if (shownBullets.length >= 1 && used + b.length > CHAR_LIMIT) break;
-      shownBullets.push(b);
-      used += b.length;
-    }
+  // "cut" or "full" — full content when expanded, truncated to CHAR_LIMIT when cut.
+  const expanded = state === "full";
+
+  if (!hasBullets) {
+    const shown = expanded ? `${text} ` : `${renderBudgeted(CHAR_LIMIT) as string} `;
+    return (
+      <p style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.55, margin: 0 }}>
+        {shown}
+        {button}
+      </p>
+    );
   }
 
+  const shownBullets = expanded ? bullets : (renderBudgeted(CHAR_LIMIT) as string[]);
   return (
     <div style={{ fontSize, color: "var(--text-secondary)", lineHeight: 1.55 }}>
       {lead && <p style={{ margin: 0 }}>{lead}</p>}
@@ -319,23 +373,26 @@ function RoleDescription({
           </li>
         ))}
       </ul>
-      {needsTruncate && (
-        <ReadToggle expanded={expanded} onToggle={toggle} fontSize={fontSize} readMore={readMore} readLess={readLess} />
-      )}
+      {button}
     </div>
   );
 }
 
-export function ExperienceSection({ experience, isPrint = false, printBudget, expandedKeys, messages }: ExperienceSectionProps) {
+export function ExperienceSection({ experience, isPrint = false, printBudget, roleStates, messages }: ExperienceSectionProps) {
   const { locale } = useLocale();
 
-  const getText = (text: { es: string; en: string } | string) => {
+  const getText = (text: { es: string; en: string } | string | undefined) => {
+    if (text == null) return "";
     if (typeof text === "string") return text;
     return text[locale as keyof typeof text] || text.es;
   };
 
-  const readMore = messages?.cv?.read_more || "Leer más";
-  const readLess = messages?.cv?.read_less || "Leer menos";
+  const labels: CycleLabels = {
+    readMore: messages?.cv?.read_more || "Leer más",
+    summary: messages?.cv?.summary || "Resumen",
+    empty: messages?.cv?.empty || "Vacío",
+    read: messages?.cv?.read || "Leer",
+  };
   // Unified layout for web and print: left line column, logo column, content column
   return (
     <section>
@@ -405,7 +462,7 @@ export function ExperienceSection({ experience, isPrint = false, printBudget, ex
                           <div>
                             <h4 style={{ fontSize: 13, fontWeight: 600, margin: 0 }}>{getText(role.role)}</h4>
                             <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "2px 0" }}>{role.start} – {getText(role.end || messages?.cv?.present || "Presente")}{(() => { const d = formatDuration(role.start, rawDate(role.end), locale); return d ? <span style={{ opacity: 0.75 }}> · ({d})</span> : null; })()}</p>
-                            <RoleDescription text={getText(role.description)} fontSize={isPrint ? 10.5 : 13} isPrint={isPrint} printBudget={printBudget} roleKey={roleStorageKey(exp.company, role.start)} forceFull={isPrint && !!expandedKeys?.has(roleStorageKey(exp.company, role.start))} readMore={readMore} readLess={readLess} />
+                            <RoleDescription text={getText(role.description)} summary={getText(role.summary)} fontSize={isPrint ? 10.5 : 13} isPrint={isPrint} printBudget={printBudget} roleKey={roleStorageKey(exp.company, role.start)} printState={roleStates?.[roleStorageKey(exp.company, role.start)]} labels={labels} />
                           </div>
                         </div>
                       ))}
@@ -429,7 +486,7 @@ export function ExperienceSection({ experience, isPrint = false, printBudget, ex
                     <p style={{ fontSize: 11, fontFamily: "var(--font-geist-mono)", color: "var(--text-muted)", margin: "0 0 4px" }}>
                       {exp.roles[0].start} – {getText(exp.roles[0].end || messages?.cv?.present || "Presente")}{companyDuration && <span style={{ opacity: 0.75 }}> · ({companyDuration})</span>}{exp.roles[0].location && ` • ${exp.roles[0].location}`}
                     </p>
-                    <RoleDescription text={getText(exp.roles[0].description)} fontSize={isPrint ? 10.5 : 13} isPrint={isPrint} printBudget={printBudget} roleKey={roleStorageKey(exp.company, exp.roles[0].start)} forceFull={isPrint && !!expandedKeys?.has(roleStorageKey(exp.company, exp.roles[0].start))} readMore={readMore} readLess={readLess} />
+                    <RoleDescription text={getText(exp.roles[0].description)} summary={getText(exp.roles[0].summary)} fontSize={isPrint ? 10.5 : 13} isPrint={isPrint} printBudget={printBudget} roleKey={roleStorageKey(exp.company, exp.roles[0].start)} printState={roleStates?.[roleStorageKey(exp.company, exp.roles[0].start)]} labels={labels} />
                   </>
                 )}
               </div>

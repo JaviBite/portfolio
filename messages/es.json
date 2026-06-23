@@ -57,7 +57,10 @@
     "chat_cta": "Pregunta a mi CV →",
     "present": "Presente",
     "read_more": "Leer más",
-    "read_less": "Leer menos"
+    "read_less": "Leer menos",
+    "summary": "Resumen",
+    "empty": "Vacío",
+    "read": "Leer"
   },
   "labels": {
     "email": "EMAIL:",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ExperienceSection, readExpandedRoles } from "@/components/ExperienceSection";
+import { ExperienceSection, readRoleStates, type RoleState } from "@/components/ExperienceSection";
 import { Icon } from "@/components/Icon";
 import { useData } from "@/lib/useData";
 import { useLocale } from "@/i18n/LocaleContext";
@@ -87,18 +87,29 @@ export default function CVPrintPage() {
     };
   }, []);
 
-  // Roles the user expanded on the web CV ("Leer más"). They're shown in full
-  // regardless of the auto-fit budget. We run the auto-fit with expansion OFF so
-  // the non-expanded roles keep their normal one-page detail, then apply expansion
-  // on top — the expanded roles' extra bullets spill onto a second page if needed.
-  const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => new Set());
+  // The per-role display state chosen on the web CV. "summary"/"empty" reduce a
+  // role's content, so they're applied DURING the auto-fit (they free up space the
+  // fit can give to other roles). "full" adds content, so — like the old "Leer más"
+  // — we run the fit with full roles at their default and only expand them on top
+  // afterwards, letting their extra bullets spill onto a second page if needed.
+  const [roleStates, setRoleStates] = useState<Record<string, RoleState>>({});
   const [storeLoaded, setStoreLoaded] = useState(false);
   const [applyExpanded, setApplyExpanded] = useState(false);
   const [tick, setTick] = useState(0); // forces a re-render to reach finalization
   useEffect(() => {
-    setExpandedKeys(readExpandedRoles());
+    setRoleStates(readRoleStates());
     setStoreLoaded(true);
   }, []);
+
+  const hasFull = useMemo(() => Object.values(roleStates).some((s) => s === "full"), [roleStates]);
+  // Fit phase: keep the space-reducing states, drop "full" (applied afterwards).
+  const fitStates = useMemo(() => {
+    const m: Record<string, RoleState> = {};
+    for (const [k, v] of Object.entries(roleStates)) {
+      if (v === "summary" || v === "empty") m[k] = v;
+    }
+    return m;
+  }, [roleStates]);
 
   useIsoLayoutEffect(() => {
     const f = fit.current;
@@ -108,7 +119,7 @@ export default function CVPrintPage() {
     // layout is settled. Apply any expanded roles first (one more render), then
     // signal ready — printing therefore always captures the final layout.
     if (f.done) {
-      if (expandedKeys.size > 0 && !applyExpanded) {
+      if (hasFull && !applyExpanded) {
         setApplyExpanded(true);
         return;
       }
@@ -167,7 +178,7 @@ export default function CVPrintPage() {
       return;
     }
     setBudget(Math.round((f.lo + f.hi) / 2));
-  }, [budget, fullBudget, fontsReady, storeLoaded, applyExpanded, expandedKeys, tick]);
+  }, [budget, fullBudget, fontsReady, storeLoaded, applyExpanded, hasFull, tick]);
 
   return (
     <main style={{ minHeight: "100vh", paddingTop: 0, paddingBottom: 0 }}>
@@ -350,7 +361,7 @@ export default function CVPrintPage() {
           </div>
 
           {/* EXPERIENCE - flows around the floated sidebar, full-width past it */}
-          <ExperienceSection experience={experience} isPrint={true} printBudget={budget} expandedKeys={applyExpanded ? expandedKeys : undefined} />
+          <ExperienceSection experience={experience} isPrint={true} printBudget={budget} roleStates={applyExpanded ? roleStates : fitStates} />
         </div>
       </div>
 
