@@ -202,7 +202,7 @@ Todos los colores son variables CSS — nunca hardcodeados en componentes.
 - [x] Galería de proyectos Bento Grid
 - [x] Build limpio, TypeScript sin errores
 - [x] Demos interactivas (homografía JS, sliders, overlays de vídeo, log console simulado)
-- [ ] Easter egg musical (Web Audio API + AnalyserNode, glow reactivo al BPM)
+- [x] Easter egg musical (Web Audio API + AnalyserNode, glow reactivo al BPM)
 - [ ] Animaciones Framer Motion
 - [ ] Optimización Core Web Vitals
 

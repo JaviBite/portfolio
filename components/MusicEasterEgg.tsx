@@ -19,14 +19,24 @@ import {
  * to know its BPM. The live value is written to the `--beat` CSS custom property
  * on <html> every animation frame (0..1); elements just reference `var(--beat)`.
  *
- * Drop the track at: public/music/easter-egg.mp3
- * Until a file is there, clicking still works visually: we fall back to a
- * synthetic 120 BPM pulse (no sound) so the effect is demonstrable, and it
- * switches to the real audio analysis automatically once the file exists.
+ * Drop royalty-free / CC tracks in public/music/ and list them in TRACKS below;
+ * each activation cycles to the next one. Until a file is there, clicking still
+ * works visually: we fall back to a synthetic 120 BPM pulse (no sound) so the
+ * effect is demonstrable, and it switches to real audio analysis automatically
+ * once a file exists. No track needs a known BPM — the beat is read live.
  */
 
-const MUSIC_SRC = "/music/easter-egg.mp3";
+// Royalty-free / Creative Commons tracks only — keep each one's license &
+// attribution (see public/music/README.md). Add/rename freely.
+const TRACKS = ["/music/Chrome_Boulevard.mp3"];
 const FALLBACK_BPM = 120;
+// Overall punch of the beat reaction. Auto-gain already fills the 0..1 range,
+// so this is just a final nudge — bump it up if you want the web to react harder.
+const SENSITIVITY = 1.25;
+// How much of the beat comes from a clean on-beat pulse (a decaying thump on
+// each detected kick — locked to the track's tempo) vs. the raw bass energy.
+// 1 = pure on-beat pulse, 0 = pure energy (busier). 0.7 = mostly on-beat + body.
+const PULSE_MIX = 0.7;
 
 type MusicEasterEggValue = {
   active: boolean;
@@ -42,8 +52,14 @@ export function MusicEasterEggProvider({ children }: { children: React.ReactNode
   const dataRef = useRef<Uint8Array<ArrayBuffer> | null>(null);
   const rafRef = useRef<number | null>(null);
   const beatRef = useRef(0);
+  const peakRef = useRef(0.12); // adaptive ceiling for beat auto-gain
+  const floorRef = useRef(0.04); // adaptive floor for beat auto-gain
+  const prevEnergyRef = useRef(0); // last frame's energy (onset rising-edge check)
+  const lastOnsetRef = useRef(0); // ms timestamp of last detected kick (refractory)
+  const pulseRef = useRef(0); // current on-beat pulse envelope (decays each frame)
   const activeRef = useRef(false);
   const tickRef = useRef<() => void>(() => {});
+  const trackIndexRef = useRef(0);
 
   const [active, setActive] = useState(false);
 
@@ -60,8 +76,8 @@ export function MusicEasterEggProvider({ children }: { children: React.ReactNode
       const ctx = new AC();
       const source = ctx.createMediaElementSource(audio);
       const analyser = ctx.createAnalyser();
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.75;
+      analyser.fftSize = 512; // finer low-end resolution for the kick/bass
+      analyser.smoothingTimeConstant = 0.6; // less smoothing -> snappier peaks
       source.connect(analyser);
       analyser.connect(ctx.destination);
       ctxRef.current = ctx;
@@ -86,15 +102,42 @@ export function MusicEasterEggProvider({ children }: { children: React.ReactNode
 
       if (playing && analyser && data) {
         analyser.getByteFrequencyData(data);
-        // Bass energy ~ bins 1..8 (≈ 180–1500 Hz at 48 kHz / fftSize 256).
+        // Average the low (kick/bass) bins ~40–800 Hz at 44.1 kHz / fftSize 512.
         let sum = 0;
         const lo = 1;
-        const hi = 8;
+        const hi = 9;
         for (let i = lo; i <= hi; i++) sum += data[i];
-        const energy = sum / ((hi - lo + 1) * 255); // 0..1
-        const prev = beatRef.current;
-        // Fast attack, slow decay -> a punchy, kick-like pulse.
-        beat = energy > prev ? energy : prev * 0.86 + energy * 0.14;
+        const energy = sum / ((hi - lo + 1) * 255); // 0..1 raw
+
+        // (1) ENERGY track: auto-gain with an adaptive floor AND ceiling (both
+        // snap fast toward a new extreme, release slowly). Mapping energy across
+        // that recent range gives contrast on *any* track — sustained level near
+        // 0, kicks near 1 — instead of pinning at max or topping out at ~0.5.
+        peakRef.current += (energy - peakRef.current) * (energy > peakRef.current ? 0.5 : 0.02);
+        floorRef.current += (energy - floorRef.current) * (energy < floorRef.current ? 0.5 : 0.02);
+        const range = Math.max(0.04, peakRef.current - floorRef.current);
+        const norm = Math.max(0, (energy - floorRef.current) / range); // 0..1 across recent dynamics
+        const energyBeat = Math.min(1, norm * SENSITIVITY);
+
+        // (2) ON-BEAT pulse: fire a clean decaying thump each time the energy
+        // crosses the upper part of its current dynamic range on a rising edge
+        // (reusing the floor/ceiling, so it's robust on any track), past a
+        // refractory gap. "Locked to the tempo" without fragile global-BPM code.
+        const now = performance.now();
+        pulseRef.current *= 0.9; // decay the previous pulse (~0.4s tail)
+        const trigger = floorRef.current + range * 0.4;
+        if (
+          energy > trigger &&
+          prevEnergyRef.current <= trigger &&
+          now - lastOnsetRef.current > 110 // ms refractory (caps ~9 hits/s)
+        ) {
+          lastOnsetRef.current = now;
+          pulseRef.current = 1;
+        }
+        prevEnergyRef.current = energy;
+
+        // (3) MIX the on-beat pulse with the energy body (PULSE_MIX knob).
+        beat = Math.min(1, pulseRef.current * PULSE_MIX + energyBeat * (1 - PULSE_MIX));
       } else {
         // No track yet (or blocked): synthetic pulse so the effect is still visible.
         const phase = ((performance.now() / 1000) * (FALLBACK_BPM / 60)) % 1;
@@ -108,6 +151,13 @@ export function MusicEasterEggProvider({ children }: { children: React.ReactNode
   }, []);
 
   const start = useCallback(async () => {
+    // Cycle to the next track in the list before playing.
+    const audio = audioRef.current;
+    if (audio && TRACKS.length > 0) {
+      const next = TRACKS[trackIndexRef.current % TRACKS.length];
+      trackIndexRef.current += 1;
+      if (!audio.src.endsWith(next)) audio.src = next;
+    }
     ensureGraph();
     // Scroll up so the portrait is in view — the shades drop in a beat later
     // (MusicianPortrait delays them), making the entrance visible.
@@ -166,10 +216,12 @@ export function MusicEasterEggProvider({ children }: { children: React.ReactNode
 
   return (
     <MusicEasterEggContext.Provider value={{ active, toggle }}>
-      {/* preload="none" so we don't fetch (and 404) the track until activated */}
-      <audio ref={audioRef} src={MUSIC_SRC} loop preload="none" onEnded={stop} style={{ display: "none" }} />
+      {/* src is set per-activation (cycles TRACKS); preload="none" so nothing
+          is fetched until the user clicks. */}
+      <audio ref={audioRef} loop preload="none" onEnded={stop} style={{ display: "none" }} />
       {children}
       {active && <BeatLights />}
+      {active && <StopButton onStop={stop} />}
     </MusicEasterEggContext.Provider>
   );
 }
@@ -220,6 +272,59 @@ function BeatLights() {
         return <span key={pos} className="beat-light" style={style} />;
       })}
     </div>
+  );
+}
+
+/**
+ * Floating "stop the music" control, bottom-left (the chat bubble is bottom-
+ * right, so they don't collide). A little equalizer bounces with the beat; the
+ * pill glows with it too. Shown only while playing.
+ */
+function StopButton({ onStop }: { onStop: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onStop}
+      aria-label="Parar la música"
+      className="music-stop"
+      style={{
+        position: "fixed",
+        left: 24,
+        // Clear of the Next.js dev-tools indicator (bottom-left, dev only).
+        bottom: 84,
+        zIndex: 9991,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 9,
+        padding: "10px 16px 10px 13px",
+        borderRadius: 999,
+        border: "1px solid var(--accent-cyan)",
+        backgroundColor: "var(--surface-card)",
+        color: "var(--accent-cyan)",
+        fontSize: 13,
+        fontWeight: 600,
+        fontFamily: "var(--font-geist-mono)",
+        cursor: "pointer",
+        boxShadow:
+          "0 8px 24px rgba(0, 0, 0, 0.18), 0 0 calc(6px + var(--beat, 0) * 26px) var(--accent-cyan-glow)",
+      }}
+    >
+      <span aria-hidden="true" style={{ display: "inline-flex", alignItems: "flex-end", gap: 2, height: 13 }}>
+        {[0.6, 1, 0.45].map((m, i) => (
+          <span
+            key={i}
+            className="music-eq-bar"
+            style={{
+              width: 3,
+              borderRadius: 1,
+              backgroundColor: "var(--accent-cyan)",
+              height: `calc(3px + var(--beat, 0) * ${(m * 10).toFixed(1)}px)`,
+            }}
+          />
+        ))}
+      </span>
+      Parar música
+    </button>
   );
 }
 

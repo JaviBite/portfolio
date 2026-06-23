@@ -1697,6 +1697,14 @@ html[data-music-live] main header h1 {
   transition: text-shadow .08s linear;
 }
 
+/* Floating "stop the music" pill: pops up when the track starts. */
+.music-stop { animation: stop-in 0.3s ease both; transition: background-color .2s ease; }
+.music-stop:hover { background-color: var(--accent-cyan-glow); }
+@keyframes stop-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* Respect user's reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -1718,5 +1726,6 @@ html[data-music-live] main header h1 {
   }
   .beat-lights { animation: none !important; }
   .beat-light { opacity: 0.12 !important; }
+  .music-eq-bar { height: 8px !important; }
 }
 
