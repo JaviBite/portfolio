@@ -324,7 +324,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
                     color: "var(--text-muted)",
                   }}
                 >
-                  {project.start} — {project.end}
+                  {project.start === project.end ? project.start : `${project.start} — ${project.end}`}
                 </span>
               </div>
             </div>

@@ -75,6 +75,7 @@ export function useData() {
         client: getTranslated(project.client, locale),
         tag: getTranslated(project.tag, locale),
         description: getTranslated(project.description, locale),
+        start: typeof project.start === "object" ? getTranslated(project.start, locale) : project.start,
         end: typeof project.end === "object" ? getTranslated(project.end, locale) : project.end,
       })),
       homelab: {
