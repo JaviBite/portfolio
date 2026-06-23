@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import rawData from "@/lib/data.json";
 
-// Sanitize data.json - remove private fields before sending to Gemini
+// Sanitize data.json - remove private fields before sending to the model
 function getSanitizedData() {
   const { profile, experience, education, projects, homelab } = rawData;
 
@@ -51,6 +51,67 @@ INSTRUCCIONES:
 - No inventes información. Si no tienes el dato, dilo.
 - No compartas información de contacto privada más allá del email y LinkedIn.`;
 
+// OpenRouter (OpenAI-compatible). Free models carry the ":free" suffix and share
+// a fluctuating upstream rate limit, so we keep a fallback list of modern models
+// and try the next one when one is busy/unavailable. OPENROUTER_MODEL (if set) is
+// tried first. We attempt at most MAX_ATTEMPTS models before giving up.
+const FALLBACK_MODELS = [
+  "openai/gpt-oss-120b:free",
+  "google/gemma-4-31b-it:free",
+  "openai/gpt-oss-20b:free",
+  "qwen/qwen3-next-80b-a3b-instruct:free",
+  "meta-llama/llama-3.3-70b-instruct:free",
+];
+const MAX_ATTEMPTS = 3;
+
+function getModelChain(): string[] {
+  const preferred = process.env.OPENROUTER_MODEL;
+  const chain = preferred
+    ? [preferred, ...FALLBACK_MODELS.filter((m) => m !== preferred)]
+    : FALLBACK_MODELS;
+  return chain.slice(0, MAX_ATTEMPTS);
+}
+
+// Calls one model. Returns the reply text on success, or null so the caller can
+// fall through to the next model in the chain.
+async function tryModel(
+  model: string,
+  apiKey: string,
+  chatMessages: { role: string; content: string }[]
+): Promise<string | null> {
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        // Optional attribution headers used by OpenRouter for ranking.
+        "HTTP-Referer": "https://javiergimenez.dev",
+        "X-Title": "Javier Gimenez CV Chat",
+      },
+      body: JSON.stringify({
+        model,
+        messages: chatMessages,
+        max_tokens: 1024,
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`OpenRouter error (${model}): ${response.status} ${errText}`);
+      return null;
+    }
+
+    const data = await response.json();
+    const reply: string | undefined = data.choices?.[0]?.message?.content;
+    return reply && reply.trim() ? reply : null;
+  } catch (err) {
+    console.error(`OpenRouter request failed (${model}):`, err);
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json();
@@ -59,55 +120,35 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid messages" }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "Gemini API key not configured" },
+        { error: "OpenRouter API key not configured" },
         { status: 500 }
       );
     }
 
-    // Build Gemini request
-    const geminiMessages = messages.map(
-      (m: { role: string; content: string }) => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }],
-      })
-    );
+    // OpenAI-compatible payload: system prompt first, then the conversation.
+    // Roles "user"/"assistant" map 1:1, so no remapping is needed.
+    const chatMessages = [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...messages.map((m: { role: string; content: string }) => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: m.content,
+      })),
+    ];
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: SYSTEM_PROMPT }],
-          },
-          contents: geminiMessages,
-          generationConfig: {
-            maxOutputTokens: 1024,
-            temperature: 0.7,
-          },
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error("Gemini API error:", errText);
-      return NextResponse.json(
-        { error: "Gemini API error" },
-        { status: 502 }
-      );
+    // Try each model in the chain until one answers (up to MAX_ATTEMPTS).
+    for (const model of getModelChain()) {
+      const reply = await tryModel(model, apiKey, chatMessages);
+      if (reply) return NextResponse.json({ reply, model });
     }
 
-    const data = await response.json();
-    const reply =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ??
-      "Lo siento, no he podido generar una respuesta.";
-
-    return NextResponse.json({ reply });
+    // Every model in the chain was busy/unavailable.
+    return NextResponse.json(
+      { error: "El asistente está saturado ahora mismo. Por favor, inténtalo de nuevo en unos minutos." },
+      { status: 503 }
+    );
   } catch (err) {
     console.error("Chat API error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

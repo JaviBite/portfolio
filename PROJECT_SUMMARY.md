@@ -5,7 +5,7 @@
 
 **Build**: ✅ Compila limpio sin errores TypeScript  
 **Rutas**: 6 rutas correctamente configuradas  
-**Deploy**: Listo para Vercel (push + añadir GEMINI_API_KEY)
+**Deploy**: Listo para Vercel (push + añadir OPENROUTER_API_KEY)
 
 ---
 
@@ -14,8 +14,8 @@
 ```
 Next.js 14 (App Router)
 ├── Páginas estáticas (SSG): /, /projects, /cv
-├── Client Components: /cv/chat, HeroSection, HomeLab, StackSection, ProjectsPreview
-└── Serverless Function: /api/chat (Gemini proxy con sanitización)
+├── Client Components: CVChatBubble (burbuja flotante en /cv), /cv/chat, HeroSection, HomeLab, StackSection, ProjectsPreview
+└── Serverless Function: /api/chat (OpenRouter proxy con sanitización + fallback de modelos)
 ```
 
 ## Rutas
@@ -25,8 +25,9 @@ Next.js 14 (App Router)
 | `/` | Static (SSG) | Landing: Hero · Stack · Proyectos · Filosofía · HomeLab |
 | `/projects` | Client | Galería Bento Grid — 5 proyectos enterprise |
 | `/cv` | Static (SSG) | Living CV con print support |
-| `/cv/chat` | Client | Chatbot UI (localStorage rate limit) |
-| `/api/chat` | Serverless | Proxy Gemini — sanitiza data.json antes de la llamada |
+| `/cv` | — | Chatbot como burbuja flotante (`CVChatBubble`) |
+| `/cv/chat` | Client | Chatbot UI standalone (localStorage rate limit) |
+| `/api/chat` | Serverless | Proxy OpenRouter — sanitiza data.json + fallback de modelos |
 | `/_not-found` | Static | 404 page |
 
 ## Diseño — Paleta de color
@@ -44,20 +45,21 @@ Todos los colores son **CSS variables**, nunca hardcodeados en componentes.
 ## Fuente de verdad
 
 `lib/data.json` — toda la información del portfolio en un único archivo.  
-El endpoint `/api/chat` genera una versión sanitizada (excluye `phone`) antes de enviarla a Gemini.
+El endpoint `/api/chat` genera una versión sanitizada (excluye `phone`) antes de enviarla al modelo.
 
 ## Variables de entorno
 
 | Variable | Descripción | Requerida |
 |----------|-------------|-----------|
-| `GEMINI_API_KEY` | Google Gemini API Key (Free Tier) | Sí, para el chatbot |
+| `OPENROUTER_API_KEY` | OpenRouter API Key (modelos `:free`) | Sí, para el chatbot |
+| `OPENROUTER_MODEL` | Modelo a forzar (si se omite, lista con fallback) | No |
 
 ## Seguridad del chatbot
 
-- **Sanitización server-side**: `phone` y cualquier campo privado eliminados antes de llamar a Gemini
+- **Sanitización server-side**: `phone` y cualquier campo privado eliminados antes de llamar al modelo
 - **Rate limiting cliente**: contador en `localStorage`, máximo 8 preguntas/sesión
 - **Scope restringido**: system prompt limita respuestas al CV y trayectoria profesional
-- **Modelo**: `gemini-1.5-flash` (Free Tier — 15 RPM, 1M tokens/día)
+- **Modelos**: OpenRouter `:free` con fallback automático (hasta 3 intentos); por defecto `openai/gpt-oss-120b:free`, luego `google/gemma-4-31b-it:free`, `openai/gpt-oss-20b:free`…
 
 ## Componentes implementados
 

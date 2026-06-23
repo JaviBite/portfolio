@@ -10,7 +10,7 @@
 
 - **Landing page** con hero animado (canvas), stack técnico por dominio, proyectos destacados, sección filosófica y diagrama interactivo del Home Lab
 - **Living CV** (`/cv`) — CV web completo, optimizado para impresión PDF (`window.print()`)
-- **Chatbot "Pregunta a mi CV"** (`/cv/chat`) — Powered by Gemini 1.5 Flash (Free Tier), 8 preguntas/sesión con contador visible; datos privados sanitizados en servidor antes de enviar a la API
+- **Chatbot "Pregunta a mi CV"** — burbuja flotante en `/cv` (y página `/cv/chat`). Powered by OpenRouter (modelos gratis con fallback automático), 8 preguntas/sesión con contador visible; datos privados sanitizados en servidor antes de enviar a la API
 - **Galería de proyectos** (`/projects`) — Bento Grid responsivo con 5 proyectos enterprise
 - **Tema oscuro/claro** con detección automática de `prefers-color-scheme`
 - **i18n ES/EN** con persistencia en cookie
@@ -26,7 +26,7 @@
 | Estilos | Tailwind CSS + CSS Variables |
 | Temas | next-themes |
 | i18n | next-intl |
-| Chatbot | Google Gemini API (`gemini-1.5-flash`) |
+| Chatbot | OpenRouter (modelos `:free`, p. ej. `openai/gpt-oss-120b:free`) |
 | Fuentes | Geist Sans + Geist Mono (local) |
 | Deploy | Vercel |
 
@@ -51,10 +51,12 @@ cp .env.local.example .env.local
 Edita `.env.local` y añade tu clave:
 
 ```env
-GEMINI_API_KEY=tu_api_key_aqui
+OPENROUTER_API_KEY=tu_api_key_aqui
+# Opcional: fuerza un modelo concreto (por defecto se usa una lista con fallback)
+# OPENROUTER_MODEL=openai/gpt-oss-120b:free
 ```
 
-Obtén tu API key gratuita en [Google AI Studio](https://aistudio.google.com/app/apikey).
+Obtén tu API key gratuita en [OpenRouter](https://openrouter.ai/keys). El chatbot usa modelos `:free` con fallback automático entre varios (hasta 3 intentos) por si alguno está saturado.
 
 ### 3. Desarrollo local
 
@@ -92,7 +94,8 @@ Vercel es el host recomendado: gestiona automáticamente las páginas estáticas
 1. Push del repositorio a GitHub / GitLab
 2. Importar en [vercel.com/new](https://vercel.com/new)
 3. En **Environment Variables**, añadir:
-   - `GEMINI_API_KEY` → tu API key de Gemini
+   - `OPENROUTER_API_KEY` → tu API key de OpenRouter
+   - *(opcional)* `OPENROUTER_MODEL` → modelo concreto, p. ej. `openai/gpt-oss-120b:free`
 4. Clic en **Deploy** — listo
 
 Vercel detecta Next.js automáticamente. No hace falta configurar nada más.
@@ -107,7 +110,7 @@ vercel login
 vercel
 
 # Añadir variable de entorno:
-vercel env add GEMINI_API_KEY production
+vercel env add OPENROUTER_API_KEY production
 
 # Deploy a producción:
 vercel --prod
@@ -137,7 +140,7 @@ portfolio/
 │   │       └── page.tsx      # Chatbot UI (Client Component)
 │   └── api/
 │       └── chat/
-│           └── route.ts      # Proxy Gemini — sanitiza data.json en servidor
+│           └── route.ts      # Proxy OpenRouter — sanitiza data.json en servidor
 ├── components/
 │   ├── ui/
 │   │   ├── Navbar.tsx        # Toggles: tema · idioma · audio (easter egg)
@@ -172,7 +175,7 @@ portfolio/
 - Formación académica
 - Pista de audio para el easter egg (`music.track`, `music.bpm`)
 
-El archivo **nunca se expone directamente al cliente**. La ruta `/api/chat` genera una versión sanitizada (sin teléfono ni dirección exacta) antes de enviarla a Gemini.
+El archivo **nunca se expone directamente al cliente**. La ruta `/api/chat` genera una versión sanitizada (sin teléfono ni dirección exacta) antes de enviarla al modelo.
 
 ---
 
@@ -195,7 +198,7 @@ Todos los colores son variables CSS — nunca hardcodeados en componentes.
 - [x] Setup Next.js + Tailwind + temas + i18n
 - [x] Landing completa (Hero, Stack, Proyectos, Filosofía, HomeLab)
 - [x] Living CV con print CSS
-- [ ] Chatbot en burbuja con rate limiting por sesión
+- [x] Chatbot en burbuja con rate limiting por sesión
 - [x] Galería de proyectos Bento Grid
 - [x] Build limpio, TypeScript sin errores
 - [x] Demos interactivas (homografía JS, sliders, overlays de vídeo, log console simulado)

@@ -78,8 +78,22 @@ export function CVChatBubble({ open, onOpenChange }: CVChatBubbleProps) {
         body: JSON.stringify({ messages: newMessages }),
       });
 
-      if (!res.ok) throw new Error("API error");
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        // The API surfaces a friendly "try again later" message when every
+        // model in the fallback chain is busy/unavailable.
+        setMessages([
+          ...newMessages,
+          {
+            role: "assistant",
+            content:
+              data.error ||
+              chatT.error ||
+              "Lo siento, ha habido un error al procesar tu pregunta. Por favor, inténtalo de nuevo.",
+          },
+        ]);
+        return;
+      }
       setMessages([...newMessages, { role: "assistant", content: data.reply }]);
     } catch {
       setMessages([
