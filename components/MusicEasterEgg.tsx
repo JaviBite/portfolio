@@ -109,6 +109,14 @@ export function MusicEasterEggProvider({ children }: { children: React.ReactNode
 
   const start = useCallback(async () => {
     ensureGraph();
+    // Scroll up so the portrait is in view — the shades drop in a beat later
+    // (MusicianPortrait delays them), making the entrance visible.
+    try {
+      const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    } catch {
+      /* ignore */
+    }
     try {
       if (ctxRef.current?.state === "suspended") await ctxRef.current.resume();
     } catch {
@@ -161,6 +169,7 @@ export function MusicEasterEggProvider({ children }: { children: React.ReactNode
       {/* preload="none" so we don't fetch (and 404) the track until activated */}
       <audio ref={audioRef} src={MUSIC_SRC} loop preload="none" onEnded={stop} style={{ display: "none" }} />
       {children}
+      {active && <BeatLights />}
     </MusicEasterEggContext.Provider>
   );
 }
@@ -171,6 +180,47 @@ export function useMusicEasterEgg() {
     throw new Error("useMusicEasterEgg must be used within <MusicEasterEggProvider>");
   }
   return ctx;
+}
+
+/**
+ * Pulsing "disco" glows in the four screen corners while the music plays.
+ * Fixed + pointer-events:none, so it's purely decorative. Each corner pulses
+ * with the beat (cyan/purple, alternating) via inline styles on --beat.
+ */
+function BeatLights() {
+  const corners = [
+    { pos: "top left", color: "var(--accent-cyan)" },
+    { pos: "top right", color: "var(--accent-purple)" },
+    { pos: "bottom left", color: "var(--accent-purple)" },
+    { pos: "bottom right", color: "var(--accent-cyan)" },
+  ];
+  return (
+    <div
+      aria-hidden="true"
+      className="beat-lights"
+      style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9990, overflow: "hidden" }}
+    >
+      {corners.map(({ pos, color }) => {
+        const [v, h] = pos.split(" ");
+        // Big, soft, blurred glow anchored just *off* the corner. It pulses by
+        // opacity only (no scaling), so its faded edge never moves — that's what
+        // removes the hard "cut": the gradient is huge and blurred, and its
+        // transparent boundary sits off-screen.
+        const style: CSSProperties = {
+          position: "absolute",
+          width: "80vw",
+          height: "80vh",
+          background: `radial-gradient(circle at ${pos}, ${color} 0%, transparent 72%)`,
+          opacity: "calc(0.05 + var(--beat, 0) * 0.5)",
+          filter: "blur(55px)",
+          willChange: "opacity",
+          ...(v === "top" ? { top: "-12vh" } : { bottom: "-12vh" }),
+          ...(h === "left" ? { left: "-12vw" } : { right: "-12vw" }),
+        };
+        return <span key={pos} className="beat-light" style={style} />;
+      })}
+    </div>
+  );
 }
 
 /**
@@ -258,9 +308,9 @@ function ShadesOverlay() {
       aria-hidden="true"
       style={{
         position: "absolute",
-        left: "47.75%",
+        left: "47.5%",
         top: "45%", // ≈ eye line — tweak if it sits high/low on your photo
-        width: "45%",
+        width: "40%",
         transform: "translate(-50%, -50%)",
         pointerEvents: "none",
         zIndex: 2,
@@ -299,7 +349,21 @@ export function MusicianPortrait({ src, alt }: { src: string; alt: string }) {
   const { active } = useMusicEasterEgg();
   // "unknown" until we try to load the real shades photo on first activation.
   const [realShades, setRealShades] = useState<"unknown" | "yes" | "no">("unknown");
-  const showRealShades = active && realShades === "yes";
+  // Hold the shades back briefly so the page can scroll to the top first — then
+  // they "drop in" while the portrait is in view. The ring still pulses from the
+  // moment you click (it keys off `active`, not `shadesOn`).
+  const [dropReady, setDropReady] = useState(false);
+  useEffect(() => {
+    if (!active) {
+      setDropReady(false);
+      return;
+    }
+    const t = setTimeout(() => setDropReady(true), 600);
+    return () => clearTimeout(t);
+  }, [active]);
+
+  const shadesOn = active && dropReady;
+  const showRealShades = shadesOn && realShades === "yes";
 
   const imgStyle: CSSProperties = {
     position: "absolute",
@@ -331,7 +395,7 @@ export function MusicianPortrait({ src, alt }: { src: string; alt: string }) {
     >
       <div style={{ position: "absolute", inset: 0, borderRadius: "50%", overflow: "hidden" }}>
         <img src={src} alt={alt} style={{ ...imgStyle, opacity: showRealShades ? 0 : 1 }} />
-        {active && realShades !== "no" && (
+        {shadesOn && realShades !== "no" && (
           <img
             src="/portrait-shades.jpg"
             alt=""
@@ -342,7 +406,7 @@ export function MusicianPortrait({ src, alt }: { src: string; alt: string }) {
           />
         )}
       </div>
-      {active && !showRealShades && <ShadesOverlay />}
+      {shadesOn && !showRealShades && <ShadesOverlay />}
     </div>
   );
 }

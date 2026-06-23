@@ -1684,6 +1684,19 @@ body {
   100% { transform: translate(-50%, -50%) rotate(0deg); opacity: 1; }
 }
 
+/* Corner "disco" lights fade in while the music plays (each light pulses with
+   --beat via inline styles). */
+@keyframes beat-lights-in { from { opacity: 0; } to { opacity: 1; } }
+.beat-lights { animation: beat-lights-in 0.45s ease both; }
+
+/* The CV title (your name) breathes + glows with the beat. */
+html[data-music-live] main header h1 {
+  text-shadow: 0 0 calc(2px + var(--beat) * 22px) var(--accent-cyan-glow);
+  transform: scale(calc(1 + var(--beat) * 0.025));
+  transform-origin: left center;
+  transition: text-shadow .08s linear;
+}
+
 /* Respect user's reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -1698,8 +1711,12 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .musician-trait.is-playing,
   .musician-trait.is-playing .musician-trait__note,
-  .portrait-ring.is-playing {
+  .portrait-ring.is-playing,
+  html[data-music-live] main header h1,
+  .beat-light {
     transform: none !important;
   }
+  .beat-lights { animation: none !important; }
+  .beat-light { opacity: 0.12 !important; }
 }
 
