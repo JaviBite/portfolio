@@ -23,7 +23,7 @@ export function HowIThink({ blocks }: Props) {
       {/* Blocks grid */}
       <Stagger className="think-grid">
         {blocks.map((block, i) => (
-          <StaggerItem key={block.title} className="think-card">
+          <StaggerItem key={i} className="think-card">
             {/* Number */}
             <span className="think-card-number">0{i + 1}</span>
 
