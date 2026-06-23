@@ -32,7 +32,7 @@
           "current": true,
           "location": "Zaragoza, España",
           "description": { "es": "Diseño de propuestas y arquitecturas de IA en preventa. - Propuesta de IA (RAG + Computer Vision) para el departamento de seguridad de una administración provincial, aprobada y actualmente en ejecución. - Diseño técnico de un partnership con una importante productora (indexación audiovisual con IA, generación de contenido y visión espacial). - Arquitecturas multi-agente, IA on-edge integrada en hardware y optimización de modelos (Intel OpenVINO, CompactifAI). - Soporte técnico en reuniones comerciales, licitaciones públicas (Elkartek, Horizon) y mentoría de onboarding.", "en": "Design of AI pre-sales proposals and architectures. - AI proposal (RAG + Computer Vision) for the security department of a provincial administration, approved and currently in execution. - Technical design of a partnership with a major media producer (AI-based audiovisual indexing, content generation and spatial vision). - Multi-agent architectures, on-edge AI embedded in hardware and model optimization (Intel OpenVINO, CompactifAI). - Technical support in sales meetings, public tenders (Elkartek, Horizon) and onboarding mentoring." },
-          "stack": ["CompactifAI", "LLM", "RAG", "Agentes", "Computer Vision", "OpenVINO"]
+          "stack": ["LLM", "RAG", "Agentes", "Computer Vision", "OpenVINO"]
         }
       ]
     },
@@ -232,7 +232,7 @@
     {
       "id": "aerial-gis-madrid",
       "client": { "es": "Detección de cambios urbanos", "en": "Urban Change Detection" },
-      "tag": { "es": "Administración pública", "en": "Public Administration" },
+      "tag": { "es": "Admn. pública", "en": "Public Admin." },
       "start": "2024",
       "end": "2024",
       "description": { "es": "Análisis semántico de imágenes aéreas para detección de cambios urbanos. Resistente a variaciones de iluminación y sombras mediante embeddings visuales.", "en": "Semantic analysis of aerial imagery for urban change detection. Robust to lighting and shadow variations through visual embeddings." },

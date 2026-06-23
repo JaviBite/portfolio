@@ -23,7 +23,7 @@
     },
     "items": {
       "vision": ["OpenCV", "SAM", "YOLO", "FFmpeg", "Multi-camera tracking", "Homography", "Saliency Detection"],
-      "ai": ["PyTorch", "Whisper", "KNN", "Embeddings", "Model compression", "CompactifAI"],
+      "ai": ["PyTorch", "Whisper", "KNN", "Embeddings", "Model compression", "LLM", "RAG", "Agents"],
       "infra": ["Docker", "Proxmox", "Nginx", "WireGuard", "CI/CD"],
       "languages": ["Python", "C++", "TypeScript", "JavaScript"]
     }

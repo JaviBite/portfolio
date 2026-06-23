@@ -19,6 +19,8 @@ interface Props {
   projects: Project[];
 }
 
+type ProjectMessages = { projects?: Record<string, string | undefined> };
+
 const projectColors: Record<string, string> = {
   "logistics-wurth": "var(--accent-cyan)",
   "tracking-stellantis": "var(--accent-purple)",
@@ -26,6 +28,15 @@ const projectColors: Record<string, string> = {
   "biometric-id": "#f59e0b",
   "smartcrop-autoflip": "#f97316",
   "personal-selfhosted": "#ec4899",
+};
+
+// Imagen estática que asoma por la esquina de la tarjeta como "sneak peek"
+// de la demo real que el visitante encontrará en /projects.
+const projectPreviews: Record<string, string> = {
+  "logistics-wurth": "/demos/logistics-wurth/conveyor-atasco.webp",
+  "tracking-stellantis": "/demos/multicam-tracking/topdown-day.jpg",
+  "aerial-gis-madrid": "/demos/gis-madrid/plaza-espana-2023-heatmap.jpg",
+  "smartcrop-autoflip": "/demos/smartcrop-autoflip/autoflip-poster.jpg",
 };
 
 export function ProjectsPreview({ projects }: Props) {
@@ -48,7 +59,12 @@ export function ProjectsPreview({ projects }: Props) {
         <Stagger className="bento-grid">
           {projects.map((project) => (
             <StaggerItem key={project.id}>
-              <ProjectCard project={project} color={projectColors[project.id] ?? "var(--accent-cyan)"} messages={messages} />
+              <ProjectCard
+                project={project}
+                color={projectColors[project.id] ?? "var(--accent-cyan)"}
+                preview={projectPreviews[project.id]}
+                messages={messages}
+              />
             </StaggerItem>
           ))}
         </Stagger>
@@ -57,21 +73,44 @@ export function ProjectsPreview({ projects }: Props) {
   );
 }
 
-function ProjectCard({ project, color, messages }: { project: Project; color: string; messages: any }) {
+function ProjectCard({
+  project,
+  color,
+  preview,
+  messages,
+}: {
+  project: Project;
+  color: string;
+  preview?: string;
+  messages: ProjectMessages;
+}) {
+  const demoLabel = messages.projects?.demo || "Ver demo";
+  const stackChips = project.stack.slice(0, 3).map((tech) => (
+    <span key={tech} className="stack-chip">
+      {tech}
+    </span>
+  ));
   return (
-    <div className="project-card" style={{ "--accent-color": color } as React.CSSProperties & { "--accent-color": string }}>
-
+    <Link
+      href={`/projects#${project.id}`}
+      className="project-card project-card--linked"
+      style={{ "--accent-color": color } as React.CSSProperties & { "--accent-color": string }}
+      aria-label={`${project.client} — ${demoLabel}`}
+    >
       {/* Ambient glow */}
       <div className="ambient-glow" />
 
-      {/* Left side - Info */}
+      {/* Texto arriba */}
       <div className="project-card-info" style={{ color }}>
-        {/* Tag */}
+        {/* Tag + "Ver demo" */}
         <div className="project-card-header">
           <span className="tag-chip" style={{ color, borderColor: color }}>
             {(project.tag || messages.projects?.tag_enterprise || "ENTERPRISE").toUpperCase()}
           </span>
-          <span className="arrow-icon">→</span>
+          <span className="project-card-cta" style={{ color }}>
+            <span className="project-card-cta-label">{demoLabel}</span>
+            <span className="arrow-icon" style={{ color }}>→</span>
+          </span>
         </div>
 
         {/* Client & Description */}
@@ -79,18 +118,21 @@ function ProjectCard({ project, color, messages }: { project: Project; color: st
           <h3 className="client-title">{project.client}</h3>
           <p className="description-text">{project.description}</p>
 
-          {/* Stack chips */}
-          <div className="stack-chips">
-            {project.stack.slice(0, 3).map((tech) => (
-              <span key={tech} className="stack-chip">
-                {tech}
-              </span>
-            ))}
-          </div>
+          {/* Sin preview: los chips van bajo el texto como siempre */}
+          {!preview && <div className="stack-chips">{stackChips}</div>}
         </div>
       </div>
 
-
-    </div>
+      {/* Sneak peek: banda de imagen real de la demo abajo, con los badges
+          de tecnologías y el "Ver demo" superpuestos encima. */}
+      {preview && (
+        <div className="project-peek">
+          <img src={preview} alt="" loading="lazy" decoding="async" />
+          <div className="project-peek-overlay">
+            <div className="stack-chips">{stackChips}</div>
+          </div>
+        </div>
+      )}
+    </Link>
   );
 }

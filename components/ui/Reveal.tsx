@@ -65,10 +65,12 @@ interface StaggerItemProps {
   className?: string;
   style?: CSSProperties;
   y?: number;
+  /** Optional DOM id, e.g. so the item can be a `#hash` scroll target. */
+  id?: string;
 }
 
 /** A single item inside a <Stagger> container. */
-export function StaggerItem({ children, className, style, y = 28 }: StaggerItemProps) {
+export function StaggerItem({ children, className, style, y = 28, id }: StaggerItemProps) {
   const reduce = useReducedMotion();
 
   const variants: Variants = {
@@ -81,7 +83,7 @@ export function StaggerItem({ children, className, style, y = 28 }: StaggerItemP
   };
 
   return (
-    <motion.div className={className} style={style} variants={variants}>
+    <motion.div id={id} className={className} style={style} variants={variants}>
       {children}
     </motion.div>
   );

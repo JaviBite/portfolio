@@ -193,6 +193,126 @@ body {
   box-shadow: 6px 6px 0px rgba(0,0,0,0.12), 0 12px 32px rgba(0,0,0,0.1);
 }
 
+/* Home preview cards are clickable links to the matching project on /projects */
+.project-card--linked {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+
+.project-card--linked:hover {
+  border-color: color-mix(in srgb, var(--accent-color, var(--accent-cyan)) 55%, var(--surface-card-border));
+}
+
+/* The info column floats above the sneak-peek image */
+.project-card-info {
+  position: relative;
+  z-index: 1;
+}
+
+/* El texto se ajusta a su contenido y la imagen ocupa el resto: así no queda
+   espacio en blanco entre medias. */
+.project-card--linked .project-card-info {
+  flex: 0 0 auto;
+}
+
+/* Sneak peek: banda de imagen real de la demo abajo, a sangre con los bordes
+   de la tarjeta, con los badges de tecnologías y el "Ver demo" superpuestos. */
+.project-peek {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 168px;
+  margin: 20px -32px -32px;
+  overflow: hidden;
+  border-top: 2px solid color-mix(in srgb, var(--accent-color, var(--accent-cyan)) 45%, var(--surface-card-border));
+}
+
+.project-peek img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  filter: saturate(1.05);
+  transition: transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1), filter 0.4s ease;
+}
+
+.project-card--linked:hover .project-peek img {
+  transform: scale(1.08);
+  filter: saturate(1.12) brightness(1.04);
+}
+
+/* Badges (izq) + "Ver demo →" (der) superpuestos sobre la imagen */
+.project-peek-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+}
+
+/* Chips sobre la imagen: fondo translúcido oscuro, texto claro y legibles */
+.project-peek-overlay .stack-chips {
+  gap: 6px;
+}
+
+.project-peek-overlay .stack-chip {
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(4px);
+}
+
+/* "Ver demo →" arriba a la derecha, junto al tag. La flecha está siempre
+   visible (algo más grande) y la etiqueta "Ver demo" se despliega al hover. */
+.project-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.project-card-cta-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-geist-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: max-width 0.4s ease, opacity 0.3s ease;
+}
+
+.project-card--linked:hover .project-card-cta-label {
+  max-width: 110px;
+  opacity: 0.95;
+}
+
+.project-card-cta .arrow-icon {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.project-card--linked:hover .project-card-cta .arrow-icon {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-peek img,
+  .project-card-cta-label,
+  .project-card-cta .arrow-icon {
+    transition: none;
+  }
+}
+
 /* Split layout for ProjectsPreview cards */
 .project-card-split {
   display: grid;

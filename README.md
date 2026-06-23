@@ -205,6 +205,7 @@ Todos los colores son variables CSS — nunca hardcodeados en componentes.
 - [x] Easter egg musical (Web Audio API + AnalyserNode, glow reactivo al BPM)
 - [ ] Animaciones Framer Motion
 - [ ] Optimización Core Web Vitals
+- [ ] Opciones Leer mas, SUmmary, None, Descripcion
 
 ---
 

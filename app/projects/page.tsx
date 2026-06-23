@@ -519,7 +519,7 @@ export default function ProjectsPage() {
         {/* Enterprise bento */}
         <Stagger className="projects-bento" style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
           {enterprise.map((project) => (
-            <StaggerItem key={project.id} style={{ gridColumn: `span ${project.gridSpan ?? 5}`, gridRow: `span ${project.gridRowSpan ?? 1}`, display: "flex", flexDirection: "column" }}>
+            <StaggerItem key={project.id} id={project.id} style={{ scrollMarginTop: 96, gridColumn: `span ${project.gridSpan ?? 5}`, gridRow: `span ${project.gridRowSpan ?? 1}`, display: "flex", flexDirection: "column" }}>
               <ProjectCard project={project} />
             </StaggerItem>
           ))}
@@ -565,7 +565,7 @@ export default function ProjectsPage() {
 
             <Stagger className="projects-bento" style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16 }}>
               {personal.map((project) => (
-                <StaggerItem key={project.id} style={{ gridColumn: `span ${project.gridSpan ?? 5}`, gridRow: `span ${project.gridRowSpan ?? 1}`, display: "flex", flexDirection: "column" }}>
+                <StaggerItem key={project.id} id={project.id} style={{ scrollMarginTop: 96, gridColumn: `span ${project.gridSpan ?? 5}`, gridRow: `span ${project.gridRowSpan ?? 1}`, display: "flex", flexDirection: "column" }}>
                   <ProjectCard project={project} />
                 </StaggerItem>
               ))}
