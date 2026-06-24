@@ -10,10 +10,12 @@ const args = [
   '/repo/node_modules',
   '-w',
   '/repo',
-  'node:20',
+  // Same image as CI (.github/workflows/playwright-visual.yml) so the generated
+  // baselines render identically to what CI produces. Browsers come preinstalled.
+  'mcr.microsoft.com/playwright:v1.60.0-jammy',
   'bash',
   '-lc',
-  'npm install && npx playwright install --with-deps chromium && npm run test:visual:update',
+  'npm install && npm run test:visual:update',
 ];
 
 const child = spawn('docker', args, { stdio: 'inherit' });
