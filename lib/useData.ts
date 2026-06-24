@@ -32,6 +32,11 @@ export function useData() {
         achievements: rawData.profile.achievements.map((a) =>
           getTranslated(a, locale)
         ),
+        availability: {
+          ...rawData.profile.availability,
+          label: getTranslated(rawData.profile.availability.label, locale),
+        },
+        cvLastUpdated: getTranslated(rawData.profile.cvLastUpdated, locale),
       },
       experience: rawData.experience.map((exp) => ({
         ...exp,

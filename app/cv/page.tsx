@@ -26,7 +26,7 @@ export default function CVPage() {
         {/* Actions bar */}
         <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", marginBottom: 40, borderBottom: "1px solid var(--surface-card-border)" }}>
           <span style={{ fontFamily: "var(--font-geist-mono)", fontSize: 11, color: "var(--text-muted)", letterSpacing: "0.1em" }}>
-            {messages.cv?.subtitle || "LIVING CV — actualizado 2026"}
+            {[messages.cv?.subtitle || "LIVING CV — actualizado", profile.cvLastUpdated].filter(Boolean).join(" ")}
           </span>
           <div style={{ display: "flex", gap: 12 }}>
             <button onClick={() => setChatOpen(true)} style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid var(--accent-cyan)", backgroundColor: "var(--accent-cyan-glow)", color: "var(--accent-cyan)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-geist-mono)" }}>

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useLocale } from "@/i18n/LocaleContext";
 
+type AvailabilityStatus = "available" | "working" | "looking";
+
 interface HeroProps {
   profile: {
     name: string;
@@ -11,12 +13,26 @@ interface HeroProps {
     bio: string;
     motto: string;
     portrait: string;
+    availability?: {
+      status: string;
+      label: string;
+    };
   };
 }
+
+const AVAILABILITY_STATUSES: AvailabilityStatus[] = ["available", "working", "looking"];
 
 export function HeroSection({ profile }: HeroProps) {
   const { messages } = useLocale();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const availability = profile.availability;
+  const status: AvailabilityStatus =
+    availability && AVAILABILITY_STATUSES.includes(availability.status as AvailabilityStatus)
+      ? (availability.status as AvailabilityStatus)
+      : "available";
+  const availabilityLabel =
+    availability?.label || messages.hero?.available || "DISPONIBLE PARA PROYECTOS";
 
   // Animated particle grid
   useEffect(() => {
@@ -81,10 +97,10 @@ export function HeroSection({ profile }: HeroProps) {
       {/* Content */}
       <div className="hero-inner">
         <div className="hero-copy">
-          {/* Available badge */}
-          <div className="hero-badge">
+          {/* Availability badge */}
+          <div className={`hero-badge hero-badge--${status}`}>
             <span className="hero-badge-dot" />
-            {messages.hero?.available || "DISPONIBLE PARA PROYECTOS"}
+            {availabilityLabel}
           </div>
 
           <h1 className="hero-title">
