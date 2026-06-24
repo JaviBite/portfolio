@@ -44,6 +44,10 @@ export function HeroSection({ profile }: HeroProps) {
     let animId: number;
     let t = 0;
 
+    // Respect reduced motion (and keep visual tests deterministic): render a
+    // single static frame instead of an endless requestAnimationFrame loop.
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
     function resize() {
       if (!canvas) return;
       canvas.width = canvas.offsetWidth;
@@ -76,6 +80,7 @@ export function HeroSection({ profile }: HeroProps) {
         }
       }
       t++;
+      if (reduceMotion) return;
       animId = requestAnimationFrame(draw);
     }
     draw();
