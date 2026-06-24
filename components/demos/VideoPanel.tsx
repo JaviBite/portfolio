@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import { DemoFrame, MediaPlaceholder } from "./DemoFrame";
 import type { DemoBaseProps, DemoFit, DemoMedia } from "./types";
 
@@ -35,7 +36,14 @@ export function VideoPanel({
   fitPosition = "center",
 }: VideoPanelProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const reduce = useReducedMotion();
   const [playing, setPlaying] = useState(autoPlay);
+
+  // Reduced motion (and visual tests): never autoplay — fall back to the static
+  // poster frame so screenshots are deterministic.
+  useEffect(() => {
+    if (reduce) setPlaying(false);
+  }, [reduce]);
 
   const play = () => {
     setPlaying(true);

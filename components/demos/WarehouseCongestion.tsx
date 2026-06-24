@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import { DemoFrame, MediaPlaceholder } from "./DemoFrame";
 import sceneData from "./wurth-scene.json";
 import type { DemoBaseProps, WarehouseScene } from "./types";
@@ -72,6 +73,9 @@ export function WarehouseCongestion({ accent = "var(--accent-cyan)", badge }: Wa
   const rootRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
   const inViewRef = useRef(false);
+  // Reduced motion (and visual tests): settle on a single deterministic frame —
+  // no scene auto-advance, score shown at its final value, overlays revealed.
+  const reduce = useReducedMotion();
 
   const { conveyor, yard } = scene;
   const revealed = active === "yard" && inView;
@@ -80,6 +84,11 @@ export function WarehouseCongestion({ accent = "var(--accent-cyan)", badge }: Wa
   // Reveal trigger: observe the card so the ROI / boxes animate in when it scrolls
   // into view (and re-animate each time a scene becomes active).
   useEffect(() => {
+    if (reduce) {
+      inViewRef.current = true;
+      setInView(true);
+      return;
+    }
     const el = rootRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
@@ -91,7 +100,7 @@ export function WarehouseCongestion({ accent = "var(--accent-cyan)", badge }: Wa
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  }, [reduce]);
 
   // Track the container size so overlays follow the cover-cropped image.
   useEffect(() => {
@@ -107,18 +116,23 @@ export function WarehouseCongestion({ accent = "var(--accent-cyan)", badge }: Wa
 
   // Auto-advance between scenes; skip while hovered or off-screen.
   useEffect(() => {
+    if (reduce) return;
     const id = setInterval(() => {
       if (!inViewRef.current || hoveredRef.current) return;
       setActive((a) => (a === "yard" ? "conveyor" : "yard"));
     }, CYCLE_MS);
     return () => clearInterval(id);
-  }, []);
+  }, [reduce]);
 
   // Count the real score (0.443621 → 44%) up from zero on reveal; reset so it
   // replays every time the "Capacidad" scene comes back round.
   useEffect(() => {
     if (!revealed) {
       setDisplayScore(0);
+      return;
+    }
+    if (reduce) {
+      setDisplayScore(yard.score);
       return;
     }
     let raf = 0;
@@ -133,7 +147,7 @@ export function WarehouseCongestion({ accent = "var(--accent-cyan)", badge }: Wa
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [revealed, yard.score]);
+  }, [revealed, yard.score, reduce]);
 
   const mappedYard = size.w > 0 && natYard.w > 0;
   const mappedConveyor = size.w > 0 && natConveyor.w > 0;
