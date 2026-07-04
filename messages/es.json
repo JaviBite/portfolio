@@ -43,7 +43,16 @@
     "subtitle": "Sistemas en producción para clientes enterprise",
     "tag_enterprise": "Enterprise",
     "demo": "Ver demo",
-    "stack": "Stack"
+    "stack": "Stack",
+    "enterprise_label": "// EMPRESA",
+    "enterprise_title": "Proyectos Enterprise",
+    "enterprise_subtitle": "Sistemas de visión artificial y AI desplegados en producción real para clientes enterprise.",
+    "personal_label": "// PERSONAL",
+    "personal_title": "Proyectos Personales",
+    "personal_subtitle": "Proyectos e infraestructura propios: apps para wearables e infraestructura self-hosted en producción real sobre hardware doméstico.",
+    "tab_enterprise": "Empresa",
+    "tab_personal": "Personal",
+    "back_home": "← Volver al inicio"
   },
   "cv": {
     "title": "Living CV",

@@ -282,6 +282,10 @@ function RoleDescription({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPrint, roleKey]);
 
+  // Nothing authored yet (e.g. a brand-new role with no description or summary):
+  // render no block at all rather than an empty paragraph with a lone toggle.
+  if (text.trim().length === 0 && !hasSummary) return null;
+
   // Renders the lead + bullet list (or plain prose), trimmed to `budget` characters.
   // Used by both the web "cut" state (CHAR_LIMIT) and every print state (page budget).
   const renderBudgeted = (budget: number) => {

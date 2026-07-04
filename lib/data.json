@@ -9,7 +9,7 @@
       "status": "working",
       "label": { "es": "Trabajando actualmente", "en": "Working currently" }
     },
-    "cvLastUpdated": { "es": "junio 2026", "en": "June 2026" },
+    "cvLastUpdated": { "es": "julio 2026", "en": "July 2026" },
     "contact": {
       "email": "javiergimenezgarces@gmail.com",
       "linkedin": "https://linkedin.com/in/jgimenez",
@@ -26,6 +26,23 @@
   },
   "experience": [
     {
+      "company": "Turing Challenge",
+      "logo": "/logos/tc.jpg",
+      "website": "https://www.turingchallenge.com/",
+      "roles": [
+        {
+          "role": { "es": "Senior AI Engineer", "en": "Senior AI Engineer" },
+          "start": "Julio 2026",
+          "end": null,
+          "current": true,
+          "location": "Zaragoza, España (Remote)",
+          "description": { "es": "", "en": "" },
+          "summary": { "es": "", "en": "" },
+          "stack": []
+        }
+      ]
+    },
+    {
       "company": "Multiverse Computing",
       "logo": "/logos/mvc.jpeg",
       "website": "https://multiversecomputing.com",
@@ -33,9 +50,9 @@
         {
           "role": { "es": "AI Solution Engineer | Ingeniero de Preventa", "en": "AI Solution Engineer | Pre-sales Engineer" },
           "start": "Enero 2026",
-          "end": null,
-          "current": true,
-          "location": "Zaragoza, España",
+          "end": "Junio 2026",
+          "current": false,
+          "location": "Zaragoza, España (Hibrido)",
           "description": { "es": "Diseño de propuestas y arquitecturas de IA en preventa. - Propuesta de IA (RAG + Computer Vision) para el departamento de seguridad de una administración provincial, aprobada y actualmente en ejecución. - Diseño técnico de un partnership con una importante productora (indexación audiovisual con IA, generación de contenido y visión espacial). - Arquitecturas multi-agente, IA on-edge integrada en hardware y optimización de modelos (Intel OpenVINO, CompactifAI). - Soporte técnico en reuniones comerciales, licitaciones públicas (Elkartek, Horizon) y mentoría de onboarding.", "en": "Design of AI pre-sales proposals and architectures. - AI proposal (RAG + Computer Vision) for the security department of a provincial administration, approved and currently in execution. - Technical design of a partnership with a major media producer (AI-based audiovisual indexing, content generation and spatial vision). - Multi-agent architectures, on-edge AI embedded in hardware and model optimization (Intel OpenVINO, CompactifAI). - Technical support in sales meetings, public tenders (Elkartek, Horizon) and onboarding mentoring." },
           "summary": { "es": "Diseño de propuestas y arquitecturas de IA en preventa: sistemas multi-agente, RAG, computer vision e IA on-edge para clientes y licitaciones públicas.", "en": "Design of AI pre-sales proposals and architectures: multi-agent systems, RAG, computer vision and on-edge AI for clients and public tenders." },
           "stack": ["LLM", "RAG", "Agentes", "Computer Vision", "OpenVINO"]
@@ -52,7 +69,7 @@
           "start": "Diciembre 2022",
           "end": "Enero 2026",
           "current": false,
-          "location": "Zaragoza, España",
+          "location": "Zaragoza, España (Hibrido)",
           "description": { "es": "Gestión del departamento de vídeo/imagen e innovación en visión por computador. - Optimización extrema: integración de TensorRT en servidores críticos y desarrollo de un servidor de inferencia VLM (Visual Language Model) en C++ basado en llama.cpp, 3x más rápido que las implementaciones en Python. - Liderazgo técnico en proyectos y PoCs: detección de errantes en residencias para una administración pública, análisis de cambios urbanos en ortofotografías, detección de atascos logísticos (Würth) y tracking multicámara en parkings con homografía para una planta de automoción. - Media e IA generativa: generación automática de contenido con reencuadre inteligente (verticalización con trayectorias suavizadas) para clientes del sector audiovisual, y minutado/análisis de audiencias TDT. - Estandarización con Label Studio y documentación técnica en Confluence.", "en": "Management of the video/image and computer vision innovation department. - Extreme optimization: TensorRT integration in critical servers and development of a VLM (Visual Language Model) inference server in C++ based on llama.cpp, 3x faster than Python implementations. - Technical leadership in projects and PoCs: wandering-resident detection in care homes for a public administration, urban change analysis in orthophotos, logistics congestion detection (Würth) and multi-camera parking tracking via homography for an automotive plant. - Media and generative AI: automatic content generation with intelligent reframing (verticalization with smoothed trajectories) for audiovisual-sector clients, plus TDT audience analysis. - Standardization with Label Studio and technical documentation in Confluence." },
           "summary": { "es": "Gestión del departamento de visión por computador e innovación: optimización extrema en C++/TensorRT, liderazgo de PoCs y media con IA generativa.", "en": "Lead of the computer vision and innovation department: extreme C++/TensorRT optimization, PoC leadership and generative-AI media." },
           "stack": ["C++", "TensorRT", "llama.cpp", "OpenCV", "Homography", "Whisper", "FFmpeg"]
@@ -289,7 +306,7 @@
       "id": "personal-selfhosted",
       "client": "Self-hosted Lab",
       "tag": { "es": "Self-hosted", "en": "Self-hosted" },
-      "start": "2023",
+      "start": "2025",
       "end": { "es": "Presente", "en": "Present" },
       "description": { "es": "Infraestructura personal para experimentar con servicios en producción real: Proxmox, contenedores, VPN y plataformas multimedia con acceso remoto seguro.", "en": "Personal infrastructure to experiment with services in real production: Proxmox, containers, VPN and multimedia platforms with secure remote access." },
       "stack": ["Proxmox", "Docker", "WireGuard", "Nginx", "Ollama", "Jellyfin", "Immich"],
@@ -302,8 +319,21 @@
       "layout": "horizontal-right"
     },
     {
+      "id": "portfolio",
+      "client": { "es": "Este portfolio", "en": "This Portfolio" },
+      "tag": { "es": "Web", "en": "Web" },
+      "start": "2026",
+      "end": "2026",
+      "description": { "es": "Esta misma web: Next.js (App Router) con grid bento y demos interactivas de cada proyecto, soporte bilingüe y un 'CV vivo' con exportación a PDF y un chat que responde sobre mi trayectoria. Con tests de regresión visual y despliegue continuo en Vercel.", "en": "This very site: Next.js (App Router) with a bento grid and interactive demos for each project, bilingual support and a 'living CV' with PDF export and a chat that answers questions about my career. With visual regression tests and continuous deployment on Vercel." },
+      "stack": ["Next.js", "React", "TypeScript", "Framer Motion", "Vercel"],
+      "demos": [],
+      "category": "personal",
+      "gridSpan": 4,
+      "gridRowSpan": 1
+    },
+    {
       "id": "wip-personal",
-      "client": "Próximamente",
+      "client": { "es": "Próximamente", "en": "Coming soon" },
       "tag": { "es": "En progreso", "en": "In progress" },
       "start": "2026",
       "end": { "es": "Presente", "en": "Present" },
@@ -314,6 +344,38 @@
       "category": "personal",
       "gridSpan": 4,
       "gridRowSpan": 1
+    },
+    {
+      "id": "garmin-mood",
+      "client": { "es": "Mood Tracker · Garmin", "en": "Mood Tracker · Garmin" },
+      "tag": { "es": "Wearables", "en": "Wearables" },
+      "start": "2026",
+      "end": "2026",
+      "description": { "es": "App nativa en Monkey C (SDK de Garmin) para registrar el estado de ánimo desde el reloj: múltiples temas, histórico de 7 días y por meses, y recordatorios configurables. Lo mejor: los datos se visualizan y exportan desde una web desplegada en un Worker de Cloudflare, ligada al dispositivo mediante un código único. En hoja de ruta: sincronización por correo y funciones premium (de momento, todo gratis).", "en": "Native Monkey C (Garmin SDK) app to log your mood right from the watch: multiple themes, 7-day and monthly history, and configurable reminders. The best part: data is visualized and exported from a web app deployed on a Cloudflare Worker, linked to the device via a unique code. On the roadmap: email sync and premium features (all free for now)." },
+      "stack": ["Monkey C", "Garmin SDK", "Cloudflare Workers"],
+      "demos": ["slideshow"],
+      "demo": {
+        "type": "slideshow",
+        "badge": "Screenshots",
+        "fit": "cover",
+        "placeholderIcon": "mood",
+        "interval": 2800,
+        "images": [
+          { "src": "/demos/garmin-mood/menu.png", "label": "Menú principal", "alt": "Menú principal de la app en el reloj Garmin: racha, estado 'Great' y accesos a Historial, Registrar y Ajustes" },
+          { "src": "/demos/garmin-mood/selector_good.png", "label": "Registrar ánimo", "alt": "Selector de estado de ánimo positivo (cara verde)" },
+          { "src": "/demos/garmin-mood/selector_bad.png", "label": "Registrar ánimo", "alt": "Selector de estado de ánimo negativo (cara naranja)" },
+          { "src": "/demos/garmin-mood/hist7.png", "label": "Histórico · 7 días", "alt": "Gráfico de barras del estado de ánimo de los últimos 7 días" },
+          { "src": "/demos/garmin-mood/month.png", "label": "Vista mensual", "alt": "Vista mensual del estado de ánimo (julio 2026)" },
+          { "src": "/demos/garmin-mood/glance.png", "label": "Glance", "alt": "Glance/widget de Mood en la esfera del reloj con la escala de color" },
+          { "src": "/demos/garmin-mood/settings.png", "label": "Código y sync", "alt": "Ajustes con el código único del dispositivo y la sincronización con la web" }
+        ]
+      },
+      "store": { "url": null },
+      "category": "personal",
+      "gridSpan": 8,
+      "gridRowSpan": 1,
+      "demoPercentage": 40,
+      "layout": "horizontal-right"
     }
   ],
   "homelab": {

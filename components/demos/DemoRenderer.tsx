@@ -5,6 +5,7 @@ import { CompareSlider } from "./CompareSlider";
 import { ImagePanel, type DetectionBox } from "./ImagePanel";
 import { MultiCamTracking } from "./MultiCamTracking";
 import { NetworkGraph, type GraphEdge, type GraphNode } from "./NetworkGraph";
+import { Slideshow } from "./Slideshow";
 import { VideoPanel } from "./VideoPanel";
 import { WarehouseCongestion } from "./WarehouseCongestion";
 import { YouTubeEmbed } from "./YouTubeEmbed";
@@ -18,6 +19,7 @@ import type { DemoFit, DemoMedia } from "./types";
 export type DemoConfig =
   | { type: "youtube"; badge?: string; youtubeId?: string; title?: string; fit?: DemoFit }
   | { type: "video"; badge?: string; src?: string; poster?: DemoMedia; autoPlay?: boolean; fit?: DemoFit; fitPosition?: string }
+  | { type: "slideshow"; badge?: string; images?: DemoMedia[]; fit?: DemoFit; interval?: number; placeholderIcon?: string }
   | { type: "image"; badge?: string; image?: DemoMedia; boxes?: DetectionBox[]; placeholderIcon?: string; fit?: DemoFit }
   | { type: "compare"; badge?: string; before?: DemoMedia; after?: DemoMedia; afterClean?: DemoMedia; toggleLabel?: string; initial?: number }
   | { type: "network"; badge?: string; nodes?: GraphNode[]; edges?: GraphEdge[] }
@@ -51,6 +53,9 @@ export function DemoRenderer({
 
     case "video":
       return <VideoPanel src={demo.src} poster={demo.poster} autoPlay={demo.autoPlay} fit={demo.fit} fitPosition={demo.fitPosition} accent={accent} badge={demo.badge} />;
+
+    case "slideshow":
+      return <Slideshow images={demo.images} fit={demo.fit} interval={demo.interval} placeholderIcon={demo.placeholderIcon} accent={accent} badge={demo.badge} />;
 
     case "image":
       return (
@@ -97,4 +102,4 @@ export function hasProjectDemo(project: ProjectLike): boolean {
 }
 
 // Re-export generics so demos/index stays the single import surface.
-export { CompareSlider, VideoPanel, YouTubeEmbed, ImagePanel, NetworkGraph, MultiCamTracking, WarehouseCongestion };
+export { CompareSlider, VideoPanel, YouTubeEmbed, ImagePanel, NetworkGraph, MultiCamTracking, WarehouseCongestion, Slideshow };

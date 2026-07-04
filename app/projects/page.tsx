@@ -16,6 +16,8 @@ const projectColors: Record<string, string> = {
   "biometric-id": "#f59e0b",
   "smartcrop-autoflip": "#f97316",
   "personal-selfhosted": "#ec4899",
+  "garmin-mood": "#14b8a6",
+  "portfolio": "#8b5cf6",
 };
 
 const projectIcons: Record<string, { icon: string; fill?: boolean }> = {
@@ -25,6 +27,8 @@ const projectIcons: Record<string, { icon: string; fill?: boolean }> = {
   "biometric-id": { icon: "person", fill: false },
   "smartcrop-autoflip": { icon: "movie", fill: false },
   "personal-selfhosted": { icon: "storage", fill: false },
+  "garmin-mood": { icon: "mood", fill: false },
+  "portfolio": { icon: "language", fill: false },
 };
 
 // Constantes de estilo para el layout
@@ -39,9 +43,9 @@ type ProjectItem = ReturnType<typeof useData>["projects"][number];
 
 type SectionKey = "empresa" | "personal";
 
-const SECTION_TABS: { key: SectionKey; label: string }[] = [
-  { key: "empresa", label: "Empresa" },
-  { key: "personal", label: "Personal" },
+const SECTION_TABS: { key: SectionKey; labelKey: string; fallback: string }[] = [
+  { key: "empresa", labelKey: "tab_enterprise", fallback: "Empresa" },
+  { key: "personal", labelKey: "tab_personal", fallback: "Personal" },
 ];
 
 /**
@@ -50,6 +54,7 @@ const SECTION_TABS: { key: SectionKey; label: string }[] = [
  * every instance stays in sync with the same state.
  */
 function SectionNav({ active, onSelect }: { active: SectionKey; onSelect: (key: SectionKey) => void }) {
+  const { messages } = useLocale();
   return (
     <div
       role="tablist"
@@ -82,6 +87,7 @@ function SectionNav({ active, onSelect }: { active: SectionKey; onSelect: (key: 
       />
       {SECTION_TABS.map((tab) => {
         const isActive = active === tab.key;
+        const label = messages.projects?.[tab.labelKey] || tab.fallback;
         return (
           <button
             key={tab.key}
@@ -109,7 +115,7 @@ function SectionNav({ active, onSelect }: { active: SectionKey; onSelect: (key: 
               transition: "color 0.3s ease",
             }}
           >
-            {tab.label}
+            {label}
           </button>
         );
       })}
@@ -128,6 +134,9 @@ function ProjectCard({ project }: { project: ProjectItem }) {
   const isWip = (project as { status?: string }).status === "wip";
   const { locale } = useLocale();
   const videoId = (project as { video?: string }).video;
+  // Optional store link (e.g. Garmin IQ Store). Present-but-null url renders a
+  // disabled placeholder button until the real listing is live.
+  const store = (project as { store?: { url?: string | null } }).store;
   const [videoOpen, setVideoOpen] = useState(false);
 
   // "Working on it" placeholder: translucent, ghosted card for upcoming work.
@@ -387,6 +396,65 @@ function ProjectCard({ project }: { project: ProjectItem }) {
               {locale === "en" ? "Watch promo video" : "Ver vídeo promocional"}
             </button>
           )}
+
+          {store && (() => {
+            const label = locale === "en" ? "View on Garmin IQ Store" : "Ver en la Garmin IQ Store";
+            const enabled = Boolean(store.url);
+            const baseStyle: React.CSSProperties = {
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 7,
+              padding: "7px 13px",
+              borderRadius: 3,
+              fontSize: 12,
+              fontWeight: 700,
+              fontFamily: "var(--font-geist-mono)",
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              color: color,
+              backgroundColor: "transparent",
+              border: `2px solid ${color}`,
+              width: "fit-content",
+              textDecoration: "none",
+              cursor: enabled ? "pointer" : "not-allowed",
+              opacity: enabled ? 1 : 0.55,
+              transition: "background-color 0.2s ease, color 0.2s ease",
+            };
+            const hoverIn = (e: React.MouseEvent<HTMLElement>) => {
+              if (!enabled) return;
+              e.currentTarget.style.backgroundColor = color;
+              e.currentTarget.style.color = "#0b0b0b";
+            };
+            const hoverOut = (e: React.MouseEvent<HTMLElement>) => {
+              if (!enabled) return;
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = color;
+            };
+            return enabled ? (
+              <a
+                href={store.url as string}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={baseStyle}
+                onMouseEnter={hoverIn}
+                onMouseLeave={hoverOut}
+              >
+                <Icon name="storefront" size={18} />
+                {label}
+              </a>
+            ) : (
+              <button
+                type="button"
+                disabled
+                aria-disabled="true"
+                title={locale === "en" ? "Coming soon to the Garmin IQ Store" : "Próximamente en la Garmin IQ Store"}
+                style={baseStyle}
+              >
+                <Icon name="storefront" size={18} />
+                {label}
+              </button>
+            );
+          })()}
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 16 }}>
@@ -495,7 +563,7 @@ export default function ProjectsPage() {
                 marginBottom: 12,
               }}
             >
-              {messages.projects?.header || "// PROYECTOS"}
+              {messages.projects?.enterprise_label || "// EMPRESA"}
             </p>
             <h1
               style={{
@@ -505,10 +573,10 @@ export default function ProjectsPage() {
                 marginBottom: 12,
               }}
             >
-              Proyectos Enterprise
+              {messages.projects?.enterprise_title || "Proyectos Enterprise"}
             </h1>
             <p style={{ color: "var(--text-secondary)", fontSize: 16, maxWidth: 560 }}>
-              Sistemas de visión artificial y AI desplegados en producción real para clientes enterprise.
+              {messages.projects?.enterprise_subtitle || "Sistemas de visión artificial y AI desplegados en producción real para clientes enterprise."}
             </p>
           </div>
 
@@ -542,7 +610,7 @@ export default function ProjectsPage() {
                     marginBottom: 12,
                   }}
                 >
-                  {"// PERSONAL"}
+                  {messages.projects?.personal_label || "// PERSONAL"}
                 </p>
                 <h2
                   style={{
@@ -552,10 +620,10 @@ export default function ProjectsPage() {
                     marginBottom: 12,
                   }}
                 >
-                  Proyectos Personales
+                  {messages.projects?.personal_title || "Proyectos Personales"}
                 </h2>
                 <p style={{ color: "var(--text-secondary)", fontSize: 16, maxWidth: 560 }}>
-                  Infraestructura self-hosted propia: experimentación con servicios en producción real sobre hardware doméstico.
+                  {messages.projects?.personal_subtitle || "Proyectos e infraestructura propios: apps para wearables e infraestructura self-hosted en producción real sobre hardware doméstico."}
                 </p>
               </div>
 
@@ -585,7 +653,7 @@ export default function ProjectsPage() {
               letterSpacing: "0.05em",
             }}
           >
-            ← Volver al inicio
+            {messages.projects?.back_home || "← Volver al inicio"}
           </Link>
         </div>
       </div>

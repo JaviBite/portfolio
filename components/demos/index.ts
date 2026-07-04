@@ -1,6 +1,7 @@
 export { DemoFrame, MediaPlaceholder } from "./DemoFrame";
 export { CompareSlider } from "./CompareSlider";
 export { VideoPanel } from "./VideoPanel";
+export { Slideshow } from "./Slideshow";
 export { YouTubeEmbed } from "./YouTubeEmbed";
 export { ImagePanel } from "./ImagePanel";
 export { HotspotImage } from "./HotspotImage";
