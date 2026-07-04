@@ -721,9 +721,9 @@ body {
 }
 
 .hero-portrait {
-  flex: 0 0 320px;
-  width: 320px;
-  height: 320px;
+  flex: 0 0 400px;
+  width: 400px;
+  height: 400px;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid var(--accent-cyan);
