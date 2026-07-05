@@ -4,6 +4,19 @@
 
 > **Computer Vision & AI Engineer** — Personal branding site con chatbot de CV, Bento Grid de proyectos y diagrama de Home Lab interactivo.
 
+### 🌐 [Ver el sitio en vivo → javigg-portfolio.vercel.app](https://javigg-portfolio.vercel.app/)
+
+<table>
+  <tr>
+    <td width="50%"><a href="https://javigg-portfolio.vercel.app/"><img src="images/main_hero_dark.png" alt="Landing — tema oscuro" /></a><br/><sub><b>Landing</b> — tema oscuro</sub></td>
+    <td width="50%"><a href="https://javigg-portfolio.vercel.app/"><img src="images/main_hero_light.png" alt="Landing — tema claro" /></a><br/><sub><b>Landing</b> — tema claro</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="https://javigg-portfolio.vercel.app/projects"><img src="images/projects.png" alt="Galería de proyectos — Bento Grid" /></a><br/><sub><b>Proyectos</b> — Bento Grid interactivo</sub></td>
+    <td width="50%"><a href="https://javigg-portfolio.vercel.app/cv"><img src="images/cv.png" alt="Living CV con chatbot" /></a><br/><sub><b>Living CV</b> — con chatbot "Pregunta a mi CV"</sub></td>
+  </tr>
+</table>
+
 ---
 
 ## ✨ Features
