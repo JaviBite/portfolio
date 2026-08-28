@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CVPrintButton } from "@/components/CVPrintButton";
 import { CVChatBubble } from "@/components/CVChatBubble";
 import { ExperienceSection } from "@/components/ExperienceSection";
@@ -13,11 +13,41 @@ import { Icon } from "@/components/Icon";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useData } from "@/lib/useData";
 
+const SIDEBAR_EXPANSION_KEY = "cv:sidebarExpansion";
+
 export default function CVPage() {
   const { messages } = useLocale();
   const data = useData();
-  const { profile, experience, education, languages, skills } = data;
+  const { profile, experience, education, languages, certifications, skills } = data;
   const [chatOpen, setChatOpen] = useState(false);
+  const [languagesExpanded, setLanguagesExpanded] = useState(false);
+  const [certificationsExpanded, setCertificationsExpanded] = useState(false);
+  const visibleLanguages = languagesExpanded ? languages : languages.slice(0, 2);
+  const visibleCertifications = certificationsExpanded ? certifications : certifications.slice(0, 2);
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(SIDEBAR_EXPANSION_KEY);
+      if (!stored) return;
+      const expansion = JSON.parse(stored) as { languages?: boolean; certifications?: boolean };
+      setLanguagesExpanded(Boolean(expansion.languages));
+      setCertificationsExpanded(Boolean(expansion.certifications));
+    } catch {
+      /* localStorage unavailable or malformed: use collapsed defaults. */
+    }
+  }, []);
+
+  const setSidebarExpanded = (section: "languages" | "certifications", expanded: boolean) => {
+    if (section === "languages") setLanguagesExpanded(expanded);
+    else setCertificationsExpanded(expanded);
+    try {
+      const stored = window.localStorage.getItem(SIDEBAR_EXPANSION_KEY);
+      const current = stored ? (JSON.parse(stored) as Record<string, boolean>) : {};
+      window.localStorage.setItem(SIDEBAR_EXPANSION_KEY, JSON.stringify({ ...current, [section]: expanded }));
+    } catch {
+      /* The current page still updates if localStorage is unavailable. */
+    }
+  };
 
   return (
     <MusicEasterEggProvider>
@@ -122,38 +152,59 @@ export default function CVPage() {
               </div>
             </section>
 
-            {/* Languages */}
-            <section style={{ pageBreakInside: "avoid" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                <Icon name="translate" size={20} style={{ color: "var(--accent-cyan)" }} />
-                <h3 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
-                  Idiomas
-                </h3>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {languages.map((lang, idx) => (
-                  <div key={idx}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                      <span style={{ fontSize: 14, fontWeight: 600 }}>{lang.language}</span>
+            {/* Languages followed by certifications in the web CV. */}
+            <div>
+              <section style={{ pageBreakInside: "avoid" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                  <Icon name="translate" size={20} style={{ color: "var(--accent-cyan)" }} />
+                  <h3 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
+                    Idiomas
+                  </h3>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {visibleLanguages.map((lang, idx) => (
+                    <div key={idx}>
+                      <span style={{ display: "block", fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{lang.language}</span>
+                      <div style={{ display: "flex", gap: 3 }}>
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: i < lang.level ? "var(--accent-cyan)" : "var(--surface-card-border)" }} />
+                        ))}
+                      </div>
+                      {lang.note && <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>{lang.note}</p>}
                     </div>
-                    <div style={{ display: "flex", gap: 3 }}>
-                      {[...Array(5)].map((_, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: "50%",
-                            backgroundColor: i < lang.level ? "var(--accent-cyan)" : "var(--surface-card-border)",
-                          }}
-                        />
-                      ))}
-                    </div>
-                    {lang.note && <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>{lang.note}</p>}
+                  ))}
+                </div>
+                {languages.length > 2 && (
+                  <button className="cv-show-more no-print" type="button" onClick={() => setSidebarExpanded("languages", !languagesExpanded)} aria-expanded={languagesExpanded}>
+                    {languagesExpanded ? "Ver menos" : `Ver más (${languages.length - 2})`}
+                  </button>
+                )}
+              </section>
+
+              {certifications.length > 0 && (
+                <section style={{ pageBreakInside: "avoid", marginTop: 32 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                    <Icon name="workspace_premium" size={20} style={{ color: "var(--accent-cyan)" }} />
+                    <h3 style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
+                      Certificaciones
+                    </h3>
                   </div>
-                ))}
-              </div>
-            </section>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {visibleCertifications.map((certification) => (
+                      <a key={certification.url} className="cv-certification" href={certification.url} target="_blank" rel="noopener noreferrer" aria-label={`${certification.name} (${certification.issuer})`}>
+                        <span className="cv-certification-mark" aria-hidden>{certification.issuerMark}</span>
+                        <span>{certification.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                  {certifications.length > 2 && (
+                    <button className="cv-show-more no-print" type="button" onClick={() => setSidebarExpanded("certifications", !certificationsExpanded)} aria-expanded={certificationsExpanded}>
+                      {certificationsExpanded ? "Ver menos" : `Ver más (${certifications.length - 2})`}
+                    </button>
+                  )}
+                </section>
+              )}
+            </div>
 
             {/* Skills */}
             <section style={{ pageBreakInside: "avoid" }}>

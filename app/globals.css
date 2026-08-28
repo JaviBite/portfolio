@@ -1474,6 +1474,95 @@ body {
   background-color: var(--accent-cyan);
 }
 
+.cv-sidebar-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.cv-certification {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.cv-certification:hover,
+.cv-certification:focus-visible {
+  color: var(--accent-cyan);
+}
+
+.cv-certification-mark {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--accent-cyan);
+  border-radius: 50%;
+  color: var(--accent-cyan);
+  font-family: var(--font-geist-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cv-sidebar-pair .cv-certification {
+  gap: 6px;
+  font-size: 8px;
+}
+
+.cv-sidebar-pair .cv-certification-mark {
+  width: 16px;
+  height: 16px;
+  font-size: 8px;
+}
+
+.cv-sidebar-pair--print {
+  grid-template-columns: 0.8fr 1.2fr;
+}
+
+.cv-sidebar-pair--print-expanded {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.cv-sidebar-pair--print .cv-certification {
+  align-items: flex-start;
+}
+
+.cv-sidebar-pair--print .cv-certification > span:last-child {
+  font-size: 9px !important;
+}
+
+.cv-show-more {
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-cyan);
+  cursor: pointer;
+  font-family: var(--font-geist-mono);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cv-show-more:hover,
+.cv-show-more:focus-visible {
+  text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+  .cv-sidebar-pair {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
 .cv-skills-group {
   display: flex;
   flex-direction: column;

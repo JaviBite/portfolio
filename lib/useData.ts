@@ -56,6 +56,10 @@ export function useData() {
         language: getTranslated(lang.language, locale),
         note: getTranslated(lang.note, locale),
       })),
+      certifications: rawData.certifications.map((certification) => ({
+        ...certification,
+        name: getTranslated(certification.name, locale),
+      })),
       skills: rawData.skills.map((skill) => ({
         ...skill,
         category: getTranslated(skill.category, locale),

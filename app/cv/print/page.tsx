@@ -6,6 +6,8 @@ import { Icon } from "@/components/Icon";
 import { useData } from "@/lib/useData";
 import { useLocale } from "@/i18n/LocaleContext";
 
+const SIDEBAR_EXPANSION_KEY = "cv:sidebarExpansion";
+
 // Auto-fit tuning. The container is pinned to the printable width and the print
 // spacing rules are applied on screen too (see the <style> block), so the measured
 // height equals the printed height — measurements are in true page pixels.
@@ -26,7 +28,7 @@ const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : use
 
 export default function CVPrintPage() {
   const data = useData();
-  const { profile, experience, education, languages, skills } = data;
+  const { profile, experience, education, languages, certifications, skills } = data;
   const { locale } = useLocale();
 
   const LABELS: Record<string, { email: string; location: string }> = {
@@ -34,9 +36,9 @@ export default function CVPrintPage() {
     en: { email: "EMAIL:", location: "LOCATION:" },
   };
 
-  const HEADERS: Record<string, { education: string; languages: string; skills: string; achievements: string }> = {
-    es: { education: "Formación", languages: "Idiomas", skills: "Skills", achievements: "Logros" },
-    en: { education: "Education", languages: "Languages", skills: "Skills", achievements: "Achievements" },
+  const HEADERS: Record<string, { education: string; languages: string; certifications: string; skills: string; achievements: string }> = {
+    es: { education: "Formación", languages: "Idiomas", certifications: "Certificaciones", skills: "Skills", achievements: "Logros" },
+    en: { education: "Education", languages: "Languages", certifications: "Certifications", skills: "Skills", achievements: "Achievements" },
   };
 
   const labels = LABELS[(locale as string) || "es"];
@@ -94,10 +96,17 @@ export default function CVPrintPage() {
   // afterwards, letting their extra bullets spill onto a second page if needed.
   const [roleStates, setRoleStates] = useState<Record<string, RoleState>>({});
   const [storeLoaded, setStoreLoaded] = useState(false);
+  const [sidebarExpansion, setSidebarExpansion] = useState({ languages: false, certifications: false });
   const [applyExpanded, setApplyExpanded] = useState(false);
   const [tick, setTick] = useState(0); // forces a re-render to reach finalization
   useEffect(() => {
     setRoleStates(readRoleStates());
+    try {
+      const stored = window.localStorage.getItem(SIDEBAR_EXPANSION_KEY);
+      if (stored) setSidebarExpansion(JSON.parse(stored) as { languages: boolean; certifications: boolean });
+    } catch {
+      /* localStorage unavailable or malformed: use collapsed defaults. */
+    }
     setStoreLoaded(true);
   }, []);
 
@@ -278,37 +287,59 @@ export default function CVPrintPage() {
               </div>
             </section>
 
-            {/* Languages */}
-            <section>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                <Icon name="translate" size={18} style={{ color: "var(--accent-cyan)" }} />
-                <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
-                  {headers.languages}
-                </h3>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {languages.map((lang, idx) => (
-                  <div key={idx}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
-                      <span style={{ fontSize: 9, fontWeight: 600 }}>{lang.language}</span>
+            <div
+              className="cv-sidebar-pair cv-sidebar-pair--print"
+              style={sidebarExpansion.languages || sidebarExpansion.certifications ? { gridTemplateColumns: "1fr" } : undefined}
+            >
+              {/* Languages */}
+              <section>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <Icon name="translate" size={18} style={{ color: "var(--accent-cyan)" }} />
+                  <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
+                    {headers.languages}
+                  </h3>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {(sidebarExpansion.languages ? languages : languages.slice(0, 2)).map((lang, idx) => (
+                    <div key={idx}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
+                        <span style={{ fontSize: 9, fontWeight: 600 }}>{lang.language}</span>
+                      </div>
+                      <div style={{ display: "flex", gap: 2 }}>
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: i < lang.level ? "var(--accent-cyan)" : "var(--surface-card-border)" }} />
+                        ))}
+                      </div>
                     </div>
-                    <div style={{ display: "flex", gap: 2 }}>
-                      {[...Array(5)].map((_, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: "50%",
-                            backgroundColor: i < lang.level ? "var(--accent-cyan)" : "var(--surface-card-border)",
-                          }}
-                        />
-                      ))}
-                    </div>
+                  ))}
+                </div>
+                {languages.length > 2 && !sidebarExpansion.languages && (
+                  <p style={{ fontSize: 7, color: "var(--text-muted)", marginTop: 4 }}>+{languages.length - 2} {locale === "en" ? "more" : "más"}</p>
+                )}
+              </section>
+
+              {certifications.length > 0 && (
+                <section>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                    <Icon name="workspace_premium" size={18} style={{ color: "var(--accent-cyan)" }} />
+                    <h3 style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", margin: 0 }}>
+                      {headers.certifications}
+                    </h3>
                   </div>
-                ))}
-              </div>
-            </section>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {(sidebarExpansion.certifications ? certifications : certifications.slice(0, 2)).map((certification) => (
+                      <a key={certification.url} className="cv-certification" href={certification.url} target="_blank" rel="noopener noreferrer">
+                        <span className="cv-certification-mark" aria-hidden>{certification.issuerMark}</span>
+                        <span>{certification.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                  {certifications.length > 2 && !sidebarExpansion.certifications && (
+                    <p style={{ fontSize: 7, color: "var(--text-muted)", marginTop: 4 }}>+{certifications.length - 2} {locale === "en" ? "more" : "más"}</p>
+                  )}
+                </section>
+              )}
+            </div>
 
             {/* Skills */}
             <section>

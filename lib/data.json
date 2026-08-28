@@ -139,6 +139,14 @@
       "level": 5
     }
   ],
+  "certifications": [
+    {
+      "name": { "es": "Google Cloud Professional Data Engineer", "en": "Google Cloud Professional Data Engineer" },
+      "issuer": "Google Cloud",
+      "issuerMark": "G",
+      "url": "https://www.credly.com/badges/ee02b199-138d-4fb0-8e84-9c100ac88d76/public_url"
+    }
+  ],
   "skills": [
     {
       "category": { "es": "Lenguajes", "en": "Languages" },
